@@ -1,14 +1,13 @@
 c-----------------------------------------------------------------------
-c     Averages over two homogeneous directions.
 c
 c     BASED ON plavg.usr. Relies on lexicographical element
 c     and node ordering.
-c-----------------------------------------------------------------------
 c
 c     call line_avg_tensor(ua,u,gs_hndl,nelx,nely,nelz,ifld,idir)
 c
+c     
 c     ua: averaged field, u: field to average
-c
+c     
 c     idir=1 ==> average over y-z plane i.e. get X-profile.
 c     idir=2 ==> average over x-z plane i.e. get Y-profile.
 c     idir=3 ==> average over x-y plane i.e. get Z-profile.
@@ -21,7 +20,7 @@ c     save    gs_avg_hndl
 c     data    gs_avg_hndl / 0 /
 c
 c     real u  (lx1,ly1,lz1,lelt) ! some field
-c    $    ,uya(lx1,ly1,lz1,lelt) ! Y-profile of u.
+c    $    ,uya(lx1,ly1,lz1,lelt) ! Y-profile
 c
 c     nelx = 128
 c     nely = 32
@@ -30,6 +29,11 @@ c     ifld = 1  ! velocity field
 c     idir = 2  ! avg over X-Z plane
 c
 c     call line_avg_tensor(uya,u,gs_avg_hndl,nelx,nely,nelz,ifld,idir)
+c
+c     ifxyo = .true.
+c     ifto  = .false.
+c     call outpost(vxa,vya,vza,pra,t,'zav')	! X & no PT?
+c     call exitti(" Exit after plane_avg_tensor, E=$",nelgt)
 c
 c-----------------------------------------------------------------------
       subroutine line_avg_tensor(ua,u,gs_hndl,nelx,nely,nelz,ifld,idir)
