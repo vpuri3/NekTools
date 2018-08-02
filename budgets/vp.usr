@@ -29,7 +29,7 @@ c-----------------------------------------------------------------------
       call gradm1(wdxavg,wdyavg,wdzavg,wavg)
       call gradm1(dpdxavg,dpdyavg,dpdzavg,pm1avg)
  
-      ! Reconciliate gradients at element boundaries
+      ! Reconcile gradients at element boundaries
  
       call opcolv (udxavg,udyavg,udzavg,bm1)
       call opdssum(udxavg,udyavg,udzavg)
