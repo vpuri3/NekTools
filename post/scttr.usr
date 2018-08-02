@@ -13,6 +13,10 @@ c
 c     real u (lx1,ly1,lz1,lelv)
 c    $     ua(lx1,ly1,lz1,lelv)
 c
+c     integer gs_sctr_hndl
+c     save    gs_sctr_hndl
+c     data    gs_sctr_hndl / 0 /
+c
 c     f     = 1
 c     bctyp = 'W  '
 c     nelx  = 16
@@ -21,7 +25,7 @@ c     nelx  = 128
 c     ifld  = 1       ! Velocity field
 c     idir  = 2       ! Y-Direction
 c
-c     call scttr(ua,u,f,bctyp,gs_hndl,nelx,nely,nelz,ifld,idir)
+c     call scttr(ua,u,f,bctyp,gs_sctr_hndl,nelx,nely,nelz,ifld,idir)
 c
 c      _________________________________________________
 c      \                                                |
