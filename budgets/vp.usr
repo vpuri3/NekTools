@@ -1,0 +1,169 @@
+c-----------------------------------------------------------------------
+      subroutine avg_grad()
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+
+      if(nid.eq.0) write(6,*) 'computing gradient of <u>,<v>,<w>,<p>'
+
+      ntot = nx1*ny1*nz1*nelv
+
+      call rzero(udxavg,ntot)
+      call rzero(udyavg,ntot)
+      call rzero(udzavg,ntot)
+      call rzero(vdxavg,ntot)
+      call rzero(vdyavg,ntot)
+      call rzero(vdzavg,ntot)
+      call rzero(wdxavg,ntot)
+      call rzero(wdyavg,ntot)
+      call rzero(wdzavg,ntot)
+      call rzero(dpdxavg,ntot)
+      call rzero(dpdyavg,ntot)
+      call rzero(dpdzavg,ntot)
+ 
+      call gradm1(udxavg,udyavg,udzavg,uavg)
+      call gradm1(vdxavg,vdyavg,vdzavg,vavg)
+      call gradm1(wdxavg,wdyavg,wdzavg,wavg)
+      call gradm1(dpdxavg,dpdyavg,dpdzavg,pm1avg)
+ 
+      ! Reconciliate gradients at element boundaries
+ 
+      call opcolv (udxavg,udyavg,udzavg,bm1)
+      call opdssum(udxavg,udyavg,udzavg)
+      call opcolv (udxavg,udyavg,udzavg,binvm1)
+ 
+      call opcolv (vdxavg,vdyavg,vdzavg,bm1)
+      call opdssum(vdxavg,vdyavg,vdzavg)
+      call opcolv (vdxavg,vdyavg,vdzavg,binvm1)
+ 
+      call opcolv (wdxavg,wdyavg,wdzavg,bm1)
+      call opdssum(wdxavg,wdyavg,wdzavg)
+      call opcolv (wdxavg,wdyavg,wdzavg,binvm1)
+ 
+      call opcolv (dpdxavg,dpdyavg,dpdzavg,bm1)
+      call opdssum(dpdxavg,dpdyavg,dpdzavg)
+      call opcolv (dpdxavg,dpdyavg,dpdzavg,binvm1)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      include 'plavg.usr'
+      include 'uplus.usr'
+c-----------------------------------------------------------------------
+      subroutine budget_post()
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+
+      real tke(lx1,ly1,lz1,lelv) ! TKE sum
+      real cnk(lx1,ly1,lz1,lelv) ! TKE convection
+      real prk(lx1,ly1,lz1,lelv) ! TKE proudction
+      real ptk(lx1,ly1,lz1,lelv) ! TKE pressure transport
+      real pdk(lx1,ly1,lz1,lelv) ! TKE pressure diffusion
+      real psk(lx1,ly1,lz1,lelv) ! TKE pressure strain
+      real tdk(lx1,ly1,lz1,lelv) ! TKE turbulent diffusion
+      real epk(lx1,ly1,lz1,lelv) ! TKE viscous dissipation
+      real vdk(lx1,ly1,lz1,lelv) ! TKE viscous diffusion
+c
+      real ppp(lx1,ly1,lz1,lelv) ! check if pres(transp = diff + strain)
+c
+      real tka(lx1,ly1,lz1,lelv) ! planar averages
+      real pka(lx1,ly1,lz1,lelv)
+      real upa(lx1,ly1,lz1,lelv)
+      real ypa(lx1,ly1,lz1,lelv)
+c
+      real uplnr(lx1,ly1,lz1,lelv)
+c
+      real up(lx1,ly1,lz1,lelv)
+      real yp(lx1,ly1,lz1,lelv)
+c
+      integer f,idir
+      character*3 bctyp
+c
+      integer gs_avg_hndl
+      save    gs_avg_hndl
+      data    gs_avg_hndl / 0 /
+c
+      integer nelx,nely,nelz,ifld
+
+      if(nid.eq.0) write(6,*) 'computing TKE, planar avg, etc'
+
+      ntot = nx1*ny1*nz1*nelv
+      nelx = 64
+      nely = 16
+      nelz = 32
+
+      call rzero(uplnr,n)
+c
+      call rzero(up,ntot)
+      call rzero(yp,ntot)
+c
+      call rzero(tke,ntnt)
+      call rzero(cnk,ntot)
+      call rzero(prk,ntot)
+      call rzero(ptk,ntot)
+      call rzero(pdk,ntot)
+      call rzero(psk,ntot)
+      call rzero(tdk,ntot)
+      call rzero(epk,ntot)
+      call rzero(vdk,ntot)
+c
+      call rzero(ppp,ntot)
+c
+      call rzero(tka,ntnt)
+      call rzero(pka,ntot)
+      call rzero(upa,ntot)
+      call rzero(ypa,ntot)
+
+      do i=1,ntot
+         cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
+         prk(i,1,1,1)= prd_uu(i,1,1,1)+ prd_vv(i,1,1,1)+ prd_ww(i,1,1,1)
+         ptk(i,1,1,1)= ptr_uu(i,1,1,1)+ ptr_vv(i,1,1,1)+ ptr_ww(i,1,1,1)
+         pdk(i,1,1,1)= pdf_uu(i,1,1,1)+ pdf_vv(i,1,1,1)+ pdf_ww(i,1,1,1)
+         psk(i,1,1,1)= pst_uu(i,1,1,1)+ pst_vv(i,1,1,1)+ pst_ww(i,1,1,1)
+         tdk(i,1,1,1)= tdf_uu(i,1,1,1)+ tdf_vv(i,1,1,1)+ tdf_ww(i,1,1,1)
+         epk(i,1,1,1)= eps_uu(i,1,1,1)+ eps_vv(i,1,1,1)+ eps_ww(i,1,1,1)
+         vdk(i,1,1,1)= vdf_uu(i,1,1,1)+ vdf_vv(i,1,1,1)+ vdf_ww(i,1,1,1)
+c
+         cnk(i,1,1,1) = cnk(i,1,1,1) * 0.5
+         prk(i,1,1,1) = prk(i,1,1,1) * 0.5
+         ptk(i,1,1,1) = ptk(i,1,1,1) * 0.5
+         tdk(i,1,1,1) = tdk(i,1,1,1) * 0.5
+         epk(i,1,1,1) = epk(i,1,1,1) * 0.5
+         vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
+c
+         ppp(i,1,1,1) = ptk(i,1,1,1) - (pdk(i,1,1,1) + psk(i,1,1,1))
+c
+         tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
+     $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
+      enddo
+
+      f     = 1
+      idir  = 2
+      bctyp = 'W  '
+      call comp_upl(up,yp,uavg,vavg,wavg,f,idir,bctyp)
+c
+      if(nid.eq.0) write(6,*) 'computing planar averages'
+
+      idir = 3
+      gs_avg_hndl = 0
+      call plane_avg_tensor(tka,tke,gs_avg_hndl,nelx,nely,nelz,1,idir)
+      call plane_avg_tensor(pka,prk,gs_avg_hndl,nelx,nely,nelz,1,idir)
+c                     
+      call plane_avg_tensor(upa,up,gs_avg_hndl,nelx,nely,nelz,1,idir)
+      call plane_avg_tensor(ypa,yp,gs_avg_hndl,nelx,nely,nelz,1,idir)
+c                     
+      call plane_avg_tensor(uplnr,uavg,gs_avg_hndl,nelx,nely,1,idir)
+
+      call outpost2(cnk,prk,ptk,pdk,psk,1,'bbb')
+      call outpost2(tdk,epk,vdk,tke,ppp,1,'ccc')
+
+      return
+      end
+c-----------------------------------------------------------------------
