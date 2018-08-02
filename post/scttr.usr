@@ -1,31 +1,56 @@
 c-----------------------------------------------------------------------
 c
+c     Scatter face data into domain in direction idir.
 c
-c     Scatter wall data into domain in direction idir
+c     idir [1,2,3] ==> [X,Y,Z]
+c
+c     See example below.
+c-----------------------------------------------------------------------
+c     Assuming deformation of the form y = f(x,z),
+c
+c     From usrchk()
+c      
+c     real u (lx1,ly1,lz1,lelv)
+c    $     ua(lx1,ly1,lz1,lelv)
+c
+c     f     = 1
+c     bctyp = 'W  '
+c     nelx  = 16
+c     nelx  = 32
+c     nelx  = 128
+c     ifld  = 1       ! Velocity field
+c     idir  = 2       ! Y-Direction
+c
+c     call scttr(ua,u,f,bctyp,gs_hndl,nelx,nely,nelz,ifld,idir)
+c
+c      _________________________________________________
+c      \                                                |
+c       \                                               |
+c        \       scatter parallel                       |
+c wall--> \       to Y                                  |
+c (face 1) \                                            |
+c           * ------------------> *                     |
+c            \        ^                                 |  ^ Z
+c             \     distance to face                    |  |
+c              \                                        |  |
+c               \_______________________________________|  +----> Y
 c
 c
 c-----------------------------------------------------------------------
-      subroutine scttr(ua,u,bctyp,f,gs_hndl,ifld,idir)
+      subroutine scttr(ua,u,f,bctyp,gs_hndl,nelx,nely,nelz,ifld,idir)
       include 'SIZE'
       include 'TOTAL'
 
-      real ua(lx1,ly1,lz1,lelt),u(1)
+      real ua(lx1,ly1,lz1,lelv),u(1)
       character*3 bctyp
       integer gs_hndl,idir,f
 
       integer nelx,nely,nelz,nel
-      integer*8 glo_num(lx1,ly1,lz1,lelt)
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
       common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
-
-ccccccccccccccccccccc CHANGE
-      nelx = 32                 ! number of elements in X
-      nely = 16                 !                       Y
-      nelz = 16                 !                       Z
-ccccccccccccccccccccc
-
       nel  = nelfld(ifld)
-      n    = nx1*ny1*nz1*lelt
+      n    = nx1*ny1*nz1*lelv
 
       if (gs_hndl.eq.0) then
          call rzero(glo_num,n)
@@ -55,7 +80,7 @@ c-----------------------------------------------------------------------
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
 
       integer nelx,nely,nelz,nel,n
-      integer*8 glo_num(lx1,ly1,lz1,lelt)
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
       common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       if(nid.eq.0) write(6,*) 'x_sctr'
@@ -91,7 +116,7 @@ c-----------------------------------------------------------------------
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
 
       integer nelx,nely,nelz,nel,n
-      integer*8 glo_num(lx1,ly1,lz1,lelt)
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
       common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       if(nid.eq.0) write(6,*) 'y_sctr'
@@ -125,7 +150,7 @@ c-----------------------------------------------------------------------
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
 
       integer nelx,nely,nelz,nel,n
-      integer*8 glo_num(lx1,ly1,lz1,lelt)
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
       common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       if(nid.eq.0) write(6,*) 'z_sctr'
@@ -153,12 +178,14 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine flag_bdry(u,f,e,bctyp)
+      subroutine flag_bdry(idx,f,e,bctyp)
       include 'SIZE'
       include 'TOTAL'
-      integer*8 u(lx1,ly1,lz1,lelv)
+      integer*8 idx(lx1,ly1,lz1,lelv)
       integer f,e
       character*3 bctyp
+
+c     flag points on boundary
 
       if(cbc(f,e,1).eq.bctyp) then
          iface  = eface1(f)     ! surface to volume shifts
@@ -171,7 +198,7 @@ c-----------------------------------------------------------------------
 
          do j2=js2,jf2,jskip2
          do j1=js1,jf1,jskip1
-            u(j1,j2,1,e) = - u(j1,j2,1,e)
+            idx(j1,j2,1,e) = - idx(j1,j2,1,e)
          enddo
          enddo          
       endif
@@ -213,7 +240,7 @@ c     include 'INPUT'
 c     include 'TSTEP'    
 c     include 'PARALLEL'
 c
-c     real d(lx1,ly1,lz1,lelt)
+c     real d(lx1,ly1,lz1,lelv)
 c     character*3 bctyp
 c     integer e,eg,f
 c

@@ -20,8 +20,6 @@ c
 c     relies on lexicographical element and node ordering.
 c
 C-----------------------------------------------------------------------
-c     Assumes deformation of the form (in example below)
-c     y = f(x,z)
 c
 c      _________________________________________________
 c      \                                                |
