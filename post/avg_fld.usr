@@ -1,3 +1,6 @@
+c
+c     Written by Aleks Obabko
+c
 c-----------------------------------------------------------------------
 c userchk:
 c     call avg_fld (-1)	! avg of files in filename list file a.list & exit
