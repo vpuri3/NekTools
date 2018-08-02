@@ -10,8 +10,6 @@ c     idir    : direction to scatter data from face into domain
 c               [1,2,3] ==> [x,y,z]
 c     bctyp   : Boundary condition of face (char*3)
 c
-c     CHANGE nelx,nely,nelz function call scttr to match your case.
-c
 c     outputs 1) shear stress vector on face,
 c             2) normal, tangential velocity,
 c                dist. to face, shear stress mag in volume,
@@ -19,7 +17,11 @@ c             3) u-plus, y-plus, shear stress mag in volume.
 c
 c     relies on lexicographical element and node ordering.
 c
-C-----------------------------------------------------------------------
+c     integer gs_sctr_hndl      ! scattering face info into domain
+c     save    gs_sctr_hndl
+c     data    gs_sctr_hndl / 0 /
+c
+c-----------------------------------------------------------------------
 c
 c      _________________________________________________
 c      \                                                |
@@ -49,18 +51,19 @@ c
 C-----------------------------------------------------------------------
       include 'scttr.usr'
 C-----------------------------------------------------------------------
-      subroutine comp_upl(upl,ypl,vlx,vly,vlz,f,idir,bctyp)
+      subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl,
+     $                      ,nelx,nely,nelz,idir,ifld)
       include 'SIZE'
       include 'TOTAL'
 
       parameter(lxyz = lx1*ly1*lz1)
       parameter(nxzf = 2*ldim)
 
-      real upl(lx1,ly1,lz1,lelv)
-      real ypl(lx1,ly1,lz1,lelv)
-      real vlx(lx1,ly1,lz1,lelv)
-      real vly(lx1,ly1,lz1,lelv)
-      real vlz(lx1,ly1,lz1,lelv)
+      real up(lx1,ly1,lz1,lelv) ! U-plus
+      real yp(lx1,ly1,lz1,lelv) ! Y-plus
+      real ux(lx1,ly1,lz1,lelv) ! X-Velocity
+      real uy(lx1,ly1,lz1,lelv) ! Y-Velocity
+      real uz(lx1,ly1,lz1,lelv) ! Z-Velocity
       integer f,idir
       character*3 bctyp
 
@@ -103,18 +106,14 @@ c
       real a, xdrg, ydrg, zdrg, mdrg
       real u,v,w,un,ufr,dty
 
-      integer gs_sctr_hndl      ! scattering face info into domain
-      save    gs_sctr_hndl
-      data    gs_sctr_hndl / 0 /
-
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'computing u-plus, y-plus'
 
       n    = nx1*ny1*nz1*lelt
 
-      call rzero(upl,n)
-      call rzero(ypl,n)
+      call rzero(up,n)
+      call rzero(yp,n)
 c
       call rzero(fTx,n)
       call rzero(fTy,n)
@@ -144,9 +143,7 @@ c
       zdrg  = 0.                !           Z
       mdrg  = 0.                !           Mag
 
-      ifld   = 1
       idimt  = 1
-
       vsc  = vdiff(lx1,ly1,lz1,nelt,idimt)
       dsty = param(1)
 
@@ -154,7 +151,7 @@ c
       if (istep.eq.0) call cfill(vdiff,param(2),n)
 
       ! strain rate tensor
-      call comp_sij(sij,nxzf,vlx,vly,vlz,ur,us,ut,vr,vs,vt,wr,ws,wt)
+      call comp_sij(sij,nxzf,ux,uy,uz,ur,us,ut,vr,vs,vt,wr,ws,wt)
 
       ! get face info (initialize skpdat array)
       call dsset(nx1,ny1,nz1)
@@ -225,25 +222,24 @@ c
       call gop(mdrg,Tmg,'+  ',1)
 
       if(nid.eq.0) then
-         write(6,*) 'wallNS says  area     is', a
-         write(6,*) 'wallNS says xdrag     is', xdrg
-         write(6,*) 'wallNS says ydrag     is', ydrg
-         write(6,*) 'wallNS says zdrag     is', zdrg
-         write(6,*) 'wallNS says  drag mag is', mdrg
+         write(6,*) 'comp_uplus says  area     is', a
+         write(6,*) 'comp_uplus says xdrag     is', xdrg
+         write(6,*) 'comp_uplus says ydrag     is', ydrg
+         write(6,*) 'comp_uplus says zdrag     is', zdrg
+         write(6,*) 'comp_uplus says  drag mag is', mdrg
       endif
 
       ! scatter face data into domain
-      gs_sctr_hndl = 0
-      call scttr(volTx,fTx,bctyp,f,gs_sctr_hndl,1,idir)
-      call scttr(volTy,fTy,bctyp,f,gs_sctr_hndl,1,idir)
-      call scttr(volTz,fTz,bctyp,f,gs_sctr_hndl,1,idir)
-      call scttr(volTm,fTm,bctyp,f,gs_sctr_hndl,1,idir)
+      call scttr(volTx,fTx,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
+      call scttr(volTy,fTy,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
+      call scttr(volTz,fTz,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
+      call scttr(volTm,fTm,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
 c
-      call scttr(volNx,fNx,bctyp,f,gs_sctr_hndl,1,idir)
-      call scttr(volNy,fNy,bctyp,f,gs_sctr_hndl,1,idir)
-      call scttr(volNz,fNz,bctyp,f,gs_sctr_hndl,1,idir)
+      call scttr(volNx,fNx,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
+      call scttr(volNy,fNy,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
+      call scttr(volNz,fNz,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
 c
-      call dist2face(d2f,bctyp,f,gs_sctr_hndl,1,idir)
+      call dist2face(d2f,bctyp,f,gs_hndl,1,idir)
 
       ! compute u-plus, y-plus
       do i=1,n
