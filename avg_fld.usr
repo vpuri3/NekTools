@@ -1,0 +1,365 @@
+c-----------------------------------------------------------------------
+c userchk:
+c     call avg_fld (-1)	! avg of files in filename list file a.list & exit
+c     return	   	! NSTEPS=0 in .rea!
+c=======================================================================
+c     Dumping into avgcase.f*01 file the average of files from a.list in 
+c       mode = 1 (avg*.f* files with stored avegraging time intervals)
+c       mode = 2 (        files as arithmetic average)
+c       mode = 3 (        files with initial and final times in t.list)
+c       mode =-1 for the last (even) 1/4, 1/2, and all files in a.list to avg.
+c     Note: No empty last line in a.list!!!
+c         : set nsteps=0 & lx2=lx1 & IFSTRS=F & NO RESTART & check a.list!!!
+c         : to save memory: p99<0/lxd=1/IFCHAR=F, mxprev=lgmres=1 (0?),
+c           l/torder=2 (or 1 w/ G="-qzerosize" along w/ ldimt=0/npscal=-1)
+c         : ditributive file read a.list: ls -1 A0/sop0.f00??? & s 0->?
+c-----------------------------------------------------------------------
+      subroutine avg_fld (nmode)
+      include 'SIZE'
+      include 'TOTAL'
+
+      parameter        (lfiles = 99)
+      real          adt(lfiles + 1)		! real*4?
+      character*132 sfn(lfiles),sfname
+      character*6   s6
+
+      parameter (ltt=ax1*ay1*az1*lelt,lt2=ax2*ay2*az2*lelt)
+      common /chkavg/ avx(ltt),avy(ltt),avz(ltt),att(ltt,ldimt),apr(lt2) ! ~ AVG
+      logical  ifavgxyo
+
+      p66 = param(66)           ! file write format: overwrite w/ 4 for .fld
+      p67 = param(67)           ! file read  format: overwrite w/ 4 for .fld
+      s6  = 'a.list'		  ! file names
+      ifavgxyo = .true.		    ! dump coordinates w/ avg file/s
+
+      mode = iabs(nmode)
+
+      lld = (lx2 - lx1)**2 + (ly2 - ly1)**2 + (lz2 - lz1)**2
+     $    + (ax2 - lx1)**2 + (ay2 - ly1)**2 + (az2 - lz1)**2
+      if (lld.ne.0) call exitti(
+     $    " avg_fld -- check lx2=lx1 & az1=lx1, etc.: $",lld)
+
+      iname = 1	       	     	     ! for avg* filename dump
+      call avg_init(sfn,nfiles,nf2,nf4,nmode,s6,lfiles)
+      if (mode.eq.3) then
+         s6 = 't.list'			! file times
+         call avg_adt (adt,nmode,nfiles,s6)    ! from t.list
+      endif
+
+      call avg_zero(avx,avy,avz,apr,att)
+
+      do i=1,nfiles			! avg
+         call chcopy(sfname,sfn(i),132)
+         call avg_done(avx,avy,avz,apr,att,adt,mode,i,p67,sfname)
+         call e2t_out			! stats
+         if (i.eq.nf4 .or. i.eq.nf2) call
+     $     avg_dump(avx,avy,avz,apr,att,p66,iname,ifavgxyo)
+      enddo
+
+      call avg_dump(avx,avy,avz,apr,att,p66,iname,ifavgxyo)	! if*o?
+
+      call exittr("  avg_fld exit: t_avg and # of files: $",time,nfiles)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine avg_init (sfn,nfiles,nf2,nf4,nmode,sflist,lfiles)
+      include 'SIZE'
+      include 'TOTAL'
+
+      character*132 sfn(1),fname,fnam2
+      character*6   sflist
+
+
+      nfiles = 0
+      ierr   = 0
+      ierr2  = 0
+      if (nid.eq.0) then
+         open(112,file=sflist,status='old',form='formatted'
+     $                       ,iostat=ierr2,err=20)
+
+         do i=1,lfiles+1	! check for lfiles?
+            call blank(fname,132) 
+            read (112,10,end=20) fname	! check for non-empty line?
+   10       format(a132)
+            if (i.gt.lfiles) then
+               ierr = i
+               goto 20
+            endif
+c           sfn(i) = fname
+            call chcopy(sfn(i),fname,132)
+            nfiles = nfiles + 1
+         enddo
+   20    continue
+         close(112)
+      endif
+
+      ierr  = iglmax(ierr, 1)
+      if (ierr.ne.0)   call exitti("  avg_int: set lfiles >= $",ierr)
+      ierr2 = iglmax(ierr2,1)
+      if (ierr2.ne.0)  call exitti(
+     $            "Exit in avg_int: No sflist? IOSTAT error $",ierr2)
+
+      nfiles = iglmax(nfiles,1)
+      call bcast (sfn,nfiles*132)
+
+      nf4 = 0 
+      nf2 = 0 
+      if (nmode.lt.0) then	! to get avg over 'quarter' & 'half' too
+        nf4 = nfiles/4 
+        nf2 = nfiles/2 
+        if (nf4.eq.0) then
+           if (nid.eq.0) write(6,30) nf4,nf2
+           nf4 = nf2
+        endif
+   30   format("  avg_fld: adjusting nf4 from ",i5," to ",i5)
+
+        nfiles2 = nfiles/2 	     ! reversing order of filenames
+        do i=1,nfiles2
+            j = nfiles - i
+            call chcopy(fname,sfn(i),132)
+            call chcopy(fnam2,sfn(j),132)
+            call chcopy(sfn(i),fnam2,132)
+	        call chcopy(sfn(j),fname,132)
+        enddo
+      endif
+      if (nid.eq.0)  write (6,40) nfiles,nf2,nf4
+   40 format("  Files to average ",3i5)
+
+      do iline=1,15   	 	 ! for setics in avg_load_sum
+         call blank (initc(iline),132)
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine avg_adt (adt,nmode,nfiles,stlist) ! mode=3: t.list of avg t_0 & t_final columns
+      include 'SIZE'
+      include 'TOTAL'
+
+      character*6   stlist
+      real adt(1)
+
+
+      nlines = nfiles		! +1 for mode=1?
+      call rzero (adt,nlines)	! check for lfiles?
+      ierr   = 0
+      if (nid.eq.0) then
+         open(112,file=stlist,status='old',form='formatted')	! mode=2?
+         do i=1,nlines+1					  ! check for lfiles
+            read (112,*,end=20) time1,time2
+            if (i.gt.nlines) then
+               ierr = i
+               goto 20
+            endif
+            adt(i) = time2 - time1
+         enddo
+   20    continue
+         close(112)
+      endif
+      ierr = iglmax(ierr,1)						!?
+      if (ierr.ne.0)  call exitti("  avg_adt: time lines are >= $",ierr)
+
+      do i=1,nlines
+         adtc = adt(i)		! bcast adt instead?
+         adt(i)= glsum(adtc,1)
+      enddo
+      if (nmode.lt.0) then	! reversing weights for 'quarter' & 'half'
+      do i=1,nlines/2 		! mode
+         j = nlines - i
+         adtc   = adt(i)
+         adt(i) = adt(j)
+         adt(j) = adtc
+      enddo
+      endif
+
+      adtmin = glmin(adt,nlines)
+      adtmax = glmax(adt,nlines)
+      if (nid.eq.0)  write (6,40) adtmin,adtmax
+   40 format(3x,'Averaging time interval range : ',1p2g15.7)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine avg_zero (avx,avy,avz,apr,att)
+      include 'SIZE'
+      parameter (ltt=ax1*ay1*az1*lelt,lt2=ax2*ay2*az2*lelt)
+      dimension avx(1),avy(1),avz(1),apr(1),att(ltt,1)
+
+      ifield = 1
+      call opzero(avx,avy,avz)
+      call rzero (apr,lt2)
+      call rzero (att,ltt*ldimt)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine avg_done (avx,avy,avz,apr,att,adt,mode,ifile,p67,fname)
+      include 'SIZE'
+      include 'TOTAL'
+
+      parameter (ltt=ax1*ay1*az1*lelt,lt2=ltt)	! better if lx2=lx1
+      dimension avx(1),avy(1),avz(1),apr(1),att(ltt,1)
+
+      character*132 fname
+      real adt(1)
+
+      real adtt
+      save adtt
+      data adtt /0./
+
+
+      param(67) = p67
+      call chcopy(initc(1),fname,132)			! initc(2)?
+      if (nid.eq.0) write(6,10) param(67),ifile,initc(1)
+   10 format('p67=',f2.0,3x,i5,' fname = ',a132)
+
+      ifvcor = .false.		       ! no mean correction to pr
+      call setics		       	    	 	       ! reading
+
+      call avg_wghts (awtp,awtc,adtt,mode,ifile,adt,time)      ! weights
+
+      if (nid.eq.0) write(6,20) ifile,mode,adtt,adtp,adtc,time,awtp,awtc
+   20 format(i5,i2,1p6e15.7,'  avg_done')
+
+      ntott = nx1*ny1*nz1*nelt
+      ntot2 = nx2*ny2*nz2*nelt
+      ntotv = ntott
+      call add2sxy(avx,awtp,vx,awtc,ntotv)			! averaging
+      call add2sxy(avy,awtp,vy,awtc,ntotv)
+      if (if3d) call
+     $     add2sxy(avz,awtp,vz,awtc,ntotv)
+      call add2sxy(apr,awtp,pr,awtc,ntot2) ! ifpo? use lx2=lx1
+      do k=1,ldimt					  ! ifto?
+        call add2sxy(att(1,k),awtp,t(1,1,1,1,k),awtc,ntott)
+      enddo
+
+      time  = adtt					! for avg_dump
+      istep = ifile
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine avg_wghts (awtp,awtc,adtt,mode,ifile,adt,time)
+
+      real adt(1)		! for mode=3
+
+
+      if (mode.eq.3) then		! t.list
+
+         adtc = adt(ifile)		! t_i from adtc <- avg_adt <- t.list
+         adtp = adtt
+         if (ifile.eq.1)   adtp = 0.
+
+      else if (mode.eq.2) then			! ifile
+
+         adtc = ifile - 1.			! avg_i = a_i/i + avg_{i-1} * (i-1)/i
+         adtp = 1.    	! which is mode=0 w/ t_i = i * dt
+
+      else   ! mode.eq.1  	   	  ! time 
+
+         adtc = time			  !    tt = t_i          + t_{i-1}
+         adtp = adtt			  ! avg_i = t_i/tt * a_i + t_{i-1}/tt * avg_{i-1}
+         if (ifile.eq.1)   adtp = 0.
+      endif
+
+      adtt = adtp + adtc	! previous and current time intervals t_{i-1} & t_i
+      awtp = adtp/adtt		  ! check for 0.?
+      awtc = adtc/adtt
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine avg_dump (avx,avy,avz,apr,att,p66,iname,ifavgxyo)
+      include 'SIZE'
+      include 'TOTAL'
+
+      parameter (ltt=ax1*ay1*az1*lelt,lt2=ax2*ay2*az2*lelt)
+      dimension avx(1),avy(1),avz(1),apr(1),att(ltt,1)
+
+      logical ifavgxyo
+      character*3 s3(3),sprefix		! argument?
+      save        s3
+      data        s3 /'avg','arm','ar2'/	! true avg,rms,re-tensor
+      real tmax(ldimt)
+
+      sprefix   = s3(iname)
+      param(66) = p66
+      ifxyo     = ifavgxyo
+
+      ntott = nx1*ny1*nz1*nelt
+      ntot2 = nx2*ny2*nz2*nelt
+      ntotv = ntott
+
+      vxmax = glmax(avx,ntotv)
+      vymax = glmax(avy,ntotv)
+      vzmax = glmax(avz,ntotv)		! ndim=2?
+      prmax = glmax(apr,ntotv)		  ! F ifpo or 'ar2'?
+      do k=1,ldimt
+         tmax(k) = glmax(att(1,k),ntott)
+      enddo
+      if (nid.eq.0) write(6,10) param(66),sprefix,vxmax,vymax,vzmax
+     $                         ,prmax,(tmax(k),k=1,ldimt)
+   10 format('p66=',f2.0,1x,a3,'_uvwpt_max',1p14g13.5)	! up to ldimt=10?
+
+      nfldt = 0
+      if (ifto) nfldt = nfldt + 1
+      do i=1,ldimt-1
+         if (ifpsco(i)) nfldt = nfldt + 1
+      enddo
+      call outpost2(avx,avy,avz,apr,att,nfldt,sprefix)	! F ifpo?
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine e2t_out
+      include 'SIZE'
+      include 'TOTAL'
+c
+c     prints out uvwpt abs max and volume average/rms
+ 
+
+      nt  = nx1*ny1*nz1*nelt
+      nv  = nx1*ny1*nz1*nelv
+      n2  = nx2*ny2*nz2*nelv
+      vxm = glamax(vx,nv)			! absolute value max
+      vym = glamax(vy,nv)
+      prm = glamax(pr,n2)
+      tem = glamax(t ,nt)
+      vxa = glsc2(vx,   bm1,nt) / volvm1	! volume-average
+      vya = glsc2(vy,   bm1,nt) / volvm1
+      pra = glsc2(pr,   bm2,n2) / volvm2
+      tea = glsc2(t ,   bm1,nt) / volvm1
+      vx2 = glsc3(vx,vx,bm1,nt) / volvm1
+      vy2 = glsc3(vy,vy,bm1,nt) / volvm1
+      pr2 = glsc3(pr,pr,bm2,n2) / volvm2
+      te2 = glsc3(t ,t ,bm1,nt) / volvm1
+      vx2 = vx2 - vxa*vxa
+      vy2 = vy2 - vya*vya
+      pr2 = pr2 - pra*pra
+      te2 = te2 - tea*tea
+      if (vx2.gt.0.) vx2 = sqrt(vx2)		! volume-rms
+      if (vy2.gt.0.) vy2 = sqrt(vy2)
+      if (pr2.gt.0.) pr2 = sqrt(pr2)
+      if (te2.gt.0.) te2 = sqrt(te2)
+
+      if (if3d) then		! 3D
+         vzm = glamax(vz,nv)
+         vza = glsc2(vz,   bm1,nt) / volvm1
+         vz2 = glsc3(vz,vz,bm1,nt) / volvm1
+         vz2 = vz2 - vza*vza
+         if (vz2.gt.0) vz2 = sqrt(vz2)
+
+         if (nid.eq.0) write(6,1) istep,time,vxa,vya,vza,pra,tea ! 1-2  3-7
+     $                  ,vx2,vy2,vz2,pr2,te2,vxm,vym,vzm,prm,tem ! 8-12 13-17
+      else
+         if (nid.eq.0) write(6,2) istep,time,vxa,vya,pra,tea     ! 1-2  3-6
+     $                      ,vx2,vy2,pr2,te2,vxm,vym,prm,tem     ! 7-10 11-14
+      endif
+!         tstep time       avgut   rmsut   amaxut
+    1 format(i7, 1pe14.7, 5e15.7, 5e11.3, 5e10.2, ' e2t')
+    2 format(i7, 1pe14.7, 4e15.7, 4e11.3, 4e10.2, ' e2t')
+
+      return
+      end
+c-----------------------------------------------------------------------
