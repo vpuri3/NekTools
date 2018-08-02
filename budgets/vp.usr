@@ -51,7 +51,6 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       include 'plavg.usr'
-      include 'uplus.usr'
 c-----------------------------------------------------------------------
       subroutine budget_post()
       INCLUDE 'SIZE'  
@@ -66,7 +65,7 @@ c-----------------------------------------------------------------------
       real prk(lx1,ly1,lz1,lelv) ! TKE proudction
       real ptk(lx1,ly1,lz1,lelv) ! TKE pressure transport
       real pdk(lx1,ly1,lz1,lelv) ! TKE pressure diffusion
-      real psk(lx1,ly1,lz1,lelv) ! TKE pressure strain
+      real psk(lx1,ly1,lz1,lelv) ! TKE pressure strain -- should be zero!
       real tdk(lx1,ly1,lz1,lelv) ! TKE turbulent diffusion
       real epk(lx1,ly1,lz1,lelv) ! TKE viscous dissipation
       real vdk(lx1,ly1,lz1,lelv) ! TKE viscous diffusion
@@ -92,7 +91,7 @@ c
 c
       integer nelx,nely,nelz,ifld
 
-      if(nid.eq.0) write(6,*) 'computing TKE, planar avg, etc'
+      if(nid.eq.0) write(6,*) 'computing TKE, planar averages, etc'
 
       ntot = nx1*ny1*nz1*nelv
       nelx = 64
@@ -147,7 +146,7 @@ c
       f     = 1
       idir  = 2
       bctyp = 'W  '
-      call comp_upl(up,yp,uavg,vavg,wavg,f,idir,bctyp)
+c     call comp_upl(up,yp,uavg,vavg,wavg,f,idir,bctyp)
 c
       if(nid.eq.0) write(6,*) 'computing planar averages'
 
