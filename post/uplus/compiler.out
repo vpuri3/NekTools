@@ -147,57 +147,60 @@ Warning: Deleted feature: ASSIGN statement at (1)
 Warning: Deleted feature: ASSIGN statement at (1)
 smoothWavyWall.usr -> smoothWavyWall.f
 mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
-scttr.usr:54.32:
-    Included at uplus.usr:56:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
+mpif77  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/Users/vedantpuri/Nek5000/3rd_party/gslib/lib -lgs 
 
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n                        
-                                1
-Error: COMMON attribute conflicts with DUMMY attribute in 'nelx' at (1)
-uplus.usr:264.9:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+__TEXT	__DATA	__OBJC	others	dec	hex
+2826240	2482442240	0	4295151616	6780420096	194250000	
 
-         upl(i,1,1,1) = utan(i,1,1,1)/ufr                               
-         1
-Error: Unclassifiable statement at (1)
-uplus.usr:265.9:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
 
-         ypl(i,1,1,1) = d2f(i,1,1,1)*ufr/vsc                            
-         1
-Error: Unclassifiable statement at (1)
-make: *** [nek5000] Error 1
 build 3rd-party software ...
 smoothWavyWall.usr -> smoothWavyWall.f
 mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
-scttr.usr:54.32:
-    Included at uplus.usr:56:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
+mpif77  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/Users/vedantpuri/Nek5000/3rd_party/gslib/lib -lgs 
 
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n                        
-                                1
-Error: COMMON attribute conflicts with DUMMY attribute in 'nelx' at (1)
-uplus.usr:264.9:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+__TEXT	__DATA	__OBJC	others	dec	hex
+2822144	2482442240	0	4295151616	6780416000	19424f000	
 
-         upl(i,1,1,1) = utan(i,1,1,1)/ufr                               
-         1
-Error: Unclassifiable statement at (1)
-uplus.usr:265.9:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
 
-         ypl(i,1,1,1) = d2f(i,1,1,1)*ufr/vsc                            
-         1
-Error: Unclassifiable statement at (1)
-make: *** [nek5000] Error 1
 build 3rd-party software ...
 smoothWavyWall.usr -> smoothWavyWall.f
 mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
-scttr.usr:54.32:
-    Included at uplus.usr:56:
-    Included at /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f:15:
+mpif77  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/Users/vedantpuri/Nek5000/3rd_party/gslib/lib -lgs 
 
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n                        
-                                1
-Error: COMMON attribute conflicts with DUMMY attribute in 'nelx' at (1)
-make: *** [nek5000] Error 1
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+__TEXT	__DATA	__OBJC	others	dec	hex
+2822144	2482442240	0	4295151616	6780416000	19424f000	
+
+
+build 3rd-party software ...
+smoothWavyWall.usr -> smoothWavyWall.f
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
+mpif77  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/Users/vedantpuri/Nek5000/3rd_party/gslib/lib -lgs 
+
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+__TEXT	__DATA	__OBJC	others	dec	hex
+2822144	2482442240	0	4295151616	6780416000	19424f000	
+
+
+build 3rd-party software ...
+smoothWavyWall.usr -> smoothWavyWall.f
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
+mpif77  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus -I/Users/vedantpuri/Nek5000/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/Users/vedantpuri/Nek5000/3rd_party/gslib/lib -lgs 
+
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+__TEXT	__DATA	__OBJC	others	dec	hex
+2826240	2482442240	0	4295151616	6780420096	194250000	
+
+

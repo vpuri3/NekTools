@@ -50,18 +50,18 @@ c-----------------------------------------------------------------------
       integer gs_hndl,idir,f
 
       integer nelx,nely,nelz,nel
-      integer*8 glo_num(lx1,ly1,lz1,lelv)
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n
+c     integer*8 glo_num(lx1,ly1,lz1,lelv)
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       nel  = nelfld(ifld)
-      n    = nx1*ny1*nz1*lelv
+      n    = nx1*ny1*nz1*nel
 
       if (gs_hndl.eq.0) then
-         call rzero(glo_num,n)
-         call dsset(nx1,ny1,nz1)
-         if (idir.eq.1) call gs_x_scttr(gs_hndl,f,bctyp)
-         if (idir.eq.2) call gs_y_scttr(gs_hndl,f,bctyp)
-         if (idir.eq.3) call gs_z_scttr(gs_hndl,f,bctyp)
+c      call rzero(glo_num,n)
+       call dsset(nx1,ny1,nz1)
+       if (idir.eq.1) call gs_x_sctr(gs_hndl,f,bctyp,nelx,nely,nelz,nel)
+       if (idir.eq.2) call gs_y_sctr(gs_hndl,f,bctyp,nelx,nely,nelz,nel)
+       if (idir.eq.3) call gs_z_sctr(gs_hndl,f,bctyp,nelx,nely,nelz,nel)
       endif
 
       call copy(ua,u,n)
@@ -76,7 +76,7 @@ c     enddo
       return
       end
 c-----------------------------------------------------------------------
-      subroutine gs_x_scttr(gs_sctr_hndl,f,bctyp)
+      subroutine gs_x_sctr(gs_sctr_hndl,f,bctyp,nelx,nely,nelz,nel)
       include 'SIZE'
       include 'TOTAL'
       integer gs_sctr_hndl,f,e,ex,ey,ez,eg,nelyz
@@ -85,10 +85,11 @@ c-----------------------------------------------------------------------
 
       integer nelx,nely,nelz,nel,n
       integer*8 glo_num(lx1,ly1,lz1,lelv)
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       if(nid.eq.0) write(6,*) 'x_sctr'
 
+      n     = nx1*ny1*nz1*nel
       nelyz = nely*nelz
       nt    = ny1*nely*nz1*nelz
 
@@ -112,7 +113,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine gs_y_sctr(gs_sctr_hndl,f,bctyp)
+      subroutine gs_y_sctr(gs_sctr_hndl,f,bctyp,nelx,nely,nelz,nel)
       include 'SIZE'
       include 'TOTAL'
       integer gs_sctr_hndl,f,e,ex,ey,ez,eg
@@ -121,11 +122,12 @@ c-----------------------------------------------------------------------
 
       integer nelx,nely,nelz,nel,n
       integer*8 glo_num(lx1,ly1,lz1,lelv)
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       if(nid.eq.0) write(6,*) 'y_sctr'
 
-      nt = nx1*nelx*nz1*nelz
+      n  = nx1*ny1*nz1*nel
+
       do e=1,nel
          eg = lglel(e)
          call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)            
@@ -146,7 +148,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine gs_z_sctr(gs_sctr_hndl,f,bctyp)
+      subroutine gs_z_sctr(gs_sctr_hndl,f,bctyp,nelx,nely,nelz,nel)
       include 'SIZE'
       include 'TOTAL'
       integer gs_sctr_hndl,f,e,ex,ey,ez,eg,nelxy
@@ -155,12 +157,12 @@ c-----------------------------------------------------------------------
 
       integer nelx,nely,nelz,nel,n
       integer*8 glo_num(lx1,ly1,lz1,lelv)
-      common /sctr/ glo_num,nelx,nely,nelz,nel,n
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
       if(nid.eq.0) write(6,*) 'z_sctr'
 
+      n     = nx1*ny1*nz1*nel
       nelxy = nelx*nely
-      nt    = nx1*nelx*ny1*nely
 
       do e=1,nel
          eg = lglel(e)
