@@ -1,0 +1,158 @@
+build 3rd-party software ...
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/gs.c -o src/gs.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sort.c -o src/sort.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sarray_transfer.c -o src/sarray_transfer.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sarray_sort.c -o src/sarray_sort.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/gs_local.c -o src/gs_local.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/fail.c -o src/fail.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/crystal.c -o src/crystal.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/comm.c -o src/comm.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/tensor.c -o src/tensor.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sparse_cholesky.c -o src/sparse_cholesky.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/xxt.c -o src/xxt.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/amg.c -o src/amg.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/fcrystal.c -o src/fcrystal.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/fcrs.c -o src/fcrs.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts.c -o src/findpts.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts_local.c -o src/findpts_local.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/obbox.c -o src/obbox.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/poly.c -o src/poly.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/lob_bnd.c -o src/lob_bnd.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts_el_3.c -o src/findpts_el_3.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts_el_2.c -o src/findpts_el_2.o
+mpicc -w -I./src -DMPI -DUSEMPIIO -DUNDERSCORE -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/rand_elt_test.c -o src/rand_elt_test.o
+./src/libgs.a -> /Users/vedantpuri/Nek5000/3rd_party/gslib/gslib-1.0.1/../lib/libgs.a
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/drive.f -o obj/drive.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/drive1.f -o obj/drive1.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/drive2.f -o obj/drive2.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/plan5.f -o obj/plan5.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/plan4.f -o obj/plan4.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/bdry.f -o obj/bdry.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/coef.f -o obj/coef.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/conduct.f -o obj/conduct.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/connect1.f -o obj/connect1.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/connect2.f -o obj/connect2.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/dssum.f -o obj/dssum.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/edgec.f -o obj/edgec.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/eigsolv.f -o obj/eigsolv.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/gauss.f -o obj/gauss.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/genxyz.f -o obj/genxyz.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier1.f -o obj/navier1.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/makeq.f -o obj/makeq.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier0.f -o obj/navier0.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier2.f -o obj/navier2.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier3.f -o obj/navier3.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier4.f -o obj/navier4.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/prepost.f -o obj/prepost.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/speclib.f -o obj/speclib.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/map2.f -o obj/map2.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/mvmesh.f -o obj/mvmesh.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/ic.f -o obj/ic.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/gfldr.f -o obj/gfldr.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/ssolv.f -o obj/ssolv.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/planx.f -o obj/planx.o
+mpif77 -c  -O3 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/math.f -o obj/math.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/mxm_wrapper.f -o obj/mxm_wrapper.o 
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/hmholtz.f -o obj/hmholtz.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/gfdm_par.f -o obj/gfdm_par.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/gfdm_op.f -o obj/gfdm_op.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/gfdm_solve.f -o obj/gfdm_solve.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/subs1.f -o obj/subs1.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/subs2.f -o obj/subs2.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/genbox.f -o obj/genbox.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/gmres.f -o obj/gmres.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/hsmg.f -o obj/hsmg.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/convect.f -o obj/convect.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/induct.f -o obj/induct.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/perturb.f -o obj/perturb.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier5.f -o obj/navier5.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier6.f -o obj/navier6.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier7.f -o obj/navier7.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/navier8.f -o obj/navier8.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/fast3d.f -o obj/fast3d.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/fasts.f -o obj/fasts.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/calcz.f -o obj/calcz.o
+mpicc -c  -O2 -w -DMPI -DUNDERSCORE -DTIMER /Users/vedantpuri/Nek5000/core/byte.c -o obj/byte.o
+mpicc -c  -O2 -w -DMPI -DUNDERSCORE -DTIMER /Users/vedantpuri/Nek5000/core/chelpers.c -o obj/chelpers.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/byte_mpi.f -o obj/byte_mpi.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/postpro.f -o obj/postpro.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/intp_usr.f -o obj/intp_usr.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/cvode_driver.f -o obj/cvode_driver.o
+mpicc -c  -O2 -w -DMPI -DUNDERSCORE -DTIMER /Users/vedantpuri/Nek5000/core/nek_comm.c -o obj/nek_comm.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/vprops.f -o obj/vprops.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/makeq_aux.f -o obj/makeq_aux.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/papi.f -o obj/papi.o
+mpif77 -c   -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/3rd_party/nek_in_situ.f -o obj/nek_in_situ.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/reader_rea.f -o obj/reader_rea.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/reader_par.f -o obj/reader_par.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/reader_re2.f -o obj/reader_re2.o
+mpicc  -c  -O2 -w -DMPI -DUNDERSCORE -DTIMER  /Users/vedantpuri/Nek5000/core/3rd_party/finiparser.c -o obj/finiparser.o
+mpicc  -c  -O2 -w -DMPI -DUNDERSCORE -DTIMER  /Users/vedantpuri/Nek5000/core/3rd_party/iniparser.c -o obj/iniparser.o
+mpicc  -c  -O2 -w -DMPI -DUNDERSCORE -DTIMER  /Users/vedantpuri/Nek5000/core/3rd_party/dictionary.c -o obj/dictionary.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/hpf.f -o obj/hpf.o
+mpif77 -c  -O3 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/mxm_std.f -o obj/mxm_std.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/comm_mpi.f -o obj/comm_mpi.o
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/core/singlmesh.f -o obj/singlmesh.o
+mpif77 -c  -O0 -DMPI -DUNDERSCORE -DTIMER /Users/vedantpuri/Nek5000/core/3rd_party/blas.f -o obj/blas.o
+mpif77 -c  -O0 -DMPI -DUNDERSCORE -DTIMER /Users/vedantpuri/Nek5000/core/3rd_party/dsygv.f -o obj/dsygv.o
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:9764.15:
+
+      GO TO IGO,(120,150,180,210)                                       
+               1
+Warning: Deleted feature: Assigned GOTO statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:9770.72:
+
+               ASSIGN 120 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:9782.72:
+
+               ASSIGN 150 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:9795.72:
+
+               ASSIGN 180 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:9806.72:
+
+               ASSIGN 210 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:17277.15:
+
+      GO TO IGO,(120,150,180,210)                                       
+               1
+Warning: Deleted feature: Assigned GOTO statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:17283.72:
+
+               ASSIGN 120 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:17295.72:
+
+               ASSIGN 150 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:17308.72:
+
+               ASSIGN 180 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+/Users/vedantpuri/Nek5000/core/3rd_party/blas.f:17319.72:
+
+               ASSIGN 210 TO IGO                                        
+                                                                        1
+Warning: Deleted feature: ASSIGN statement at (1)
+smoothWavyWall.usr -> smoothWavyWall.f
+mpif77 -c  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ /Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg/smoothWavyWall.f  -o obj/smoothWavyWall.o 
+mpif77  -O2 -w -fdefault-real-8 -fdefault-double-8 -cpp -DMPI -DUNDERSCORE -DTIMER -I/Users/vedantpuri/Nek5000/run/NekRoutines/post/lnavg -I/Users/vedantpuri/Nek5000/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/Users/vedantpuri/Nek5000/3rd_party/gslib/lib -lgs 
+
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+__TEXT	__DATA	__OBJC	others	dec	hex
+2809856	3592019968	0	4295151616	7889981440	1d6479000	
+
+
