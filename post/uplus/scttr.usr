@@ -212,21 +212,22 @@ c     flag points on boundary
       return
       end
 c-----------------------------------------------------------------------
-      subroutine dist2face(d,bctyp,f,gs_sctr_hndl,ifld,idir)
+      subroutine dist2face(d,f,bctyp,gs_sctr_hndl
+     $                      ,nelx,nely,nelz,ifld,idir)
       include 'SIZE'
       include 'TOTAL'
       real d (lx1,ly1,lz1,lelv)
       real dd(lx1,ly1,lz1,lelv)
       integer n,f,ifld
 
-      nelv = nelfld(ifld)
-      n    = nx1*ny1*nz1*nelv
+      nel = nelfld(ifld)
+      n   = nx1*ny1*nz1*nel
 
       if(idir.eq.1) call copy(dd,xm1,n)
       if(idir.eq.2) call copy(dd,ym1,n)
       if(idir.eq.3) call copy(dd,zm1,n)
-      
-      call scttr(d,dd,bctyp,f,gs_sctr_hndl,ifld,idir)
+
+      call scttr(d,dd,f,bctyp,gs_sctr_hndl,nelx,nely,nelz,ifld,idir)
 
       do i=1,n
          d(i,1,1,1) = abs( d(i,1,1,1)-dd(i,1,1,1) )

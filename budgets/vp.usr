@@ -1,4 +1,6 @@
 c-----------------------------------------------------------------------
+      include 'plavg.usr'
+c-----------------------------------------------------------------------
       subroutine avg_grad()
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
@@ -49,8 +51,6 @@ c-----------------------------------------------------------------------
 
       return
       end
-c-----------------------------------------------------------------------
-      include 'plavg.usr'
 c-----------------------------------------------------------------------
       subroutine budget_post()
       INCLUDE 'SIZE'  
@@ -146,7 +146,6 @@ c
       f     = 1
       idir  = 2
       bctyp = 'W  '
-c     call comp_upl(up,yp,uavg,vavg,wavg,f,idir,bctyp)
 c
       if(nid.eq.0) write(6,*) 'computing planar averages'
 

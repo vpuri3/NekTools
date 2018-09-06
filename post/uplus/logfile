@@ -18,7 +18,7 @@
  Number of processors:           4
  REAL    wdsize      :           8
  INTEGER wdsize      :           4
- Timer accuracy      : 2.15E-07
+ Timer accuracy      : 3.81E-07
   
  Reading /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.rea                                                             
  WARNING: lgmres might be too low!
@@ -26,9 +26,9 @@
  mapping elements to processors
  Reading /Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall.ma2                                                             
            0        2048        2048        8192        8192  NELV
+           1        2048        2048        8192        8192  NELV
            2        2048        2048        8192        8192  NELV
            3        2048        2048        8192        8192  NELV
-           1        2048        2048        8192        8192  NELV
  RANK     0 IEG    4097    4098    4099    4100    4101    4102    4103    4104
                    4105    4106    4107    4108    4109    4110    4111    4112
                    4113    4114    4115    4116    4117    4118    4119    4120
@@ -287,12 +287,12 @@
                    7938    7939    7940    7941    7942    7943    7944    7945
   
  element load imbalance:            0        2048        2048
- done :: mapping   0.99449E-02 sec
+ done :: mapping   0.55931E-02 sec
 
   
   preading mesh 
   preading bc for ifld           1
- done :: read .re2 file   0.95E-02 sec
+ done :: read .re2 file   0.15E-01 sec
 
            0  objects found
  118   Parameters from file:
@@ -321,7 +321,7 @@
  101      1.00000     p101 Number of additional modes to filter
  103      0.01        p103 weight of stabilizing filter (.01)
   
- done :: read .rea file   0.26183E-01 sec
+ done :: read .rea file   0.26803E-01 sec
 
  nelgt/nelgv/lelt:        8192        8192        8196
  lx1  /lx2  /lx3 :           4           4           4
@@ -333,13 +333,13 @@
  done :: usrsetvert
 
 gs_setup: 9733 unique labels shared
-   pairwise times (avg, min, max): 2.59697e-05 2.52962e-05 2.72989e-05
-   crystal router                : 0.000100243 9.9802e-05 0.000100589
-   all reduce                    : 0.000129819 0.00012939 0.000130105
+   pairwise times (avg, min, max): 3.56257e-05 3.49998e-05 3.62158e-05
+   crystal router                : 0.000102502 0.000102115 0.000102806
+   all reduce                    : 0.000132269 0.000131893 0.000132489
    used all_to_all method: pairwise
    handle bytes (avg, min, max): 1.31e+06 1309740 1310252
    buffer bytes (avg, min, max): 81904 81680 82128
-   setupds time 1.3141E-01 seconds   0  4      167361        8192
+   setupds time 1.4344E-01 seconds   0  4      167361        8192
            8  max multiplicity
  done :: setup mesh topology
   
@@ -408,7 +408,7 @@ gs_setup: 9733 unique labels shared
        FILE:restart0.f00001                                                                                                                     
 
         0  0.0000E+00 done :: Read checkpoint data
-                              avg data-throughput =   661.8MBps
+                              avg data-throughput =   384.7MBps
                               io-nodes =     4
 
  xyz min     0.0000       0.0000       0.0000    
@@ -427,7 +427,7 @@ gs_setup: 9733 unique labels shared
 gridpoints unique/tot:        232897       524288
   dofs:               223391               232897
   
- Initialization successfully completed   0.74013     sec
+ Initialization successfully completed   0.73369     sec
 
  nsteps=0 -> skip time loop
  running solver in post processing mode
@@ -441,9 +441,56 @@ gridpoints unique/tot:        232897       524288
  comp_uplus says  drag mag is   3.2181743160296983E-002
  y_sctr
 gs_setup: 8192 unique labels shared
-   pairwise times (avg, min, max): 0.000102603 7.9298e-05 0.000126004
-   crystal router                : 5.9849e-05 5.77927e-05 6.22988e-05
-   all reduce                    : 0.000368279 0.0003618 0.000372505
-   used all_to_all method: crystal router
-   handle bytes (avg, min, max): 770556 705020 836092
-   buffer bytes (avg, min, max): 98304 65536 131072
+   pairwise times (avg, min, max): 2.7597e-05 2.47002e-05 3.03984e-05
+   crystal router                : 4.02987e-05 4.0102e-05 4.06027e-05
+   all reduce                    : 0.000114077 0.000113702 0.000114393
+   used all_to_all method: pairwise
+   handle bytes (avg, min, max): 598224 590032 606416
+   buffer bytes (avg, min, max): 32768 32768 32768
+
+        0  0.0000E+00 Write checkpoint
+       FILE:/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/wshsmoothWavyWall0.f00001                                                      
+
+        0  0.0000E+00 done :: Write checkpoint
+                              file size =      15.    MB
+                              avg data-throughput =   525.7MB/s
+                              io-nodes =     4
+
+
+        0  0.0000E+00 Write checkpoint
+       FILE:/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/utnsmoothWavyWall0.f00001                                                      
+
+        0  0.0000E+00 done :: Write checkpoint
+                              file size =      15.    MB
+                              avg data-throughput =   308.3MB/s
+                              io-nodes =     4
+
+
+        0  0.0000E+00 Write checkpoint
+       FILE:/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/uplsmoothWavyWall0.f00001                                                      
+
+        0  0.0000E+00 done :: Write checkpoint
+                              file size =      13.    MB
+                              avg data-throughput =   369.3MB/s
+                              io-nodes =     4
+
+ done :: userchk
+
+        0  0.0000E+00 Write checkpoint
+       FILE:/Users/vedantpuri/Nek5000/run/NekRoutines/post/uplus/smoothWavyWall0.f00001                                                         
+
+        0  0.0000E+00 done :: Write checkpoint
+                              file size =      15.    MB
+                              avg data-throughput =   380.9MB/s
+                              io-nodes =     4
+
+  
+run successful: dying ...
+  
+  
+total elapsed time             :   1.24581E+00 sec
+total solver time w/o IO       :   0.00000E+00 sec
+time/timestep                  :   0.00000E+00 sec
+avg throughput per timestep    :   0.00000E+00 gridpts/CPUs
+total max memory usage         :   1.21450E+00 GB
+

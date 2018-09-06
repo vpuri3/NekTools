@@ -472,7 +472,6 @@ c
       !=========
         !Compute averages E(X)
       !=========
-
         call gradm1(dudx,dudy,dudz,vx)
         call gradm1(dvdx,dvdy,dvdz,vy)
         call gradm1(dwdx,dwdy,dwdz,vz)
@@ -502,6 +501,7 @@ c
       !=========
         !Compute Dissipation
       !=========
+        ! <u_{i,j}>
         call avg1(udxavg,dudx,alpha,beta,ntot ,'dudx',ifverbose)
         call avg1(udyavg,dudy,alpha,beta,ntot ,'dudy',ifverbose)
         call avg1(udzavg,dudz,alpha,beta,ntot ,'dudz',ifverbose)
@@ -511,6 +511,7 @@ c
         call avg1(wdxavg,dwdx,alpha,beta,ntot ,'dwdx',ifverbose)
         call avg1(wdyavg,dwdy,alpha,beta,ntot ,'dwdy',ifverbose)
         call avg1(wdzavg,dwdz,alpha,beta,ntot ,'dwdz',ifverbose)
+        ! <(u_{i,j})**2>
         call avg2(udxrms,dudx,alpha,beta,ntot ,'dudx',ifverbose)
         call avg2(udyrms,dudy,alpha,beta,ntot ,'dudy',ifverbose)
         call avg2(udzrms,dudz,alpha,beta,ntot ,'dudz',ifverbose)
@@ -520,6 +521,7 @@ c
         call avg2(wdxrms,dwdx,alpha,beta,ntot ,'dwdx',ifverbose)
         call avg2(wdyrms,dwdy,alpha,beta,ntot ,'dwdy',ifverbose)
         call avg2(wdzrms,dwdz,alpha,beta,ntot ,'dwdz',ifverbose)
+        ! <u_{i,k}*u_{j,k}>
         call avg3(uvdxms,dudx,dvdx,alpha,beta,ntot,'uvx ',ifverbose)
         call avg3(uvdyms,dudy,dvdy,alpha,beta,ntot,'uvy ',ifverbose)
         call avg3(uvdzms,dudz,dvdz,alpha,beta,ntot,'uvz ',ifverbose)
@@ -533,10 +535,11 @@ c
       !=========
         !Compute Pressure Transport
       !=========
+        ! <p_{,i}>
         call avg1(dpdxavg,dpdx,alpha,beta,ntot,'dpdx',ifverbose)
         call avg1(dpdyavg,dpdy,alpha,beta,ntot,'dpdy',ifverbose)
         call avg1(dpdzavg,dpdz,alpha,beta,ntot,'dpdz',ifverbose)
-
+        ! <p_{i}*v_{j}>
         call avg3(udpdxavg,dpdx,vx,alpha,beta,ntot,'dpdx',ifverbose)
         call avg3(udpdyavg,dpdy,vx,alpha,beta,ntot,'dpdy',ifverbose)
         call avg3(udpdzavg,dpdz,vx,alpha,beta,ntot,'dpdz',ifverbose)
@@ -553,6 +556,7 @@ c
       !=========
         !Compute Pressure Diffusion
       !=========
+        ! <p*u_{i}>
         call avg3(upavg,pm1,vx,alpha,beta,ntot,'u   ',ifverbose)
         call avg3(vpavg,pm1,vy,alpha,beta,ntot,'vp  ',ifverbose)
         call avg3(wpavg,pm1,vz,alpha,beta,ntot,'wp  ',ifverbose)
@@ -560,6 +564,7 @@ c
       !=========
         !Compute Turbulent Diffusion
       !=========
+        ! <u_{i}*u_{j}*u_{k}>
         call avg4(uuuavg,vx,vx,vx,alpha,beta,ntot,'uuua',ifverbose)
         call avg4(uuvavg,vx,vx,vy,alpha,beta,ntot,'uuva',ifverbose)
         call avg4(uuwavg,vx,vx,vz,alpha,beta,ntot,'uuwa',ifverbose)
@@ -574,6 +579,7 @@ c
       !=========
         !Compute Pressure Strain
       !=========
+        ! <p*u_{i,j}>
         call avg3(pudxavg,pm1,dudx,alpha,beta,ntot,'pudx',ifverbose)
         call avg3(pudyavg,pm1,dudy,alpha,beta,ntot,'pudy',ifverbose)
         call avg3(pudzavg,pm1,dudz,alpha,beta,ntot,'pudz',ifverbose)
@@ -587,6 +593,7 @@ c
       !=========
         !Compute Buoyancy terms
       !=========
+        ! <t*u_{i}>
         call avg3(utavg,vx,t,alpha,beta,ntot,'utav',ifverbose)
         call avg3(vtavg,vy,t,alpha,beta,ntot,'vtav',ifverbose)
         call avg3(wtavg,vz,t,alpha,beta,ntot,'wtav',ifverbose)

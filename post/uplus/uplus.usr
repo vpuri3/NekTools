@@ -10,6 +10,10 @@ c     idir    : direction to scatter data from face into domain
 c               [1,2,3] ==> [x,y,z]
 c     bctyp   : Boundary condition of face (char*3)
 c
+      computes normal and tangential componenets of velocity,
+      shear stress on wall, drag force on wall, friction velocity,
+      y-plus.
+
 c     outputs 1) shear stress vector on face,
 c             2) normal, tangential velocity,
 c                dist. to face, shear stress mag in volume,
@@ -112,7 +116,7 @@ c
 
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
-      if(nid.eq.0) write(6,*) 'computing u-plus, y-plus'
+      if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
 
       n    = nx1*ny1*nz1*lelt
 
@@ -243,7 +247,7 @@ c
       call scttr(volNy,fNy,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
       call scttr(volNz,fNz,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
 c
-      call dist2face(d2f,bctyp,f,gs_hndl,1,idir)
+      call dist2face(d2f,f,bctyp,gs_hndl,nelx,nely,nelz,ifld,idir)
 
       ! compute u-plus, y-plus
       do i=1,n
@@ -280,7 +284,7 @@ c     Outpost stuff
       call outpost(fTx,fTy,fTz,pr,fTm,'wsh')
       call outpost(utan,unor,d2f,pr,volTm,'utn')
       ifto = .false.
-      call outpost(upl,ypl,volTm,pr,t,'upl')
+      call outpost(up,yp,volTm,pr,t,'upl')
 
       ifxyo = iifxyo
       ifvo  = iifvo
