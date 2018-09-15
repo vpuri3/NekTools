@@ -1,5 +1,5 @@
 c-----------------------------------------------------------------------
-      include 'plavg.usr'
+c     include 'plavg.usr'
 c-----------------------------------------------------------------------
       subroutine avg_grad()
       INCLUDE 'SIZE'  
@@ -72,15 +72,15 @@ c-----------------------------------------------------------------------
 c
       real ppp(lx1,ly1,lz1,lelv) ! check if pres(transp = diff + strain)
 c
-      real tka(lx1,ly1,lz1,lelv) ! planar averages
-      real pka(lx1,ly1,lz1,lelv)
-      real upa(lx1,ly1,lz1,lelv)
-      real ypa(lx1,ly1,lz1,lelv)
+c     real tka(lx1,ly1,lz1,lelv) ! planar averages
+c     real pka(lx1,ly1,lz1,lelv)
+c     real upa(lx1,ly1,lz1,lelv)
+c     real ypa(lx1,ly1,lz1,lelv)
 c
-      real uplnr(lx1,ly1,lz1,lelv)
+c     real uplnr(lx1,ly1,lz1,lelv)
 c
-      real up(lx1,ly1,lz1,lelv)
-      real yp(lx1,ly1,lz1,lelv)
+c     real up(lx1,ly1,lz1,lelv)
+c     real yp(lx1,ly1,lz1,lelv)
 c
       integer f,idir
       character*3 bctyp
@@ -98,7 +98,7 @@ c
       nely = 16
       nelz = 32
 
-      call rzero(uplnr,n)
+c     call rzero(uplnr,n)
 c
       call rzero(up,ntot)
       call rzero(yp,ntot)
@@ -151,13 +151,13 @@ c
 
       idir = 3
       gs_avg_hndl = 0
-      call plane_avg_tensor(tka,tke,gs_avg_hndl,nelx,nely,nelz,1,idir)
-      call plane_avg_tensor(pka,prk,gs_avg_hndl,nelx,nely,nelz,1,idir)
+c     call plane_avg_tensor(tka,tke,gs_avg_hndl,nelx,nely,nelz,1,idir)
+c     call plane_avg_tensor(pka,prk,gs_avg_hndl,nelx,nely,nelz,1,idir)
 c                     
-      call plane_avg_tensor(upa,up,gs_avg_hndl,nelx,nely,nelz,1,idir)
-      call plane_avg_tensor(ypa,yp,gs_avg_hndl,nelx,nely,nelz,1,idir)
+c     call plane_avg_tensor(upa,up,gs_avg_hndl,nelx,nely,nelz,1,idir)
+c     call plane_avg_tensor(ypa,yp,gs_avg_hndl,nelx,nely,nelz,1,idir)
 c                     
-      call plane_avg_tensor(uplnr,uavg,gs_avg_hndl,nelx,nely,1,idir)
+c     call plane_avg_tensor(uplnr,uavg,gs_avg_hndl,nelx,nely,1,idir)
 
       call outpost2(cnk,prk,ptk,pdk,psk,1,'bbb')
       call outpost2(tdk,epk,vdk,tke,ppp,1,'ccc')
