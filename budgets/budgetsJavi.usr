@@ -5,8 +5,7 @@ C=======================================================================
 c----------------------------------------------------------------------
 c---Standard Averaging for Incompressible Flows
 c-----------------------------------------------------------------------   
-c     include 'vp.usr'
-c-----------------------------------------------------------------------   
+
       subroutine standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
 
       INCLUDE 'SIZE'
@@ -50,7 +49,7 @@ c-----------------------------------------------------------------------
       if (time.lt.tSTATSTART) goto 998 ! Don't start averaging
 
       if (icalld.eq.0) then
-        ntdump = int((time-tSTATSTART)/tSTATFREQ)
+        ntdump = int(time/tSTATFREQ)
       endif
 
       ! Initialization
@@ -141,7 +140,7 @@ c-----------------------------------------------------------------------
       timel = time
 
       ifverbose=.false.
-      if  ((time-tSTATSTART).gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
+      if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
 
 
       if (atime.ne.0..and.dtime.ne.0.) then
@@ -190,7 +189,7 @@ c        call probePoint(uavg,vavg,wavg,urms,vrms,wrms)
       !=========
         !Outputs
       !=========
-      if ((((time-tSTATSTART).gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
+      if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
      &   lastep.eq.1) then
 
@@ -396,7 +395,7 @@ c
       if (time.lt.tSTATSTART) goto 996 ! don't start averaging
 
       if (icalld.eq.0) then
-        ntdump = int((time-tSTATSTART)/tSTATFREQ)
+        ntdump = int(time/tSTATFREQ)
       endif
 
       ! initialization
@@ -462,7 +461,7 @@ c
 
 
       ifverbose=.false.
-      if  ((time-tSTATSTART).gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
+      if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
 
 
       if (atime.ne.0..and.dtime.ne.0.) then
@@ -598,7 +597,7 @@ c
       !=========
         !Outputs
       !=========
-      if ((((time-tSTATSTART).gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
+      if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
      &   lastep.eq.1) then
 
