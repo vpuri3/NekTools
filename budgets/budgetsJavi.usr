@@ -3442,17 +3442,16 @@ c-----------------------------------------------------------------------
         call restart(1)
         call nekgsync()         
 
-        do i=1,ntot
-          avgq1(i) = vx(i,1,1,1)
-          avgq2(i) = vy(i,1,1,1)
-          avgq3(i) = vz(i,1,1,1)
-          avgq4(i) = pr(i,1,1,1)
-        enddo
-
-        do i=1,ntot*ldimtRead
-          avgq5(i) = t(i,1,1,1,1)
-        enddo
-
+        if (nFieldsToRead.gt.4) then
+           do i=1,ldimtRead
+              call copy(avgq5(1,i),t(1,1,1,1,i),ntot)
+           enddo
+        endif
+        if (nFieldsToRead.gt.3) call copy(avgq4,pr,ntot2)
+        if (nFieldsToRead.gt.2) call copy(avgq3,vx,ntot)
+        if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot)
+                                call copy(avgq1,vz,ntot)
+            
         if (nid.eq.0) write(6,*)'Reading statistics for atime: ',time
         avtime = time
       else
