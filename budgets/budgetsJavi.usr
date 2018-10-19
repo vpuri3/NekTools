@@ -4,7 +4,7 @@ C=======================================================================
 
 c----------------------------------------------------------------------
 c---Standard Averaging for Incompressible Flows
-c-----------------------------------------------------------------------   
+c-----------------------------------------------------------------------
 
       subroutine standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
 
@@ -1015,12 +1015,12 @@ c-----------------------------------------------------------------------
 
       call load_avg5(uavg,vavg,wavg,pm1avg,tavg,
      &              'avg',readStats,avtime,ldimt,.false.)    
-   
+
       call load_avg5(urms,vrms,wrms,pmrms,trms,
      &              'rms',readStats,avtime,ldimt,.false.)
-     
+
       call load_avg3(uvms,wums,vwms,
-     &               'rm2',readStats,avtime,.true.)
+     &               'rm2',readStats,avtime,.false.)
 
       return
       end   
@@ -1172,6 +1172,7 @@ c
 !//////////////////////////////////////////////////
 !Change casename
     
+
       call load_avg5(udxavg,udyavg,udzavg,vdxavg,vdyavg,'i01',
      &               readStats,avtime,1,.false.)
       call load_avg5(vdzavg,wdxavg,wdyavg,wdzavg,udxrms,'i02',
@@ -3276,9 +3277,7 @@ c-----------------------------------------------------------------------
       INCLUDE 'ZPER'
       INCLUDE 'TOTAL'
 
-      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
-     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt),
-     &     avgq5(lx1,ly1,lz1,lelt)
+      real avgq1(lx1,ly1,lz1,lelt)
       character (3) cname
       integer readStats
       real avtime 
@@ -3298,9 +3297,7 @@ c-----------------------------------------------------------------------
       INCLUDE 'ZPER'
       INCLUDE 'TOTAL'
 
-      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
-     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt),
-     &     avgq5(lx1,ly1,lz1,lelt)
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt)
       character (3) cname
       integer readStats
       real avtime 
@@ -3308,7 +3305,6 @@ c-----------------------------------------------------------------------
 
       call load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,
      &              cname,readStats,avtime,1,lastRead,2)
-
 
       return
       end
@@ -3320,9 +3316,8 @@ c-----------------------------------------------------------------------
       INCLUDE 'ZPER'
       INCLUDE 'TOTAL'
 
-      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
-     &       avgq3(lx1,ly1,lz1,lelt)
-      real avgq4(lx1,ly1,lz1,lelt),avgq5(lx1,ly1,lz1,lelt)
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt)
+     &    ,avgq3(lx1,ly1,lz1,lelt)
       character (3) cname
       integer readStats
       real avtime 
@@ -3342,8 +3337,7 @@ c-----------------------------------------------------------------------
       INCLUDE 'TOTAL'
 
       real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
-     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt),
-     &     avgq5(lx1,ly1,lz1,lelt)
+     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt)
       character (3) cname
       integer readStats,ldimtRead
       real avtime 
@@ -3389,9 +3383,9 @@ c-----------------------------------------------------------------------
       logical lastRead
       real avtime 
       integer readStats,ldimtRead
-      real avgq1(1),avgq2(1),
-     &       avgq3(1),avgq4(1),
-     &       avgq5(1)
+      parameter(lt=lx1*ly1*lz1*lelt)
+      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(lt,1)
+
       integer nFieldsToRead
       common /size/ lname
       
@@ -3404,17 +3398,23 @@ c-----------------------------------------------------------------------
       character (1) fileName(132)
       character (1) initcOld(132)
       character (3) cname
-         
-      ntot = lx1*ly1*lz1*lelt
-    
-      ! Just to save some time in case3 it's not needed 
 
-      if (nFieldsToRead.gt.4) call rzero(avgq5,ntot*ldimtRead)
+      if(nid.eq.0) write(6,*) "in load_avg(), cname = ", cname
+
+      ntot  = lx1*ly1*lz1*nelt
+      ntot2 = lx2*ly2*lz2*nelt
+    
+      ! Don't overwrite memory that is not declared!
+
+      if (nFieldsToRead.gt.4) then
+         do i=1,ldimtRead
+            call rzero(avgq5(1,i),ntot)
+         enddo
+      endif
       if (nFieldsToRead.gt.3) call rzero(avgq4,ntot)
       if (nFieldsToRead.gt.2) call rzero(avgq3,ntot)
       if (nFieldsToRead.gt.1) call rzero(avgq2,ntot)
-
-      call rzero(avgq1,ntot)
+                              call rzero(avgq1,ntot)
             
       call chcopy(initcOld(1),initc(1),132)
       
@@ -3455,7 +3455,7 @@ c-----------------------------------------------------------------------
 
         if (nid.eq.0) write(6,*)'Reading statistics for atime: ',time
         avtime = time
-      ELSE
+      else
         if (nid.eq.0) write(6,*)'ABORT: Error when reading ',
      &  trim(fpath),', not such file or directory'
         call exitt
