@@ -3379,11 +3379,13 @@ c-----------------------------------------------------------------------
       INCLUDE 'SIZE'
       INCLUDE 'ZPER'
       INCLUDE 'TOTAL'
+      INCLUDE 'STATE'
 
       logical lastRead
       real avtime 
       integer readStats,ldimtRead
-      parameter(lt=lx1*ly1*lz1*lelt)
+      parameter(lt =lx1*ly1*lz1*lelt)
+      parameter(lt2=lx2*ly2*lz2*lelt)
       real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(lt,1)
 
       integer nFieldsToRead
@@ -3399,13 +3401,10 @@ c-----------------------------------------------------------------------
       character (1) initcOld(132)
       character (3) cname
 
-      if(nid.eq.0) write(6,*) "in load_avg(), cname = ", cname
-
       ntot  = lx1*ly1*lz1*nelt
       ntot2 = lx2*ly2*lz2*nelt
     
-      ! Don't overwrite memory that is not declared!
-
+c     zero out solution arrays
       if (nFieldsToRead.gt.4) then
          do i=1,ldimtRead
             call rzero(avgq5(1,i),ntot)
@@ -3415,9 +3414,20 @@ c-----------------------------------------------------------------------
       if (nFieldsToRead.gt.2) call rzero(avgq3,ntot)
       if (nFieldsToRead.gt.1) call rzero(avgq2,ntot)
                               call rzero(avgq1,ntot)
-            
+
+c     store state variables temporarily
+      call copy(vxtmp,vx,ntot)
+      call copy(vytmp,vy,ntot)
+      call copy(vztmp,vz,ntot)
+      call copy(prtmp,pr,ntot2)
+      do i=1:ldimt
+         call copy(ttmp(1,1,1,1,i),t(1,1,1,1,i),ntot)
+      enddo
+
+c     store initc temporarily
       call chcopy(initcOld(1),initc(1),132)
       
+c     modify initc
       call blank(fileName,132)
       call blank(format_string,132)
       call blank(lstr,132)
@@ -3427,8 +3437,8 @@ c-----------------------------------------------------------------------
       call chcopy(fileName(4),session,ls) 
       call chcopy(fileName(4+ls),'0.f',3) 
 
-      call chcopy(auxName,fileName,ls+7) 
-    
+      call chcopy(auxName,fileName,ls+7)
+
       write(lstr,"(I2)") ltrunc(fileName,132)
 
       format_string = "(A"//trim(lstr)//",I5.5)"
@@ -3460,14 +3470,27 @@ c-----------------------------------------------------------------------
         call exitt
       endif
 
+c     restore init c
       call blank(initc(1),132)
       call chcopy(initc(1),initcOld(1),132)
 
-      if (lastRead) then
-        if (nid.eq.0) write(6,*)'Reading back initial fields:'
-        call restart(1)
-        call nekgsync()         
-      endif
+c     restore state variables
+      call copy(vx,vxtmp,ntot)
+      call copy(vy,vytmp,ntot)
+      call copy(vz,vztmp,ntot)
+      call copy(pr,prtmp,ntot2)
+      do i=1:ldimt
+         call copy(t(1,1,1,1,i),ttmp(1,1,1,1,i),ntot)
+      enddo
+
+
+c     don't use the disk like an auxillary array
+
+c     if (lastRead) then
+c       if (nid.eq.0) write(6,*)'Reading back initial fields:'
+c       call restart(1)
+c       call nekgsync()         
+c     endif
 
       return
       end
