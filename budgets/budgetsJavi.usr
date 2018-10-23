@@ -3420,7 +3420,7 @@ c     store state variables temporarily
       call copy(vytmp,vy,ntot)
       call copy(vztmp,vz,ntot)
       call copy(prtmp,pr,ntot2)
-      do i=1:ldimt
+      do i=1,ldimt
          call copy(ttmp(1,1,1,1,i),t(1,1,1,1,i),ntot)
       enddo
 
@@ -3479,7 +3479,7 @@ c     restore state variables
       call copy(vy,vytmp,ntot)
       call copy(vz,vztmp,ntot)
       call copy(pr,prtmp,ntot2)
-      do i=1:ldimt
+      do i=1,ldimt
          call copy(t(1,1,1,1,i),ttmp(1,1,1,1,i),ntot)
       enddo
 
