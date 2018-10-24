@@ -3387,11 +3387,11 @@ c-----------------------------------------------------------------------
       INCLUDE 'STATE'
 
       logical lastRead
-      real avtime 
+      real avtime
       integer readStats,ldimtRead
       parameter(lt =lx1*ly1*lz1*lelt)
       parameter(lt2=lx2*ly2*lz2*lelt)
-      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(lt,1)
+      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(lt,ldimtRead)
 
       integer nFieldsToRead
       common /size/ lname
@@ -3415,7 +3415,7 @@ c     zero out solution arrays
             call rzero(avgq5(1,i),ntot)
          enddo
       endif
-      if (nFieldsToRead.gt.3) call rzero(avgq4,ntot)
+      if (nFieldsToRead.gt.3) call rzero(avgq4,ntot2)
       if (nFieldsToRead.gt.2) call rzero(avgq3,ntot)
       if (nFieldsToRead.gt.1) call rzero(avgq2,ntot)
                               call rzero(avgq1,ntot)
@@ -3489,7 +3489,7 @@ c     restore state variables
       enddo
 
 
-c     don't use the disk like an auxillary array
+c     don't use disk like an auxillary array
 
 c     if (lastRead) then
 c       if (nid.eq.0) write(6,*)'Reading back initial fields:'
