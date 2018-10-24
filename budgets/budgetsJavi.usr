@@ -3466,13 +3466,13 @@ c     read data into solution arrays
 
         if (nFieldsToRead.gt.4) then
            do i=1,ldimtRead
-              call copy(avgq5(1,i),t(1,1,1,1,i),ntot)
+              call copy(avgq5(1,i),t(1,1,1,1,i),ntot1)
            enddo
         endif
         if (nFieldsToRead.gt.3) call copy(avgq4,pr,ntot2)
-        if (nFieldsToRead.gt.2) call copy(avgq3,vx,ntot)
-        if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot)
-                                call copy(avgq1,vz,ntot)
+        if (nFieldsToRead.gt.2) call copy(avgq3,vz,ntot1)
+        if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot1)
+                                call copy(avgq1,vx,ntot1)
             
         if (nid.eq.0) write(6,*)'Reading statistics for atime: ',time
         avtime = time
