@@ -1,5 +1,0 @@
-
-c     used to temporarily store state variables.
-      real vxtmp(lx1,ly1,lz1,lelv),vytmp(lx1,ly1,lz1,lelv)
-     $    ,vztmp(lx1,ly1,lz1,lelv),prtmp(lx2,ly2,lz2,lelv)
-     $    ,ttmp (lx1,ly1,lz1,lelv,ldimt)
