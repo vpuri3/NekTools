@@ -8,11 +8,11 @@ c-----------------------------------------------------------------------
       INCLUDE 'AVGINCOMP'
       INCLUDE 'REFERENCE'
       INCLUDE 'BUDGETSINCOMP'
-
+ 
       if(nid.eq.0) write(6,*) 'computing gradient of <u>,<v>,<w>,<p>'
-
+ 
       ntot = nx1*ny1*nz1*nelv
-
+ 
       call rzero(udxavg,ntot)
       call rzero(udyavg,ntot)
       call rzero(udzavg,ntot)
@@ -48,7 +48,7 @@ c-----------------------------------------------------------------------
       call opcolv (dpdxavg,dpdyavg,dpdzavg,bm1)
       call opdssum(dpdxavg,dpdyavg,dpdzavg)
       call opcolv (dpdxavg,dpdyavg,dpdzavg,binvm1)
-
+ 
       return
       end
 c-----------------------------------------------------------------------
