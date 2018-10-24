@@ -1814,40 +1814,40 @@ c      call col2  (pudxavg,vmult,nglob1)
 
      
    !Average Convection
-      call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
-      call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
-
-   !Average Dissipation   
-      call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
-      call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
-     
-   !Average Pressure transport
-      call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
-      call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
-
-   !Average Production   
-      call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
-      call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
-     
-   !Average Turbulent Diffusion    
-      call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
-      call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
-
-   !Average Pressure Diffusion    
-      call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
-      call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
-     
-   !Average Pressure Strain   
-      call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
-      call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
-
-   !Average Viscous Strain  
-      call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
-      call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
-     
-   !Average Buoyancy 
-      call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
-      call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
+c     call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
+c     call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
+c
+c  !Average Dissipation   
+c     call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
+c     call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
+c    
+c  !Average Pressure transport
+c     call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
+c     call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
+c
+c  !Average Production   
+c     call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
+c     call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
+c    
+c  !Average Turbulent Diffusion    
+c     call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
+c     call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
+c
+c  !Average Pressure Diffusion    
+c     call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
+c     call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
+c    
+c  !Average Pressure Strain   
+c     call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
+c     call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
+c
+c  !Average Viscous Strain  
+c     call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
+c     call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
+c    
+c  !Average Buoyancy 
+c     call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
+c     call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
 
       time=temp_time
 
@@ -3392,8 +3392,9 @@ c-----------------------------------------------------------------------
       parameter(ltot2=lx2*ly2*lz2*lelt)
       real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(ltot1,ldimtRead)
 
+      real temp_time
       common /outtmp/  w1(ltot1),w2(ltot1),w3(ltot1),wp(ltot2)
-     &                ,wt(ltot1,ldimt)
+     &                ,wt(ltot1,ldimt),
 
       integer nFieldsToRead
       common /size/ lname
@@ -3435,6 +3436,8 @@ c     store state variables
       do i=1,ldimt
          call copy(wt(1,i),t(1,1,1,1,i),ntot1)
       enddo
+      
+      temp_time = time
 
 c     store initc
       call chcopy(initcOld(1),initc(1),132)
@@ -3494,6 +3497,8 @@ c     restore state variables
       do i=1,ldimt
          call copy(t(1,1,1,1,i),wt(1,i),ntot1)
       enddo
+
+      time = temp_time
 
 
 c     don't use disk like an auxillary array
