@@ -3394,7 +3394,7 @@ c-----------------------------------------------------------------------
 
       real temp_time
       common /outtmp/  w1(ltot1),w2(ltot1),w3(ltot1),wp(ltot2)
-     &                ,wt(ltot1,ldimt),
+     &                ,wt(ltot1,ldimt)
 
       integer nFieldsToRead
       common /size/ lname
