@@ -1,0 +1,46 @@
+#!/bin/bash
+##----------------------------------------------------##
+# runs nek cases every 7300 seconds.
+#
+# INPUT: $1: case name
+#        $2: base folder name
+#        $3: case # to start from
+##----------------------------------------------------##
+
+case=$1
+base=$2
+num=$3
+
+
+echo "##############################################" >> run.log
+echo "##############################################" >> run.log
+echo "##############################################" >> run.log
+echo $(date -R) >> run.log
+echo "Starting new session in directory $PWD." >> run.log
+echo "Running case $1 starting from $2$3" >> run.log
+
+num=$((num-1));
+iter=0
+for (( ;; ))
+do
+    iter=$((iter+1))
+    name0=$base$num;
+    num=$((num+1));
+    name1=$base$num;
+
+    echo "#--------------------------------------------#"  >> run.log
+    echo "-------------- ITERATION $iter --------------------"  >> run.log
+    echo $(date -R) >> run.log
+    cp -r -iv $name0 $name1 >> run.log
+    cd $name1  >> run.log
+    rm *.cobaltlog *.error *.output >> ../run.log
+    rm -iv restart0.f00001 >> ../run.log
+    mv -iv smoothWavyWall0.f00002 restart0.f00001 >> ../run.log
+    
+    makenek $1 >> ../run.log
+    /my_nekqsub $1 256 >> ../run.log
+
+    cd .. >> run.log
+
+    sleep 7300
+done
