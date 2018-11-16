@@ -1,17 +1,21 @@
 #!/bin/bash
 ##----------------------------------------------------##
-# runs nek cases every 7400 seconds.
+# runs nek cases every 7300 seconds.
 #
 # INPUT: $1: case name
 #        $2: base folder name
-#        $3: case # to start from
+#        $3: # of last completed case
 ##----------------------------------------------------##
 
 case=$1
 base=$2
 num=$3
 
-num=$((num-1));
+email="vpuri3@illinois.edu" # email log after queuing
+res="restart0.f00001"       # name of restart file
+rsfx="0.f00002"             # suffix of next restart file
+bsfx="0.f00001"             # suffix for budgets file
+
 dir=$PWD
 log=$dir/run.log
 
@@ -19,53 +23,53 @@ echo "##############################################" |& tee -a $log
 echo "##############################################" |& tee -a $log
 echo "##############################################" |& tee -a $log
 echo $(date -R)                                       |& tee -a $log
-echo "Starting new session in directory $PWD."        |& tee -a $log
-echo "Running case $1 starting from $2$3"             |& tee -a $log
+echo "Starting new session in directory $dir."        |& tee -a $log
+echo "Running case $case starting from $base$num"     |& tee -a $log
+echo "Storing log in $log"
 
-for iter in {1..3}
+for i in {1..10}
 do
-    name0=$base$num;
-    num=$((num+1));
-    name1=$base$num;
+    dir0=$dir/$base$num
+    num=$((num+1))
+    dir1=$dir/$base$num
 
-    dir0=$dir/$name0
-    dir1=$dir/$name1
+    echo "#--------------------------------------------#"  |& tee -a $log
+    echo "#------------- ITERATION $i ------------------#" |& tee -a $log
+    echo "#--------------------------------------------#"  |& tee -a $log
+    echo $(date -R)                                        |& tee -a $log
 
-    echo "#--------------------------------------------#"     |& tee -a $log 
-    echo "#------------- ITERATION $iter ------------------#" |& tee -a $log 
-    echo "#--------------------------------------------#"     |& tee -a $log 
-    echo $(date -R)                                           |& tee -a $log
-
-    echo "from $PWD"              |& tee -a $log
     echo "copying $dir0 to $dir1" |& tee -a $log
     cp -ir $dir0 $dir1            |& tee -a $log
 
     cd  $dir1
 
-    echo "From $PWD"                               |& tee -a $log
     echo "removing old logs and switching restart" |& tee -a $log
+    rm *.cobaltlog *.error *.output                |& tee -a $log
+    rm $res *log*                                  |& tee -a $log
+    mv $case$rsfx $res                             |& tee -a $log
 
-    rm *.cobaltlog *.error *.output           |& tee -a $log
-    rm restart0.f00001 *log*                  |& tee -a $log
-    mv smoothWavyWall0.f00002 restart0.f00001 |& tee -a $log
-
-    echo "restarting from"      |& tee -a $log
-    head -c 130 restart0.f00001 |& tee -a $log
-    echo -e '\n'                |& tee -a $log
-    echo "reading budgets from" |& tee -a $log
-    head -c 130 i01"$1"0.f00001 |& tee -a $log
-    echo -e '\n'                |& tee -a $log
+    echo "restarting from $res"               |& tee -a $log
+    head -c 130 $res                          |& tee -a $log
+    echo -e '\n'                              |& tee -a $log
+    echo "reading budgets from i**$case$bsfx" |& tee -a $log
+    head -c 130 i01$case$bsfx                 |& tee -a $log
+    echo -e '\n'                              |& tee -a $log
+    # exit if either of these files are not found.
 
     echo "compiling and running" |& tee -a $log
-    makenek $1                   |& tee -a $log
-    ./my_nekqsub $1 256          |& tee -a $log
+    makenek $case                |& tee -a $log # exit if compilation unseccessful.
+    ./my_nekqsub $case 256       |& tee -a $log
  
     cd $dir
 
-    echo "From $PWD"           |& tee -a $log
-    echo "sleeping for 7300 s" |& tee -a $log
+    echo "successfully queued job. See you in two hrs."
+    echo "goodnight" |& tee -a $log
 
-    mail -s "$1 autorun" vpuri3@illinois.edu < $log
+    mail -s "$1 autorun" $email < $log
 
-    sleep 7300
+    sleep 7200
+    echo $(date -R)                            |& tee -a $log
+    echo "2 hrs done. starting next iteration" |& tee -a $log
+
+    sleep 100
 done
