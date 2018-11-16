@@ -11,36 +11,61 @@ case=$1
 base=$2
 num=$3
 
-echo "##############################################" |& tee -a run.log
-echo "##############################################" |& tee -a run.log
-echo "##############################################" |& tee -a run.log
-echo $(date -R)  |& tee -a run.log
-echo "Starting new session in directory $PWD." |& tee -a run.log
-echo "Running case $1 starting from $2$3" |& tee -a run.log
-
 num=$((num-1));
-iter=0
-for iter in {1..5}
+dir=$PWD
+log=$dir/run.log
+
+echo "##############################################" |& tee -a $log
+echo "##############################################" |& tee -a $log
+echo "##############################################" |& tee -a $log
+echo $(date -R)                                       |& tee -a $log
+echo "Starting new session in directory $PWD."        |& tee -a $log
+echo "Running case $1 starting from $2$3"             |& tee -a $log
+
+for iter in {1..3}
 do
     name0=$base$num;
     num=$((num+1));
     name1=$base$num;
 
-    echo "#--------------------------------------------#" |& tee -a run.log
-    echo "#------------- ITERATION $iter ------------------#" |& tee -a run.log
-    echo $(date -R) |& tee -a run.log
-    cp -vr $name0 $name1 |& tee -a run.log
+    dir0=$dir/$name0
+    dir1=$dir/$name1
 
-    cd  $name1
-    rm *.cobaltlog *.error *.output |& tee -a ../run.log
-    rm restart0.f00001 |& tee -a ../run.log
-    mv smoothWavyWall0.f00002 restart0.f00001 |& tee -a ../run.log
-    
-    makenek $1 |& tee -a ../run.log
-    ./my_nekqsub $1 256 |& tee -a ../run.log
+    echo "#--------------------------------------------#"     |& tee -a $log 
+    echo "#------------- ITERATION $iter ------------------#" |& tee -a $log 
+    echo "#--------------------------------------------#"     |& tee -a $log 
+    echo $(date -R)                                           |& tee -a $log
 
-    cd ..
-    mail -s "$1 autorun" vpuri3@illinois.edu < ./run.log
+    echo "from $PWD"              |& tee -a $log
+    echo "copying $dir0 to $dir1" |& tee -a $log
+    cp -ir $dir0 $dir1            |& tee -a $log
 
-    sleep 7400
+    cd  $dir1
+
+    echo "From $PWD"                               |& tee -a $log
+    echo "removing old logs and switching restart" |& tee -a $log
+
+    rm *.cobaltlog *.error *.output           |& tee -a $log
+    rm restart0.f00001 *log*                  |& tee -a $log
+    mv smoothWavyWall0.f00002 restart0.f00001 |& tee -a $log
+
+    echo "restarting from"      |& tee -a $log
+    head -c 130 restart0.f00001 |& tee -a $log
+    echo -e '\n'                |& tee -a $log
+    echo "reading budgets from" |& tee -a $log
+    head -c 130 i01"$1"0.f00001 |& tee -a $log
+    echo -e '\n'                |& tee -a $log
+
+    echo "compiling and running" |& tee -a $log
+    makenek $1                   |& tee -a $log
+    ./my_nekqsub $1 256          |& tee -a $log
+ 
+    cd $dir
+
+    echo "From $PWD"           |& tee -a $log
+    echo "sleeping for 7300 s" |& tee -a $log
+
+    mail -s "$1 autorun" vpuri3@illinois.edu < $log
+
+    sleep 7300
 done
