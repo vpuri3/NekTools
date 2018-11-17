@@ -164,6 +164,20 @@ c     call plane_avg_tensor(uplnr,uavg,gs_avg_hndl,nelx,nely,1,idir)
       call outpost2(cnk,prk,ptk,pdk,psk,1,'bbb')
       call outpost2(tdk,epk,vdk,tke,ppp,1,'ccc')
 
+c     call outpost2(vx,vy,vz,pr,t,dimt,'nam')
+
+c     cnk      ! TKE convection
+c     prk      ! TKE proudction
+c     ptk      ! TKE pressure transport
+c     pdk      ! TKE pressure diffusion
+c     psk      ! TKE pressure strain -- should be zero!
+c     tdk      ! TKE turbulent diffusion
+c     epk      ! TKE viscous dissipation
+c     vdk      ! TKE viscous diffusion
+c     tke      ! TKE sum
+c     ppp      ! pres(transp - (diff + strain))
+
+
       return
       end
 c-----------------------------------------------------------------------

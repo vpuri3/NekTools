@@ -61,7 +61,8 @@ do
     cd  $dir1
 
     echo "removing old logs and updating restart" |& tee -a $log
-    rm $res *.cobaltlog *.error *.output *log*    |& tee -a $log
+    rm $res *.cobaltlog *.error *.output          |& tee -a $log
+    rm *log* *out*                                |& tee -a $log
     mv -v $case$rsfx $res                         |& tee -a $log
 
     if [ ! -f $dir1/$res ]; then
@@ -82,14 +83,14 @@ do
 
     if [ ! -f $dir1/nek5000 ]; then
 	echo "ABORT: compilation failed in $dir1 ." |& tee -a $log
-	echo "Appending compiler.out to run.log ." |& tee -a $log
-	$dir1/compiler.out >> $log
-	mail -s "$case autorun" $email < $log
+	echo "Appending compiler.out to run.log ."  |& tee -a $log
+	$dir1/compiler.out                                 >> $log
+	mail -s "$case autorun" $email                      < $log
 	exit
     fi
 
     echo "Compilation Successful." |& tee -a $log
-    tail $dir1/compiler.out        |& tee -a $log
+    tail -c 300 $dir1/compiler.out |& tee -a $log
     ./my_nekqsub $case $nnodes     |& tee -a $log
  
     cd $dir
@@ -98,7 +99,7 @@ do
     qstat --header JobId:User:RunTime:WallTime:State:Location |& tee -a $log
     echo "successfully queued job"                            |& tee -a $log
     echo "goodnight"                                          |& tee -a $log
-    mail -s "$case autorun" $email < $log
+    mail -s "$case autorun" $email                                    < $log
 
     sleep 7300
     echo $(date -R)                            |& tee -a $log
