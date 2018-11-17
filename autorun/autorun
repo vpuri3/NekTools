@@ -15,9 +15,14 @@ email="vpuri3@illinois.edu" # email log after queuing
 res="restart0.f00001"       # name of restart file
 rsfx="0.f00002"             # suffix of next restart file
 bsfx="0.f00001"             # suffix for budgets file
+nproc="256"
 
 dir=$PWD
 log=$dir/run.log
+
+if [ -f $log ]; then
+    mv run.log run.log2
+fi
 
 echo "##############################################" |& tee -a $log
 echo "##############################################" |& tee -a $log
@@ -25,7 +30,7 @@ echo "##############################################" |& tee -a $log
 echo $(date -R)                                       |& tee -a $log
 echo "Starting new session in directory $dir."        |& tee -a $log
 echo "Running case $case starting from $base$num"     |& tee -a $log
-echo "Storing log in $log"
+echo "Storing log in $log"                            |& tee -a $log
 
 for i in {1..10}
 do
@@ -34,42 +39,60 @@ do
     dir1=$dir/$base$num
 
     echo "#--------------------------------------------#"  |& tee -a $log
-    echo "#------------- ITERATION $i ------------------#" |& tee -a $log
+    echo "#------------------ RUN $i -------------------#" |& tee -a $log
     echo "#--------------------------------------------#"  |& tee -a $log
     echo $(date -R)                                        |& tee -a $log
 
+
+    if [ ! -f $dir0/$case$rsfx ]; then
+	echo "ABORT: $dir0 does not contain $case$rsfx ." |& tee -a $log
+	exit
+    fi
+    if [ ! -f $dir0/i01$case$bsfx ]; then
+	echo "ABORT: $dir0 does not contain i01$case$bsfx ." |& tee -a $log
+	exit
+    fi
+
     echo "copying $dir0 to $dir1" |& tee -a $log
-    cp -ir $dir0 $dir1            |& tee -a $log
+    cp -r $dir0 $dir1             |& tee -a $log
 
     cd  $dir1
 
     echo "removing old logs and switching restart" |& tee -a $log
-    rm *.cobaltlog *.error *.output                |& tee -a $log
-    rm $res *log*                                  |& tee -a $log
-    mv $case$rsfx $res                             |& tee -a $log
+    rm - *.cobaltlog *.error *.output              |& tee -a $log
+    rm - $res *log*                                |& tee -a $log
+    mv -v $case$rsfx $res                          |& tee -a $log
+
+    if [ ! -f $dir1/$res ]; then
+	echo "ABORT: $dir1 does not contain $res ." |& tee -a $log
+	exit
+    fi
 
     echo "restarting from $res"               |& tee -a $log
     head -c 130 $res                          |& tee -a $log
     echo -e '\n'                              |& tee -a $log
-    echo "reading budgets from i**$case$bsfx" |& tee -a $log
+    echo "reading budgets from i##$case$bsfx" |& tee -a $log
     head -c 130 i01$case$bsfx                 |& tee -a $log
     echo -e '\n'                              |& tee -a $log
-    # exit if either of these files are not found.
 
     echo "compiling and running" |& tee -a $log
-    makenek $case                |& tee -a $log # exit if compilation unseccessful.
-    ./my_nekqsub $case 256       |& tee -a $log
+    makenek $case                |& tee -a $log
+
+    if [ ! -f $dir1/nek5000 ]; then
+	echo "ABORT: compilation failed in $dir1 ." |& tee -a $log
+	exit
+    fi
+
+    ./my_nekqsub $case $nproc |& tee -a $log
  
     cd $dir
 
-    echo "successfully queued job. See you in two hrs."
-    echo "goodnight" |& tee -a $log
+    echo "successfully queued job" |& tee -a $log
+    echo "goodnight"               |& tee -a $log
 
-    mail -s "$1 autorun" $email < $log
+    mail -s "$case autorun" $email < $log
 
-    sleep 7200
+    sleep 7300
     echo $(date -R)                            |& tee -a $log
-    echo "2 hrs done. starting next iteration" |& tee -a $log
-
-    sleep 100
+    echo "long time no see? time for next run" |& tee -a $log
 done
