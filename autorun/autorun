@@ -15,7 +15,7 @@ email="vpuri3@illinois.edu" # email log after queuing
 res="restart0.f00001"       # name of restart file
 rsfx="0.f00002"             # suffix of next restart file
 bsfx="0.f00001"             # suffix for budgets file
-nproc="256"
+nnodes="256"
 
 dir=$PWD
 log=$dir/run.log
@@ -32,7 +32,7 @@ echo "Starting new session in directory $dir."        |& tee -a $log
 echo "Running case $case starting from $base$num"     |& tee -a $log
 echo "Storing log in $log"                            |& tee -a $log
 
-for i in {1..10}
+for i in {1..3}
 do
     dir0=$dir/$base$num
     num=$((num+1))
@@ -45,11 +45,13 @@ do
 
 
     if [ ! -f $dir0/$case$rsfx ]; then
-	echo "ABORT: $dir0 does not contain $case$rsfx ." |& tee -a $log
+	echo "ABORT: $dir0 does not contain $case$rsfx ."    |& tee -a $log
+	mail -s "$case autorun" $email < $log
 	exit
     fi
     if [ ! -f $dir0/i01$case$bsfx ]; then
 	echo "ABORT: $dir0 does not contain i01$case$bsfx ." |& tee -a $log
+	mail -s "$case autorun" $email < $log
 	exit
     fi
 
@@ -58,13 +60,13 @@ do
 
     cd  $dir1
 
-    echo "removing old logs and switching restart" |& tee -a $log
-    rm - *.cobaltlog *.error *.output              |& tee -a $log
-    rm - $res *log*                                |& tee -a $log
-    mv -v $case$rsfx $res                          |& tee -a $log
+    echo "removing old logs and updating restart" |& tee -a $log
+    rm $res *.cobaltlog *.error *.output *log*    |& tee -a $log
+    mv -v $case$rsfx $res                         |& tee -a $log
 
     if [ ! -f $dir1/$res ]; then
-	echo "ABORT: $dir1 does not contain $res ." |& tee -a $log
+	echo "ABORT: $res not found in $dir1 ." |& tee -a $log
+	mail -s "$case autorun" $email < $log
 	exit
     fi
 
@@ -75,21 +77,27 @@ do
     head -c 130 i01$case$bsfx                 |& tee -a $log
     echo -e '\n'                              |& tee -a $log
 
-    echo "compiling and running" |& tee -a $log
-    makenek $case                |& tee -a $log
+    echo "compiling..." |& tee -a $log
+    makenek $case        &>>  /dev/null
 
     if [ ! -f $dir1/nek5000 ]; then
 	echo "ABORT: compilation failed in $dir1 ." |& tee -a $log
+	echo "Appending compiler.out to run.log ." |& tee -a $log
+	$dir1/compiler.out >> $log
+	mail -s "$case autorun" $email < $log
 	exit
     fi
 
-    ./my_nekqsub $case $nproc |& tee -a $log
+    echo "Compilation Successful." |& tee -a $log
+    tail $dir1/compiler.out        |& tee -a $log
+    ./my_nekqsub $case $nnodes     |& tee -a $log
  
     cd $dir
 
-    echo "successfully queued job" |& tee -a $log
-    echo "goodnight"               |& tee -a $log
-
+    sleep 10
+    qstat --header JobId:User:RunTime:WallTime:State:Location |& tee -a $log
+    echo "successfully queued job"                            |& tee -a $log
+    echo "goodnight"                                          |& tee -a $log
     mail -s "$case autorun" $email < $log
 
     sleep 7300
