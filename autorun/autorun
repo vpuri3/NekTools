@@ -15,7 +15,7 @@ email="vpuri3@illinois.edu" # email log after queuing
 res="restart0.f00001"       # name of restart file
 rsfx="0.f00002"             # suffix of next restart file
 bsfx="0.f00001"             # suffix for budgets file
-nnodes="256"
+nnodes="256"                # # of nodes
 
 dir=$PWD
 log=$dir/run.log
@@ -29,7 +29,7 @@ echo "##############################################" |& tee -a $log
 echo "##############################################" |& tee -a $log
 echo $(date -R)                                       |& tee -a $log
 echo "Starting new session in directory $dir."        |& tee -a $log
-echo "Running case $case starting from $base$num"     |& tee -a $log
+echo "Running case $case from $base$num"              |& tee -a $log
 echo "Storing log in $log"                            |& tee -a $log
 
 for i in {1..3}
@@ -46,12 +46,11 @@ do
 
     if [ ! -f $dir0/$case$rsfx ]; then
 	echo "ABORT: $dir0 does not contain $case$rsfx ."    |& tee -a $log
-	mail -s "$case autorun" $email < $log
+	mail -s "$case autorun" $email                               < $log
 	exit
-    fi
-    if [ ! -f $dir0/i01$case$bsfx ]; then
+    elif [ ! -f $dir0/i01$case$bsfx ]; then
 	echo "ABORT: $dir0 does not contain i01$case$bsfx ." |& tee -a $log
-	mail -s "$case autorun" $email < $log
+	mail -s "$case autorun" $email                               < $log
 	exit
     fi
 
