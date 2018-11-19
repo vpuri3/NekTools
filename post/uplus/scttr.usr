@@ -212,6 +212,8 @@ c     flag points on boundary
       return
       end
 c-----------------------------------------------------------------------
+c     copmuts dist in direction of idir
+c-----------------------------------------------------------------------
       subroutine dist2face(d,f,bctyp,gs_sctr_hndl
      $                      ,nelx,nely,nelz,ifld,idir)
       include 'SIZE'

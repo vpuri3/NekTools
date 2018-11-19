@@ -1,19 +1,20 @@
 C-----------------------------------------------------------------------
-c
 c     In usrchk,
-c     call comp_upl(upl,ypl,vlx,vly,vlz,f,idir,bctyp)
+c     call comp_uplus(upl,ypl,vlx,vly,vlz,f,bctyp,gs_sctr_hndl
+c    $                      ,nelx,nely,nelz,ifld,idir)
 c
 c     up,yp   : u-plus, y-plus
 c     ux/y/z  : velocity fields
 c     f       : face containing wall data
-c     idir    : direction to scatter data from face into domain
+c     idir    : direction perpendicular to face /
+c               direction to scatter data from face into domain
 c               [1,2,3] ==> [x,y,z]
 c     bctyp   : Boundary condition of face (char*3)
 c
-      computes normal and tangential componenets of velocity,
-      shear stress on wall, drag force on wall, friction velocity,
-      y-plus.
-
+c     computes normal and tangential componenets of velocity,
+c     shear stress on wall, drag force on wall, friction velocity,
+c     y-plus.
+c
 c     outputs 1) shear stress vector on face,
 c             2) normal, tangential velocity,
 c                dist. to face, shear stress mag in volume,
@@ -118,8 +119,8 @@ c
 
       if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
 
-      n    = nx1*ny1*nz1*lelt
-
+      n = nx1*ny1*nz1*lelt
+c
       call rzero(up,n)
       call rzero(yp,n)
 c
@@ -145,11 +146,11 @@ c
 c
       call rzero(sij,n*nxzf)
 
-      a     = 0.                ! face area
-      xdrg  = 0.                ! face drag X-comp
-      ydrg  = 0.                !           Y 
-      zdrg  = 0.                !           Z
-      mdrg  = 0.                !           Mag
+      a     = 0.                ! drag on face
+      xdrg  = 0.                ! drag on face X-comp
+      ydrg  = 0.                !              Y 
+      zdrg  = 0.                !              Z
+      mdrg  = 0.                !              Mag
 
       idimt  = 1
       vsc  = vdiff(lx1,ly1,lz1,nelt,idimt)
@@ -178,63 +179,66 @@ c
           do j2=js2,jf2,jskip2
           do j1=js1,jf1,jskip1
             k   = k + 1
-
-            n1 = unx(k,1,f,e)   ! face normal X-comp
-            n2 = uny(k,1,f,e)   !             Y
-            n3 = unz(k,1,f,e)   !             Z
-
+c
+            n1 = unx(k,1,f,e)      ! face normal X-comp
+            n2 = uny(k,1,f,e)      !             Y
+            n3 = unz(k,1,f,e)      !             Z
+c
             s11 = sij(j1,j2,1,1,e) ! Strain rate tensor
             s21 = sij(j1,j2,1,4,e)
             s31 = sij(j1,j2,1,6,e)
-
+c
             s12 = sij(j1,j2,1,4,e)
             s22 = sij(j1,j2,1,2,e)
             s32 = sij(j1,j2,1,5,e)
-
+c
             s13 = sij(j1,j2,1,6,e)
             s23 = sij(j1,j2,1,5,e)
             s33 = sij(j1,j2,1,3,e)
-
+c
             fNx(j1,j2,1,e) = n1
             fNy(j1,j2,1,e) = n2
             fNz(j1,j2,1,e) = n3
-
+c
             fTx(j1,j2,1,e) = -(s11*n1 + s12*n2 + s13*n3)*vsc*dsty
             fTy(j1,j2,1,e) = -(s21*n1 + s22*n2 + s23*n3)*vsc*dsty
             fTz(j1,j2,1,e) = -(s31*n1 + s32*n2 + s33*n3)*vsc*dsty
-
+c
             Tmg =       fTx(j1,j2,1,e)*fTx(j1,j2,1,e)
             Tmg = Tmg + fTy(j1,j2,1,e)*fTy(j1,j2,1,e)
             Tmg = Tmg + fTz(j1,j2,1,e)*fTz(j1,j2,1,e)
-
-            fTm(j1,j2,1,e) = SQRT(Tmg)
-
+c
+            fTm(j1,j2,1,e) = SQRT(Tmg)                   ! shear stress magnitude
+c
             a    = a    + area(k,1,f,e)
-            xdrg = xdrg + fTx(j1,j2,1,e)*area(k,1,f,e)
+            xdrg = xdrg + fTx(j1,j2,1,e)*area(k,1,f,e)   ! viscous contribution to drag
             ydrg = ydrg + fTy(j1,j2,1,e)*area(k,1,f,e)
             zdrg = zdrg + fTz(j1,j2,1,e)*area(k,1,f,e)
-
+c
+c           xdrg = xdrg - n1*pr(j1,j2,1,e)*area(k,1,f,e) ! pressure contribution to drag
+c           ydrg = ydrg - n2*pr(j1,j2,1,e)*area(k,1,f,e)
+c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
+c
           enddo
           enddo
 
         endif
       enddo
-
-      mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
-      mdrg = sqrt(mdrg)
-
-      call gop(a   ,Tmg,'+  ',1)
+c
+      call gop(a   ,Tmg,'+  ',1) ! summing over all processes
       call gop(xdrg,Tmg,'+  ',1)
       call gop(ydrg,Tmg,'+  ',1)
       call gop(zdrg,Tmg,'+  ',1)
-      call gop(mdrg,Tmg,'+  ',1)
-
+c
+      mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
+      mdrg = sqrt(mdrg)
+c
       if(nid.eq.0) then
-         write(6,*) 'comp_uplus says  area     is', a
-         write(6,*) 'comp_uplus says xdrag     is', xdrg
-         write(6,*) 'comp_uplus says ydrag     is', ydrg
-         write(6,*) 'comp_uplus says zdrag     is', zdrg
-         write(6,*) 'comp_uplus says  drag mag is', mdrg
+         write(6,*) 'area     is', a
+         write(6,*) 'xdrag    is', xdrg
+         write(6,*) 'ydrag    is', ydrg
+         write(6,*) 'zdrag    is', zdrg
+         write(6,*) 'drag mag is', mdrg
       endif
 
       ! scatter face data into domain
@@ -246,11 +250,10 @@ c
       call scttr(volNx,fNx,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
       call scttr(volNy,fNy,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
       call scttr(volNz,fNz,f,bctyp,gs_hndl,nelx,nely,nelz1,ifld,idir)
-c
+c     distance in direction parallel to idir
       call dist2face(d2f,f,bctyp,gs_hndl,nelx,nely,nelz,ifld,idir)
-
-      ! compute u-plus, y-plus
-      do i=1,n
+c
+      do i=1,n                                    ! compute u-plus, y-plus
          u   = vx   (i,1,1,1)
          v   = vy   (i,1,1,1)
          w   = vz   (i,1,1,1)
@@ -259,12 +262,12 @@ c
          n3  = volNz(i,1,1,1)
          Tmg = volTm(i,1,1,1)
 c
-         un = u*n1 + v*n2 + w*n3                  ! normal component
+         un = u*n1 + v*n2 + w*n3                  ! normal component of vel
          unor(i,1,1,1) = un
          utan(i,1,1,1) = u*u  + v*v  + w*w - un*un
-         utan(i,1,1,1) = sqrt(utan(i,1,1,1))      ! tangential component
+         utan(i,1,1,1) = sqrt(utan(i,1,1,1))      ! tangential component of vel
 c
-         ufr = sqrt(Tmg/dsty)
+         ufr = sqrt(Tmg/dsty)                     ! friction velocity
          up(i,1,1,1) = utan(i,1,1,1)/ufr
          yp(i,1,1,1) = d2f(i,1,1,1)*ufr/vsc
       enddo
