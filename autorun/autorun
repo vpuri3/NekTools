@@ -32,7 +32,7 @@ echo "Starting new session in directory $dir."        |& tee -a $log
 echo "Running case $case from $base$num"              |& tee -a $log
 echo "Storing log in $log"                            |& tee -a $log
 
-for i in {1..3}
+for i in {1..2}
 do
     dir0=$dir/$base$num
     num=$((num+1))
