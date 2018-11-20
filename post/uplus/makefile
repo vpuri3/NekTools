@@ -1,4 +1,4 @@
-### makefile automatically created by makenek 11/20/2018 00:50:29 ###
+### makefile automatically created by makenek 11/20/2018 16:51:18 ###
 BINNAME=nek5000
 LIBNAME=libnek5000.a
 CASENAME:=smoothWavyWall

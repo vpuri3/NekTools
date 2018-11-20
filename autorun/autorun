@@ -55,8 +55,8 @@ for ((i=1; i<=$4; i++)); do
 	exit
     fi
 
-    echo "copying $dir0 to $dir1" |& tee -a $log
-    cp -r $dir0 $dir1             |& tee -a $log
+    echo "copying $dir0 to $dir1"                             |& tee -a $log
+    cp -r $dir0 $dir1                                         |& tee -a $log
 
     cd  $dir1
 
@@ -64,12 +64,6 @@ for ((i=1; i<=$4; i++)); do
     rm $res *.cobaltlog *.error *.output                      |& tee -a $log
     rm *log* *out*                                            |& tee -a $log
     mv -v $case$rsfx $res                                     |& tee -a $log
-
-    if [ ! -f $dir1/$res ]; then
-	echo "ABORT: $res not found in $dir1 ."               |& tee -a $log
-	mail -s "$case autorun" $email                                < $log
-	exit					            
-    fi						            
 						            
     echo "restarting from $res"                               |& tee -a $log
     head -c 130 $res                                          |& tee -a $log
@@ -96,15 +90,22 @@ for ((i=1; i<=$4; i++)); do
 	mail -s "$case autorun" $email                                < $log
 	exit
     fi
- 
-    cd $dir
 
     sleep 10
     qstat --header JobId:User:RunTime:WallTime:State:Location |& tee -a $log
     echo "successfully queued job"                            |& tee -a $log
     echo "goodnight"                                          |& tee -a $log
     mail -s "$case autorun" $email                                    < $log
-    sleep 7300
+
+    sleep 300
+    err=$(tail *.output)
+    if echo $err | grep -Fq "dying"; then
+	echo "ABORT: job died before its time."               |& tee -a $log
+	mail -s "$case autorun" $email                                < $log
+	exit					       
+    fi
+
+    sleep 7000
     echo $(date -R)                                           |& tee -a $log
     echo "long time no see? time for next run"                |& tee -a $log
 done
