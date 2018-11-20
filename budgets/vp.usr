@@ -129,8 +129,8 @@ c
 c
       if(nid.eq.0) write(6,*) 'outposting TKE'
 c
-      call outpost2(cnk,prk,ptk,pdk,psk,1,'bd1')
-      call outpost2(tdk,epk,vdk,tke,ppp,1,'bd2')
+      call outpost2(cnk,prk,ptk,pdk,psk,1,'bb1')
+      call outpost2(tdk,epk,vdk,tke,ppp,1,'bb2')
 c
 c     cnk      ! TKE convection
 c     prk      ! TKE proudction
