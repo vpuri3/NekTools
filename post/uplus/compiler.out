@@ -492,3 +492,1443 @@ __TEXT	__DATA	__OBJC	others	dec	hex
 2826240	2482442240	0	4295151616	6780420096	194250000	
 
 
+build 3rd-party software ...
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/gs.c -o src/gs.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sort.c -o src/sort.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sarray_transfer.c -o src/sarray_transfer.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sarray_sort.c -o src/sarray_sort.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/gs_local.c -o src/gs_local.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/fail.c -o src/fail.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/crystal.c -o src/crystal.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/comm.c -o src/comm.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/tensor.c -o src/tensor.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/sparse_cholesky.c -o src/sparse_cholesky.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/xxt.c -o src/xxt.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/amg.c -o src/amg.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/fcrystal.c -o src/fcrystal.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/fcrs.c -o src/fcrs.o
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 8 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -1 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 8 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -1 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 9 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -2 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 9 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -2 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 10 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -3 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 10 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -3 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 11 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -4 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 11 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -4 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 12 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -5 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 12 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -5 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 13 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -6 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 13 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -6 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 14 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -7 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 14 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -7 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 15 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -8 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 15 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -8 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 16 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -9 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 16 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -9 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 17 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -10 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 17 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -10 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 18 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -11 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 18 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -11 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 19 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -12 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 19 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -12 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 20 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -13 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 20 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -13 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 21 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -14 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 21 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -14 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 22 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -15 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 22 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -15 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 23 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -16 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 23 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -16 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 24 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -17 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 24 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -17 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 25 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -18 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 25 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -18 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 26 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -19 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 26 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -19 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 27 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -20 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 27 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -20 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 28 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -21 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 28 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -21 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 29 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -22 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 29 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -22 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 30 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -23 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 30 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -23 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 31 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -24 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 31 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -24 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 32 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -25 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 32 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -25 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 33 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -26 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 33 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -26 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 34 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -27 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 34 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -27 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 35 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -28 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 35 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -28 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 36 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -29 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 36 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -29 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 37 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -30 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 37 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -30 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 38 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -31 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 38 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -31 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 39 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -32 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 39 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -32 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 40 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -33 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 40 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -33 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 41 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -34 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 41 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -34 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 42 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -35 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 42 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -35 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 43 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -36 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 43 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -36 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 44 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -37 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 44 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -37 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 45 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -38 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 45 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -38 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 46 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -39 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 46 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -39 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 47 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -40 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 47 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -40 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 48 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -41 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 48 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -41 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 49 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -42 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 49 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -42 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 50 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -43 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 50 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -43 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 51 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -44 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 51 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -44 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 52 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -45 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 52 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -45 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 53 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -46 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 53 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -46 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 54 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -47 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 54 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -47 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 55 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -48 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 55 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -48 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 56 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -49 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 56 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -49 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 57 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -50 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 57 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -50 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 58 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -51 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 58 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -51 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 59 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -52 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 59 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -52 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 60 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -53 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 60 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -53 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 61 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -54 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 61 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -54 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 62 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -55 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 62 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -55 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 63 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -56 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 27.3: 1506-1298 (W) The subscript 63 is out of range. The valid range is 0 to 7.
+"src/amg_io.h", line 27.3: 1506-1300 (W) The subscript -56 is less than zero. The subscript of an array should be greater than or equal to zero.
+"src/amg_io.h", line 157.22: 1506-280 (W) Function argument assignment between types "char*" and "const char*" is not allowed.
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts.c -o src/findpts.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts_local.c -o src/findpts_local.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/obbox.c -o src/obbox.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/poly.c -o src/poly.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/lob_bnd.c -o src/lob_bnd.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts_el_3.c -o src/findpts_el_3.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/findpts_el_2.c -o src/findpts_el_2.o
+mpixlc  -I./src -DMPI -DUSEMPIIO -DUSE_USR_EXIT -DPREFIX=gslib_ -DFPREFIX=fgslib_ -DGLOBAL_LONG_LONG -c src/rand_elt_test.c -o src/rand_elt_test.o
+"src/lob_bnd.c", line 153.29: 1506-1418 (E) Assignment between restrict pointers "br" and "br_" is not allowed. Only outer-to-inner scope assignments between restrict pointers are allowed.
+"src/lob_bnd.c", line 154.22: 1506-1418 (E) Assignment between restrict pointers "b" and "b_" is not allowed. Only outer-to-inner scope assignments between restrict pointers are allowed.
+"src/lob_bnd.c", line 165.5: 1506-1418 (E) Assignment between restrict pointers "br" and "br_" is not allowed. Only outer-to-inner scope assignments between restrict pointers are allowed.
+"src/lob_bnd.c", line 168.7: 1506-1418 (E) Assignment between restrict pointers "b" and "b_" is not allowed. Only outer-to-inner scope assignments between restrict pointers are allowed.
+`./src/libgs.a' -> `/projects/wall_turb_dd/Nek5000-v17.0/3rd_party/gslib/gslib-1.0.1/../lib/libgs.a'
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive.f -o obj/drive.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive1.f -o obj/drive1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f -o obj/drive2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/plan5.f -o obj/plan5.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/plan4.f -o obj/plan4.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/bdry.f -o obj/bdry.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/coef.f -o obj/coef.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/conduct.f -o obj/conduct.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/connect1.f -o obj/connect1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/connect2.f -o obj/connect2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/dssum.f -o obj/dssum.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/edgec.f -o obj/edgec.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/eigsolv.f -o obj/eigsolv.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gauss.f -o obj/gauss.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/genxyz.f -o obj/genxyz.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier1.f -o obj/navier1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/makeq.f -o obj/makeq.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier0.f -o obj/navier0.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier2.f -o obj/navier2.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier1.f", line 3253.31: 1511-122 (E) Unconditional GO TO statement refers to statement inside a DO-loop, IF block, CASE construct, SELECT TYPE construct, ASSOCIATE construct, WHERE construct or FORALL construct with label 101.  Transfer of control into a DO-loop, IF block, CASE construct, SELECT TYPE construct, ASSOCIATE construct, WHERE construct or FORALL construct is not permitted.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier3.f -o obj/navier3.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f -o obj/navier4.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/prepost.f -o obj/prepost.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/speclib.f -o obj/speclib.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f", line 712.10: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f", line 1061.7: 1516-023 (E) Subscript is out of bounds.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/map2.f -o obj/map2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mvmesh.f -o obj/mvmesh.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/ic.f -o obj/ic.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfldr.f -o obj/gfldr.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/ssolv.f -o obj/ssolv.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/planx.f -o obj/planx.o
+mpixlf77 -c  -O3 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/math.f -o obj/math.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mxm_wrapper.f -o obj/mxm_wrapper.o 
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hmholtz.f -o obj/hmholtz.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_par.f -o obj/gfdm_par.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_op.f -o obj/gfdm_op.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_solve.f -o obj/gfdm_solve.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/subs1.f -o obj/subs1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/subs2.f -o obj/subs2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/genbox.f -o obj/genbox.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gmres.f -o obj/gmres.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hsmg.f -o obj/hsmg.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/convect.f -o obj/convect.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/induct.f -o obj/induct.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/convect.f", 1500-030 (I) INFORMATION: conv_bdry_dg_weak: Additional optimization may be attained by recompiling and specifying MAXMEM option with a value greater than 8192.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/perturb.f -o obj/perturb.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier5.f -o obj/navier5.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier6.f -o obj/navier6.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier7.f -o obj/navier7.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier8.f -o obj/navier8.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/fast3d.f -o obj/fast3d.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f -o obj/fasts.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 424.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 424.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 430.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 430.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 436.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 436.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 445.16: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 445.43: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 449.16: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 449.43: 1516-023 (E) Subscript is out of bounds.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/calcz.f -o obj/calcz.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/byte.c -o obj/byte.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/chelpers.c -o obj/chelpers.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/byte_mpi.f -o obj/byte_mpi.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/postpro.f -o obj/postpro.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/intp_usr.f -o obj/intp_usr.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/cvode_driver.f -o obj/cvode_driver.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/nek_comm.c -o obj/nek_comm.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/vprops.f -o obj/vprops.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/makeq_aux.f -o obj/makeq_aux.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/papi.f -o obj/papi.o
+mpixlf77 -c   -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/nek_in_situ.f -o obj/nek_in_situ.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_rea.f -o obj/reader_rea.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_par.f -o obj/reader_par.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f -o obj/reader_re2.o
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/finiparser.c -o obj/finiparser.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f", line 181.24: 1513-041 (W) Arguments of the wrong type were specified for the INTRINSIC procedure "mod".
+"/projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f", line 288.24: 1513-041 (W) Arguments of the wrong type were specified for the INTRINSIC procedure "mod".
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/iniparser.c -o obj/iniparser.o
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/dictionary.c -o obj/dictionary.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hpf.f -o obj/hpf.o
+mpixlf77 -c  -O3 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f -o obj/mxm_std.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/comm_mpi.f -o obj/comm_mpi.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/singlmesh.f -o obj/singlmesh.o
+mpixlf77 -c  -O0 -WF,-DMPI -WF,-DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/blas.f -o obj/blas.o
+** caxpy   === End of Compilation 1 ===
+** ccopy   === End of Compilation 2 ===
+** cdotc   === End of Compilation 3 ===
+** cdotu   === End of Compilation 4 ===
+** cgbmv   === End of Compilation 5 ===
+** cgemm   === End of Compilation 6 ===
+** cgemv   === End of Compilation 7 ===
+** cgerc   === End of Compilation 8 ===
+** cgeru   === End of Compilation 9 ===
+** chbmv   === End of Compilation 10 ===
+** chemm   === End of Compilation 11 ===
+** chemv   === End of Compilation 12 ===
+** cher2   === End of Compilation 13 ===
+** cher2k   === End of Compilation 14 ===
+** cher   === End of Compilation 15 ===
+** cherk   === End of Compilation 16 ===
+** chpmv   === End of Compilation 17 ===
+** chpr2   === End of Compilation 18 ===
+** chpr   === End of Compilation 19 ===
+** crotg   === End of Compilation 20 ===
+** cscal   === End of Compilation 21 ===
+** csrot   === End of Compilation 22 ===
+** csscal   === End of Compilation 23 ===
+** cswap   === End of Compilation 24 ===
+** csymm   === End of Compilation 25 ===
+** csyr2k   === End of Compilation 26 ===
+** csyrk   === End of Compilation 27 ===
+** ctbmv   === End of Compilation 28 ===
+** ctbsv   === End of Compilation 29 ===
+** ctpmv   === End of Compilation 30 ===
+** ctpsv   === End of Compilation 31 ===
+mpixlf77 -c  -O0 -WF,-DMPI -WF,-DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/dsygv.f -o obj/dsygv.o
+** ctrmm   === End of Compilation 32 ===
+** ctrmv   === End of Compilation 33 ===
+** ctrsm   === End of Compilation 34 ===
+** ctrsv   === End of Compilation 35 ===
+** dasum   === End of Compilation 36 ===
+** daxpy   === End of Compilation 37 ===
+** dcabs1   === End of Compilation 38 ===
+** dcopy   === End of Compilation 39 ===
+** ddot   === End of Compilation 40 ===
+** dgbmv   === End of Compilation 41 ===
+** dgemm   === End of Compilation 42 ===
+** dgemv   === End of Compilation 43 ===
+** dger   === End of Compilation 44 ===
+** dnrm2   === End of Compilation 45 ===
+** drot   === End of Compilation 46 ===
+** drotg   === End of Compilation 47 ===
+** drotm   === End of Compilation 48 ===
+** drotmg   === End of Compilation 49 ===
+** dsbmv   === End of Compilation 50 ===
+** dscal   === End of Compilation 51 ===
+** dsdot   === End of Compilation 52 ===
+** dspmv   === End of Compilation 53 ===
+** dspr2   === End of Compilation 54 ===
+** dspr   === End of Compilation 55 ===
+** dswap   === End of Compilation 56 ===
+** dsymm   === End of Compilation 57 ===
+** dsymv   === End of Compilation 58 ===
+** dsyr2   === End of Compilation 59 ===
+** dsyr2k   === End of Compilation 60 ===
+** dsyr   === End of Compilation 61 ===
+** dsyrk   === End of Compilation 62 ===
+** dtbmv   === End of Compilation 63 ===
+** dtbsv   === End of Compilation 64 ===
+** dtpmv   === End of Compilation 65 ===
+** dtpsv   === End of Compilation 66 ===
+** dtrmm   === End of Compilation 67 ===
+** dtrmv   === End of Compilation 68 ===
+** dtrsm   === End of Compilation 69 ===
+** dtrsv   === End of Compilation 70 ===
+** dzasum   === End of Compilation 71 ===
+** dznrm2   === End of Compilation 72 ===
+** icamax   === End of Compilation 73 ===
+** idamax   === End of Compilation 74 ===
+** isamax   === End of Compilation 75 ===
+** izamax   === End of Compilation 76 ===
+** lsame   === End of Compilation 77 ===
+** sasum   === End of Compilation 78 ===
+** saxpy   === End of Compilation 79 ===
+** scasum   === End of Compilation 80 ===
+** scnrm2   === End of Compilation 81 ===
+** scopy   === End of Compilation 82 ===
+** sdot   === End of Compilation 83 ===
+** sdsdot   === End of Compilation 84 ===
+** sgbmv   === End of Compilation 85 ===
+** sgemm   === End of Compilation 86 ===
+** sgemv   === End of Compilation 87 ===
+** sger   === End of Compilation 88 ===
+** snrm2   === End of Compilation 89 ===
+** srot   === End of Compilation 90 ===
+** srotg   === End of Compilation 91 ===
+** srotm   === End of Compilation 92 ===
+** srotmg   === End of Compilation 93 ===
+** ssbmv   === End of Compilation 94 ===
+** sscal   === End of Compilation 95 ===
+** sspmv   === End of Compilation 96 ===
+** sspr2   === End of Compilation 97 ===
+** sspr   === End of Compilation 98 ===
+** sswap   === End of Compilation 99 ===
+** ssymm   === End of Compilation 100 ===
+** ssymv   === End of Compilation 101 ===
+** ssyr2   === End of Compilation 102 ===
+** ssyr2k   === End of Compilation 103 ===
+** ssyr   === End of Compilation 104 ===
+** ssyrk   === End of Compilation 105 ===
+** stbmv   === End of Compilation 106 ===
+** stbsv   === End of Compilation 107 ===
+** stpmv   === End of Compilation 108 ===
+** stpsv   === End of Compilation 109 ===
+** strmm   === End of Compilation 110 ===
+** strmv   === End of Compilation 111 ===
+** strsm   === End of Compilation 112 ===
+** strsv   === End of Compilation 113 ===
+** xerbla   === End of Compilation 114 ===
+** zaxpy   === End of Compilation 115 ===
+** zcopy   === End of Compilation 116 ===
+** zdotc   === End of Compilation 117 ===
+** zdotu   === End of Compilation 118 ===
+** zdrot   === End of Compilation 119 ===
+** zdscal   === End of Compilation 120 ===
+** zgbmv   === End of Compilation 121 ===
+** zgemm   === End of Compilation 122 ===
+** zgemv   === End of Compilation 123 ===
+** zgerc   === End of Compilation 124 ===
+** zgeru   === End of Compilation 125 ===
+** zhbmv   === End of Compilation 126 ===
+** zhemm   === End of Compilation 127 ===
+** zhemv   === End of Compilation 128 ===
+** zher2   === End of Compilation 129 ===
+** zher2k   === End of Compilation 130 ===
+** zher   === End of Compilation 131 ===
+** zherk   === End of Compilation 132 ===
+** zhpmv   === End of Compilation 133 ===
+** dsygv   === End of Compilation 1 ===
+** zhpr2   === End of Compilation 134 ===
+** dsytd2   === End of Compilation 2 ===
+** zhpr   === End of Compilation 135 ===
+** dsytrd   === End of Compilation 3 ===
+** zrotg   === End of Compilation 136 ===
+** zscal   === End of Compilation 137 ===
+** ieeeck   === End of Compilation 4 ===
+** zswap   === End of Compilation 138 ===
+** zsymm   === End of Compilation 139 ===
+** ilaenv   === End of Compilation 5 ===
+** zsyr2k   === End of Compilation 140 ===
+** xlsame   === End of Compilation 6 ===
+** xxerbla   === End of Compilation 7 ===
+** dlae2   === End of Compilation 8 ===
+** zsyrk   === End of Compilation 141 ===
+** dlaev2   === End of Compilation 9 ===
+** dlamch   === End of Compilation 10 ===
+** dlamc1   === End of Compilation 11 ===
+** ztbmv   === End of Compilation 142 ===
+** dlamc2   === End of Compilation 12 ===
+** dlamc3   === End of Compilation 13 ===
+** dlamc4   === End of Compilation 14 ===
+** ztbsv   === End of Compilation 143 ===
+** dlamc5   === End of Compilation 15 ===
+** dlanst   === End of Compilation 16 ===
+** ztpmv   === End of Compilation 144 ===
+** dlansy   === End of Compilation 17 ===
+** dlapy2   === End of Compilation 18 ===
+** ztpsv   === End of Compilation 145 ===
+** dlarfb   === End of Compilation 19 ===
+** dlarf   === End of Compilation 20 ===
+** ztrmm   === End of Compilation 146 ===
+** dlarfg   === End of Compilation 21 ===
+** dlarft   === End of Compilation 22 ===
+** ztrmv   === End of Compilation 147 ===
+** dlartg   === End of Compilation 23 ===
+** dlascl   === End of Compilation 24 ===
+** ztrsm   === End of Compilation 148 ===
+** dlaset   === End of Compilation 25 ===
+** ztrsv   === End of Compilation 149 ===
+** dlasr   === End of Compilation 26 ===
+** dlasrt   === End of Compilation 27 ===
+** dlassq   === End of Compilation 28 ===
+** dlatrd   === End of Compilation 29 ===
+** dorg2l   === End of Compilation 30 ===
+** dorg2r   === End of Compilation 31 ===
+** dorgql   === End of Compilation 32 ===
+** dorgqr   === End of Compilation 33 ===
+** dorgtr   === End of Compilation 34 ===
+** dpotf2   === End of Compilation 35 ===
+** dpotrf   === End of Compilation 36 ===
+** dsteqr   === End of Compilation 37 ===
+** dsterf   === End of Compilation 38 ===
+** dsyev   === End of Compilation 39 ===
+** dsygs2   === End of Compilation 40 ===
+** dsygst   === End of Compilation 41 ===
+1501-510  Compilation successful for file dsygv.f.
+`smoothWavyWall.usr' -> `smoothWavyWall.f'
+1501-510  Compilation successful for file blas.f.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/vpuri/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
+mpixlf77  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/projects/wall_turb_dd/Nek5000-v17.0/3rd_party/gslib/lib -lgs 
+
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+   text	   data	    bss	    dec	    hex	filename
+12440945	2084416	8876332	23401693	16514dd	nek5000
+
+
+build 3rd-party software ...
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive.f -o obj/drive.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive1.f -o obj/drive1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f -o obj/drive2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/plan5.f -o obj/plan5.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/plan4.f -o obj/plan4.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/bdry.f -o obj/bdry.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/coef.f -o obj/coef.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/conduct.f -o obj/conduct.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/connect1.f -o obj/connect1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/connect2.f -o obj/connect2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/dssum.f -o obj/dssum.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/edgec.f -o obj/edgec.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/eigsolv.f -o obj/eigsolv.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gauss.f -o obj/gauss.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/genxyz.f -o obj/genxyz.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier1.f -o obj/navier1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/makeq.f -o obj/makeq.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier0.f -o obj/navier0.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier2.f -o obj/navier2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier3.f -o obj/navier3.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier1.f", line 3253.31: 1511-122 (E) Unconditional GO TO statement refers to statement inside a DO-loop, IF block, CASE construct, SELECT TYPE construct, ASSOCIATE construct, WHERE construct or FORALL construct with label 101.  Transfer of control into a DO-loop, IF block, CASE construct, SELECT TYPE construct, ASSOCIATE construct, WHERE construct or FORALL construct is not permitted.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f -o obj/navier4.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/prepost.f -o obj/prepost.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/speclib.f -o obj/speclib.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f", line 712.10: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f", line 1061.7: 1516-023 (E) Subscript is out of bounds.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/map2.f -o obj/map2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mvmesh.f -o obj/mvmesh.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/ic.f -o obj/ic.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfldr.f -o obj/gfldr.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/ssolv.f -o obj/ssolv.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/planx.f -o obj/planx.o
+mpixlf77 -c  -O3 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/math.f -o obj/math.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mxm_wrapper.f -o obj/mxm_wrapper.o 
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hmholtz.f -o obj/hmholtz.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_par.f -o obj/gfdm_par.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_op.f -o obj/gfdm_op.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_solve.f -o obj/gfdm_solve.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/subs1.f -o obj/subs1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/subs2.f -o obj/subs2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/genbox.f -o obj/genbox.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gmres.f -o obj/gmres.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hsmg.f -o obj/hsmg.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/convect.f -o obj/convect.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/induct.f -o obj/induct.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/convect.f", 1500-030 (I) INFORMATION: conv_bdry_dg_weak: Additional optimization may be attained by recompiling and specifying MAXMEM option with a value greater than 8192.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/perturb.f -o obj/perturb.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier5.f -o obj/navier5.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier6.f -o obj/navier6.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier7.f -o obj/navier7.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier8.f -o obj/navier8.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/fast3d.f -o obj/fast3d.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f -o obj/fasts.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 424.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 424.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 430.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 430.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 436.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 436.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 445.16: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 445.43: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 449.16: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 449.43: 1516-023 (E) Subscript is out of bounds.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/calcz.f -o obj/calcz.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/byte.c -o obj/byte.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/chelpers.c -o obj/chelpers.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/byte_mpi.f -o obj/byte_mpi.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/postpro.f -o obj/postpro.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/intp_usr.f -o obj/intp_usr.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/cvode_driver.f -o obj/cvode_driver.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/nek_comm.c -o obj/nek_comm.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/vprops.f -o obj/vprops.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/makeq_aux.f -o obj/makeq_aux.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/papi.f -o obj/papi.o
+mpixlf77 -c   -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/nek_in_situ.f -o obj/nek_in_situ.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_rea.f -o obj/reader_rea.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_par.f -o obj/reader_par.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f -o obj/reader_re2.o
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/finiparser.c -o obj/finiparser.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f", line 181.24: 1513-041 (W) Arguments of the wrong type were specified for the INTRINSIC procedure "mod".
+"/projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f", line 288.24: 1513-041 (W) Arguments of the wrong type were specified for the INTRINSIC procedure "mod".
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/iniparser.c -o obj/iniparser.o
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/dictionary.c -o obj/dictionary.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hpf.f -o obj/hpf.o
+mpixlf77 -c  -O3 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f -o obj/mxm_std.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/comm_mpi.f -o obj/comm_mpi.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/singlmesh.f -o obj/singlmesh.o
+mpixlf77 -c  -O0 -WF,-DMPI -WF,-DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/blas.f -o obj/blas.o
+** caxpy   === End of Compilation 1 ===
+** ccopy   === End of Compilation 2 ===
+** cdotc   === End of Compilation 3 ===
+** cdotu   === End of Compilation 4 ===
+** cgbmv   === End of Compilation 5 ===
+** cgemm   === End of Compilation 6 ===
+** cgemv   === End of Compilation 7 ===
+** cgerc   === End of Compilation 8 ===
+** cgeru   === End of Compilation 9 ===
+** chbmv   === End of Compilation 10 ===
+** chemm   === End of Compilation 11 ===
+** chemv   === End of Compilation 12 ===
+** cher2   === End of Compilation 13 ===
+** cher2k   === End of Compilation 14 ===
+** cher   === End of Compilation 15 ===
+** cherk   === End of Compilation 16 ===
+** chpmv   === End of Compilation 17 ===
+** chpr2   === End of Compilation 18 ===
+** chpr   === End of Compilation 19 ===
+** crotg   === End of Compilation 20 ===
+** cscal   === End of Compilation 21 ===
+** csrot   === End of Compilation 22 ===
+** csscal   === End of Compilation 23 ===
+** cswap   === End of Compilation 24 ===
+** csymm   === End of Compilation 25 ===
+** csyr2k   === End of Compilation 26 ===
+** csyrk   === End of Compilation 27 ===
+** ctbmv   === End of Compilation 28 ===
+** ctbsv   === End of Compilation 29 ===
+** ctpmv   === End of Compilation 30 ===
+** ctpsv   === End of Compilation 31 ===
+** ctrmm   === End of Compilation 32 ===
+** ctrmv   === End of Compilation 33 ===
+** ctrsm   === End of Compilation 34 ===
+** ctrsv   === End of Compilation 35 ===
+** dasum   === End of Compilation 36 ===
+** daxpy   === End of Compilation 37 ===
+** dcabs1   === End of Compilation 38 ===
+** dcopy   === End of Compilation 39 ===
+** ddot   === End of Compilation 40 ===
+** dgbmv   === End of Compilation 41 ===
+** dgemm   === End of Compilation 42 ===
+** dgemv   === End of Compilation 43 ===
+** dger   === End of Compilation 44 ===
+** dnrm2   === End of Compilation 45 ===
+** drot   === End of Compilation 46 ===
+** drotg   === End of Compilation 47 ===
+** drotm   === End of Compilation 48 ===
+** drotmg   === End of Compilation 49 ===
+** dsbmv   === End of Compilation 50 ===
+** dscal   === End of Compilation 51 ===
+** dsdot   === End of Compilation 52 ===
+** dspmv   === End of Compilation 53 ===
+** dspr2   === End of Compilation 54 ===
+** dspr   === End of Compilation 55 ===
+** dswap   === End of Compilation 56 ===
+** dsymm   === End of Compilation 57 ===
+** dsymv   === End of Compilation 58 ===
+** dsyr2   === End of Compilation 59 ===
+** dsyr2k   === End of Compilation 60 ===
+** dsyr   === End of Compilation 61 ===
+** dsyrk   === End of Compilation 62 ===
+mpixlf77 -c  -O0 -WF,-DMPI -WF,-DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/dsygv.f -o obj/dsygv.o
+** dtbmv   === End of Compilation 63 ===
+** dtbsv   === End of Compilation 64 ===
+** dtpmv   === End of Compilation 65 ===
+** dtpsv   === End of Compilation 66 ===
+** dtrmm   === End of Compilation 67 ===
+** dtrmv   === End of Compilation 68 ===
+** dtrsm   === End of Compilation 69 ===
+** dtrsv   === End of Compilation 70 ===
+** dzasum   === End of Compilation 71 ===
+** dznrm2   === End of Compilation 72 ===
+** icamax   === End of Compilation 73 ===
+** idamax   === End of Compilation 74 ===
+** isamax   === End of Compilation 75 ===
+** izamax   === End of Compilation 76 ===
+** lsame   === End of Compilation 77 ===
+** sasum   === End of Compilation 78 ===
+** saxpy   === End of Compilation 79 ===
+** scasum   === End of Compilation 80 ===
+** scnrm2   === End of Compilation 81 ===
+** scopy   === End of Compilation 82 ===
+** sdot   === End of Compilation 83 ===
+** sdsdot   === End of Compilation 84 ===
+** sgbmv   === End of Compilation 85 ===
+** sgemm   === End of Compilation 86 ===
+** sgemv   === End of Compilation 87 ===
+** sger   === End of Compilation 88 ===
+** snrm2   === End of Compilation 89 ===
+** srot   === End of Compilation 90 ===
+** srotg   === End of Compilation 91 ===
+** srotm   === End of Compilation 92 ===
+** srotmg   === End of Compilation 93 ===
+** ssbmv   === End of Compilation 94 ===
+** sscal   === End of Compilation 95 ===
+** sspmv   === End of Compilation 96 ===
+** sspr2   === End of Compilation 97 ===
+** sspr   === End of Compilation 98 ===
+** sswap   === End of Compilation 99 ===
+** ssymm   === End of Compilation 100 ===
+** ssymv   === End of Compilation 101 ===
+** ssyr2   === End of Compilation 102 ===
+** ssyr2k   === End of Compilation 103 ===
+** ssyr   === End of Compilation 104 ===
+** ssyrk   === End of Compilation 105 ===
+** stbmv   === End of Compilation 106 ===
+** stbsv   === End of Compilation 107 ===
+** stpmv   === End of Compilation 108 ===
+** stpsv   === End of Compilation 109 ===
+** strmm   === End of Compilation 110 ===
+** strmv   === End of Compilation 111 ===
+** strsm   === End of Compilation 112 ===
+** strsv   === End of Compilation 113 ===
+** xerbla   === End of Compilation 114 ===
+** zaxpy   === End of Compilation 115 ===
+** zcopy   === End of Compilation 116 ===
+** zdotc   === End of Compilation 117 ===
+** zdotu   === End of Compilation 118 ===
+** zdrot   === End of Compilation 119 ===
+** zdscal   === End of Compilation 120 ===
+** zgbmv   === End of Compilation 121 ===
+** zgemm   === End of Compilation 122 ===
+** zgemv   === End of Compilation 123 ===
+** zgerc   === End of Compilation 124 ===
+** zgeru   === End of Compilation 125 ===
+** zhbmv   === End of Compilation 126 ===
+** zhemm   === End of Compilation 127 ===
+** zhemv   === End of Compilation 128 ===
+** zher2   === End of Compilation 129 ===
+** zher2k   === End of Compilation 130 ===
+** zher   === End of Compilation 131 ===
+** zherk   === End of Compilation 132 ===
+** zhpmv   === End of Compilation 133 ===
+** zhpr2   === End of Compilation 134 ===
+** zhpr   === End of Compilation 135 ===
+** zrotg   === End of Compilation 136 ===
+** zscal   === End of Compilation 137 ===
+** zswap   === End of Compilation 138 ===
+** zsymm   === End of Compilation 139 ===
+** zsyr2k   === End of Compilation 140 ===
+** zsyrk   === End of Compilation 141 ===
+** ztbmv   === End of Compilation 142 ===
+** ztbsv   === End of Compilation 143 ===
+** ztpmv   === End of Compilation 144 ===
+** ztpsv   === End of Compilation 145 ===
+** ztrmm   === End of Compilation 146 ===
+** ztrmv   === End of Compilation 147 ===
+** ztrsm   === End of Compilation 148 ===
+** ztrsv   === End of Compilation 149 ===
+** dsygv   === End of Compilation 1 ===
+** dsytd2   === End of Compilation 2 ===
+** dsytrd   === End of Compilation 3 ===
+** ieeeck   === End of Compilation 4 ===
+** ilaenv   === End of Compilation 5 ===
+** xlsame   === End of Compilation 6 ===
+** xxerbla   === End of Compilation 7 ===
+** dlae2   === End of Compilation 8 ===
+** dlaev2   === End of Compilation 9 ===
+** dlamch   === End of Compilation 10 ===
+** dlamc1   === End of Compilation 11 ===
+** dlamc2   === End of Compilation 12 ===
+** dlamc3   === End of Compilation 13 ===
+** dlamc4   === End of Compilation 14 ===
+** dlamc5   === End of Compilation 15 ===
+** dlanst   === End of Compilation 16 ===
+** dlansy   === End of Compilation 17 ===
+** dlapy2   === End of Compilation 18 ===
+** dlarfb   === End of Compilation 19 ===
+** dlarf   === End of Compilation 20 ===
+** dlarfg   === End of Compilation 21 ===
+** dlarft   === End of Compilation 22 ===
+** dlartg   === End of Compilation 23 ===
+** dlascl   === End of Compilation 24 ===
+** dlaset   === End of Compilation 25 ===
+** dlasr   === End of Compilation 26 ===
+** dlasrt   === End of Compilation 27 ===
+** dlassq   === End of Compilation 28 ===
+** dlatrd   === End of Compilation 29 ===
+** dorg2l   === End of Compilation 30 ===
+** dorg2r   === End of Compilation 31 ===
+** dorgql   === End of Compilation 32 ===
+** dorgqr   === End of Compilation 33 ===
+** dorgtr   === End of Compilation 34 ===
+** dpotf2   === End of Compilation 35 ===
+** dpotrf   === End of Compilation 36 ===
+** dsteqr   === End of Compilation 37 ===
+** dsterf   === End of Compilation 38 ===
+** dsyev   === End of Compilation 39 ===
+** dsygs2   === End of Compilation 40 ===
+** dsygst   === End of Compilation 41 ===
+`smoothWavyWall.usr' -> `smoothWavyWall.f'
+1501-510  Compilation successful for file dsygv.f.
+1501-510  Compilation successful for file blas.f.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/vpuri/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
+mpixlf77  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/projects/wall_turb_dd/Nek5000-v17.0/3rd_party/gslib/lib -lgs 
+
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+   text	   data	    bss	    dec	    hex	filename
+12450561	2085552	16983916	31520029	1e0f51d	nek5000
+
+
+build 3rd-party software ...
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive.f -o obj/drive.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive1.f -o obj/drive1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f -o obj/drive2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/plan5.f -o obj/plan5.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/plan4.f -o obj/plan4.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1557.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1560.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1562.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor L.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-047 (E) The L FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.16: 1512-035 (W) Left parenthesis is missing in literal FMT specifier. Parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.17: 1512-050 (W) Field separator is missing, in literal FMT specifier, after edit descriptor I.  A comma is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.17: 1512-047 (E) The I FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.18: 1512-053 (E) Edit descriptor in literal FMT specifier is invalid and will be ignored.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-036 (W) Unexpected end of format specification in literal FMT specifier.  Missing right parenthesis is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-039 (E) A period is missing for the F data edit descriptor, in literal FMT specifier.  The period followed by a default value is assumed.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/drive2.f", line 1564.33: 1512-047 (E) The F FORMAT edit descriptor, in literal FMT specifier, is missing a field width. A default value based on the edit descriptor and the type of the data item being processed is assumed.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/bdry.f -o obj/bdry.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/coef.f -o obj/coef.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/conduct.f -o obj/conduct.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/connect1.f -o obj/connect1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/connect2.f -o obj/connect2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/dssum.f -o obj/dssum.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/edgec.f -o obj/edgec.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/eigsolv.f -o obj/eigsolv.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gauss.f -o obj/gauss.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/genxyz.f -o obj/genxyz.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier1.f -o obj/navier1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/makeq.f -o obj/makeq.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier0.f -o obj/navier0.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier2.f -o obj/navier2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier3.f -o obj/navier3.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier1.f", line 3253.31: 1511-122 (E) Unconditional GO TO statement refers to statement inside a DO-loop, IF block, CASE construct, SELECT TYPE construct, ASSOCIATE construct, WHERE construct or FORALL construct with label 101.  Transfer of control into a DO-loop, IF block, CASE construct, SELECT TYPE construct, ASSOCIATE construct, WHERE construct or FORALL construct is not permitted.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f -o obj/navier4.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/prepost.f -o obj/prepost.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/speclib.f -o obj/speclib.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f", line 712.10: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/navier4.f", line 1061.7: 1516-023 (E) Subscript is out of bounds.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/map2.f -o obj/map2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mvmesh.f -o obj/mvmesh.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/ic.f -o obj/ic.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfldr.f -o obj/gfldr.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/ssolv.f -o obj/ssolv.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/planx.f -o obj/planx.o
+mpixlf77 -c  -O3 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/math.f -o obj/math.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mxm_wrapper.f -o obj/mxm_wrapper.o 
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hmholtz.f -o obj/hmholtz.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_par.f -o obj/gfdm_par.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_op.f -o obj/gfdm_op.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gfdm_solve.f -o obj/gfdm_solve.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/subs1.f -o obj/subs1.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/subs2.f -o obj/subs2.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/genbox.f -o obj/genbox.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/gmres.f -o obj/gmres.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hsmg.f -o obj/hsmg.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/convect.f -o obj/convect.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/induct.f -o obj/induct.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/convect.f", 1500-030 (I) INFORMATION: conv_bdry_dg_weak: Additional optimization may be attained by recompiling and specifying MAXMEM option with a value greater than 8192.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/perturb.f -o obj/perturb.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier5.f -o obj/navier5.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier6.f -o obj/navier6.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/math.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier7.f -o obj/navier7.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/navier8.f -o obj/navier8.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/fast3d.f -o obj/fast3d.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f -o obj/fasts.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 424.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 424.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 430.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 430.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 436.19: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 436.46: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 445.16: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 445.43: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 449.16: 1516-023 (E) Subscript is out of bounds.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/fasts.f", line 449.43: 1516-023 (E) Subscript is out of bounds.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/calcz.f -o obj/calcz.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/byte.c -o obj/byte.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/chelpers.c -o obj/chelpers.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/byte_mpi.f -o obj/byte_mpi.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/postpro.f -o obj/postpro.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/intp_usr.f -o obj/intp_usr.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/cvode_driver.f -o obj/cvode_driver.o
+mpixlc -c  -O2  -DMPI -DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/nek_comm.c -o obj/nek_comm.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/vprops.f -o obj/vprops.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/makeq_aux.f -o obj/makeq_aux.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/papi.f -o obj/papi.o
+mpixlf77 -c   -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/nek_in_situ.f -o obj/nek_in_situ.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_rea.f -o obj/reader_rea.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_par.f -o obj/reader_par.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f -o obj/reader_re2.o
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/finiparser.c -o obj/finiparser.o
+"/projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f", line 181.24: 1513-041 (W) Arguments of the wrong type were specified for the INTRINSIC procedure "mod".
+"/projects/wall_turb_dd/Nek5000-v17.0/core/reader_re2.f", line 288.24: 1513-041 (W) Arguments of the wrong type were specified for the INTRINSIC procedure "mod".
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/iniparser.c -o obj/iniparser.o
+mpixlc  -c  -O2  -DMPI -DTIMER  /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/dictionary.c -o obj/dictionary.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/hpf.f -o obj/hpf.o
+mpixlf77 -c  -O3 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f -o obj/mxm_std.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/comm_mpi.f -o obj/comm_mpi.o
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/Nek5000-v17.0/core/singlmesh.f -o obj/singlmesh.o
+mpixlf77 -c  -O0 -WF,-DMPI -WF,-DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/blas.f -o obj/blas.o
+** caxpy   === End of Compilation 1 ===
+** ccopy   === End of Compilation 2 ===
+** cdotc   === End of Compilation 3 ===
+** cdotu   === End of Compilation 4 ===
+** cgbmv   === End of Compilation 5 ===
+** cgemm   === End of Compilation 6 ===
+** cgemv   === End of Compilation 7 ===
+** cgerc   === End of Compilation 8 ===
+** cgeru   === End of Compilation 9 ===
+** chbmv   === End of Compilation 10 ===
+** chemm   === End of Compilation 11 ===
+** chemv   === End of Compilation 12 ===
+** cher2   === End of Compilation 13 ===
+** cher2k   === End of Compilation 14 ===
+** cher   === End of Compilation 15 ===
+** cherk   === End of Compilation 16 ===
+** chpmv   === End of Compilation 17 ===
+** chpr2   === End of Compilation 18 ===
+** chpr   === End of Compilation 19 ===
+** crotg   === End of Compilation 20 ===
+** cscal   === End of Compilation 21 ===
+** csrot   === End of Compilation 22 ===
+** csscal   === End of Compilation 23 ===
+** cswap   === End of Compilation 24 ===
+** csymm   === End of Compilation 25 ===
+** csyr2k   === End of Compilation 26 ===
+** csyrk   === End of Compilation 27 ===
+** ctbmv   === End of Compilation 28 ===
+** ctbsv   === End of Compilation 29 ===
+** ctpmv   === End of Compilation 30 ===
+** ctpsv   === End of Compilation 31 ===
+** ctrmm   === End of Compilation 32 ===
+** ctrmv   === End of Compilation 33 ===
+** ctrsm   === End of Compilation 34 ===
+** ctrsv   === End of Compilation 35 ===
+** dasum   === End of Compilation 36 ===
+** daxpy   === End of Compilation 37 ===
+** dcabs1   === End of Compilation 38 ===
+** dcopy   === End of Compilation 39 ===
+** ddot   === End of Compilation 40 ===
+** dgbmv   === End of Compilation 41 ===
+** dgemm   === End of Compilation 42 ===
+** dgemv   === End of Compilation 43 ===
+** dger   === End of Compilation 44 ===
+** dnrm2   === End of Compilation 45 ===
+** drot   === End of Compilation 46 ===
+** drotg   === End of Compilation 47 ===
+** drotm   === End of Compilation 48 ===
+** drotmg   === End of Compilation 49 ===
+** dsbmv   === End of Compilation 50 ===
+** dscal   === End of Compilation 51 ===
+** dsdot   === End of Compilation 52 ===
+** dspmv   === End of Compilation 53 ===
+** dspr2   === End of Compilation 54 ===
+** dspr   === End of Compilation 55 ===
+** dswap   === End of Compilation 56 ===
+** dsymm   === End of Compilation 57 ===
+** dsymv   === End of Compilation 58 ===
+** dsyr2   === End of Compilation 59 ===
+** dsyr2k   === End of Compilation 60 ===
+** dsyr   === End of Compilation 61 ===
+** dsyrk   === End of Compilation 62 ===
+** dtbmv   === End of Compilation 63 ===
+** dtbsv   === End of Compilation 64 ===
+** dtpmv   === End of Compilation 65 ===
+** dtpsv   === End of Compilation 66 ===
+** dtrmm   === End of Compilation 67 ===
+** dtrmv   === End of Compilation 68 ===
+** dtrsm   === End of Compilation 69 ===
+** dtrsv   === End of Compilation 70 ===
+** dzasum   === End of Compilation 71 ===
+** dznrm2   === End of Compilation 72 ===
+** icamax   === End of Compilation 73 ===
+** idamax   === End of Compilation 74 ===
+** isamax   === End of Compilation 75 ===
+** izamax   === End of Compilation 76 ===
+** lsame   === End of Compilation 77 ===
+mpixlf77 -c  -O0 -WF,-DMPI -WF,-DTIMER /projects/wall_turb_dd/Nek5000-v17.0/core/3rd_party/dsygv.f -o obj/dsygv.o
+** sasum   === End of Compilation 78 ===
+** saxpy   === End of Compilation 79 ===
+** scasum   === End of Compilation 80 ===
+** scnrm2   === End of Compilation 81 ===
+** scopy   === End of Compilation 82 ===
+** sdot   === End of Compilation 83 ===
+** sdsdot   === End of Compilation 84 ===
+** sgbmv   === End of Compilation 85 ===
+** sgemm   === End of Compilation 86 ===
+** sgemv   === End of Compilation 87 ===
+** sger   === End of Compilation 88 ===
+** snrm2   === End of Compilation 89 ===
+** srot   === End of Compilation 90 ===
+** srotg   === End of Compilation 91 ===
+** srotm   === End of Compilation 92 ===
+** srotmg   === End of Compilation 93 ===
+** ssbmv   === End of Compilation 94 ===
+** sscal   === End of Compilation 95 ===
+** sspmv   === End of Compilation 96 ===
+** sspr2   === End of Compilation 97 ===
+** sspr   === End of Compilation 98 ===
+** sswap   === End of Compilation 99 ===
+** ssymm   === End of Compilation 100 ===
+** ssymv   === End of Compilation 101 ===
+** ssyr2   === End of Compilation 102 ===
+** ssyr2k   === End of Compilation 103 ===
+** ssyr   === End of Compilation 104 ===
+** ssyrk   === End of Compilation 105 ===
+** stbmv   === End of Compilation 106 ===
+** stbsv   === End of Compilation 107 ===
+** stpmv   === End of Compilation 108 ===
+** stpsv   === End of Compilation 109 ===
+** strmm   === End of Compilation 110 ===
+** strmv   === End of Compilation 111 ===
+** strsm   === End of Compilation 112 ===
+** strsv   === End of Compilation 113 ===
+** xerbla   === End of Compilation 114 ===
+** zaxpy   === End of Compilation 115 ===
+** zcopy   === End of Compilation 116 ===
+** zdotc   === End of Compilation 117 ===
+** zdotu   === End of Compilation 118 ===
+** zdrot   === End of Compilation 119 ===
+** zdscal   === End of Compilation 120 ===
+** zgbmv   === End of Compilation 121 ===
+** zgemm   === End of Compilation 122 ===
+** zgemv   === End of Compilation 123 ===
+** zgerc   === End of Compilation 124 ===
+** zgeru   === End of Compilation 125 ===
+** zhbmv   === End of Compilation 126 ===
+** zhemm   === End of Compilation 127 ===
+** zhemv   === End of Compilation 128 ===
+** zher2   === End of Compilation 129 ===
+** zher2k   === End of Compilation 130 ===
+** zher   === End of Compilation 131 ===
+** zherk   === End of Compilation 132 ===
+** zhpmv   === End of Compilation 133 ===
+** zhpr2   === End of Compilation 134 ===
+** zhpr   === End of Compilation 135 ===
+** zrotg   === End of Compilation 136 ===
+** zscal   === End of Compilation 137 ===
+** zswap   === End of Compilation 138 ===
+** zsymm   === End of Compilation 139 ===
+** zsyr2k   === End of Compilation 140 ===
+** zsyrk   === End of Compilation 141 ===
+** ztbmv   === End of Compilation 142 ===
+** ztbsv   === End of Compilation 143 ===
+** ztpmv   === End of Compilation 144 ===
+** ztpsv   === End of Compilation 145 ===
+** ztrmm   === End of Compilation 146 ===
+** ztrmv   === End of Compilation 147 ===
+** ztrsm   === End of Compilation 148 ===
+** ztrsv   === End of Compilation 149 ===
+** dsygv   === End of Compilation 1 ===
+** dsytd2   === End of Compilation 2 ===
+** dsytrd   === End of Compilation 3 ===
+** ieeeck   === End of Compilation 4 ===
+** ilaenv   === End of Compilation 5 ===
+** xlsame   === End of Compilation 6 ===
+** xxerbla   === End of Compilation 7 ===
+** dlae2   === End of Compilation 8 ===
+** dlaev2   === End of Compilation 9 ===
+** dlamch   === End of Compilation 10 ===
+** dlamc1   === End of Compilation 11 ===
+** dlamc2   === End of Compilation 12 ===
+** dlamc3   === End of Compilation 13 ===
+** dlamc4   === End of Compilation 14 ===
+** dlamc5   === End of Compilation 15 ===
+** dlanst   === End of Compilation 16 ===
+** dlansy   === End of Compilation 17 ===
+** dlapy2   === End of Compilation 18 ===
+** dlarfb   === End of Compilation 19 ===
+** dlarf   === End of Compilation 20 ===
+** dlarfg   === End of Compilation 21 ===
+** dlarft   === End of Compilation 22 ===
+** dlartg   === End of Compilation 23 ===
+** dlascl   === End of Compilation 24 ===
+** dlaset   === End of Compilation 25 ===
+** dlasr   === End of Compilation 26 ===
+** dlasrt   === End of Compilation 27 ===
+** dlassq   === End of Compilation 28 ===
+** dlatrd   === End of Compilation 29 ===
+** dorg2l   === End of Compilation 30 ===
+** dorg2r   === End of Compilation 31 ===
+** dorgql   === End of Compilation 32 ===
+** dorgqr   === End of Compilation 33 ===
+** dorgtr   === End of Compilation 34 ===
+** dpotf2   === End of Compilation 35 ===
+** dpotrf   === End of Compilation 36 ===
+** dsteqr   === End of Compilation 37 ===
+** dsterf   === End of Compilation 38 ===
+** dsyev   === End of Compilation 39 ===
+** dsygs2   === End of Compilation 40 ===
+** dsygst   === End of Compilation 41 ===
+`smoothWavyWall.usr' -> `smoothWavyWall.f'
+1501-510  Compilation successful for file dsygv.f.
+1501-510  Compilation successful for file blas.f.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+"/projects/wall_turb_dd/Nek5000-v17.0/core/mxm_std.f", 1500-036 (I) The NOSTRICT option (default at OPT(3)) has the potential to alter the semantics of a program.  Please refer to documentation on the STRICT/NOSTRICT option for more information.
+mpixlf77 -c  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ /projects/wall_turb_dd/vpuri/NekRoutines/post/uplus/smoothWavyWall.f  -o obj/smoothWavyWall.o 
+mpixlf77  -O2 -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg -WF,-DMPI -WF,-DTIMER -I/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus -I/projects/wall_turb_dd/Nek5000-v17.0/core -I./ -o nek5000 obj/smoothWavyWall.o obj/drive.o obj/drive1.o obj/drive2.o obj/plan5.o obj/plan4.o obj/bdry.o obj/coef.o obj/conduct.o obj/connect1.o obj/connect2.o obj/dssum.o obj/edgec.o obj/eigsolv.o obj/gauss.o obj/genxyz.o obj/navier1.o obj/makeq.o obj/navier0.o obj/navier2.o obj/navier3.o obj/navier4.o obj/prepost.o obj/speclib.o obj/map2.o obj/mvmesh.o obj/ic.o obj/gfldr.o obj/ssolv.o obj/planx.o obj/math.o obj/mxm_wrapper.o obj/hmholtz.o obj/gfdm_par.o obj/gfdm_op.o obj/gfdm_solve.o obj/subs1.o obj/subs2.o obj/genbox.o obj/gmres.o obj/hsmg.o obj/convect.o obj/induct.o obj/perturb.o obj/navier5.o obj/navier6.o obj/navier7.o obj/navier8.o obj/fast3d.o obj/fasts.o obj/calcz.o obj/byte.o obj/chelpers.o obj/byte_mpi.o obj/postpro.o obj/intp_usr.o obj/cvode_driver.o obj/nek_comm.o obj/vprops.o obj/makeq_aux.o obj/papi.o obj/nek_in_situ.o obj/reader_rea.o obj/reader_par.o obj/reader_re2.o obj/finiparser.o obj/iniparser.o obj/dictionary.o obj/hpf.o obj/mxm_std.o obj/comm_mpi.o obj/singlmesh.o obj/blas.o obj/dsygv.o -L/projects/wall_turb_dd/Nek5000-v17.0/3rd_party/gslib/lib -lgs 
+
+#############################################################
+#                  Compilation successful!                  #
+#############################################################
+   text	   data	    bss	    dec	    hex	filename
+12464817	2086288	44900972	59452077	38b2aad	nek5000
+
+

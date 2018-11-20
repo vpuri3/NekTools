@@ -1,6 +1,6 @@
-SOURCE_ROOT=/Users/vedantpuri/Nek5000
-FC=mpif77
-FFLAGS=-w -fdefault-real-8 -fdefault-double-8 -cpp
-CC=mpicc
-CFLAGS=-w
-PPLIST= MPI UNDERSCORE TIMER
+SOURCE_ROOT=/projects/wall_turb_dd/Nek5000-v17.0
+FC=mpixlf77
+FFLAGS= -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg
+CC=mpixlc
+CFLAGS=
+PPLIST= MPI TIMER

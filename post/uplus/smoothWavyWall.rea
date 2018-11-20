@@ -142,8 +142,7 @@
    5.00000       5.00000      -2.75000      -2.75000     XFAC,YFAC,XZERO,YZERO
  **MESH DATA** 6 lines are X,Y,Z;X,Y,Z. Columns corners 1-4;5-8
        -8192  3          8192     NELT,NDIM,NELV
-           1  PRESOLVE/RESTART OPTIONS  *****
-restart0.f00001
+           0  PRESOLVE/RESTART OPTIONS  *****
            7          INITIAL CONDITIONS *****
 C Default
 C Default

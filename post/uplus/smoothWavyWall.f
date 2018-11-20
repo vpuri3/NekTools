@@ -104,7 +104,7 @@ c-----------------------------------------------------------------------
 
       real up(lx1,ly1,lz1,lelv)
       real yp(lx1,ly1,lz1,lelv)
-c     call gfldr('restart0.f00001')
+      call gfldr('restart0.f00001')
 
       ifxyo = .true.
       ifto  = .false.

@@ -51,8 +51,8 @@ c
 c     f     = 1
 c     bctyp = 'W  '
 c     nelx  = 16
-c     nelx  = 32
-c     nelx  = 128
+c     nely  = 32
+c     nelz  = 128
 c     idir  = 2
 c     call comp_uplus(upl,ypl,vlx,vly,vlz,f,bctyp,gs_sctr_hndl
 c    $                      ,nelx,nely,nelz,ifld,idir)
@@ -178,7 +178,7 @@ c
           k = 0
           do j2=js2,jf2,jskip2
           do j1=js1,jf1,jskip1
-            k   = k + 1
+            k = k + 1
 c
             n1 = unx(k,1,f,e)      ! face normal X-comp
             n2 = uny(k,1,f,e)      !             Y
@@ -215,9 +215,9 @@ c
             ydrg = ydrg + fTy(j1,j2,1,e)*area(k,1,f,e)
             zdrg = zdrg + fTz(j1,j2,1,e)*area(k,1,f,e)
 c
-c           xdrg = xdrg - n1*pr(j1,j2,1,e)*area(k,1,f,e) ! pressure contribution to drag
-c           ydrg = ydrg - n2*pr(j1,j2,1,e)*area(k,1,f,e)
-c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
+            xdrg = xdrg - n1*pr(j1,j2,1,e)*area(k,1,f,e) ! pressure contribution to drag
+            ydrg = ydrg - n2*pr(j1,j2,1,e)*area(k,1,f,e)
+            zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
 c
           enddo
           enddo
