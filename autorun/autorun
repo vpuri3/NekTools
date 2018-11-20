@@ -4,7 +4,8 @@
 #
 # INPUT: $1: case name
 #        $2: base folder name
-#        $3: # of last completed case
+#        $3: # of last completed job
+#        $4: # of jobs to run
 ##----------------------------------------------------##
 
 case=$1
@@ -21,36 +22,36 @@ dir=$PWD
 log=$dir/run.log
 
 if [ -f $log ]; then
+    echo "moving old log to $log 2"
     mv run.log run.log2
-fi
-
-echo "##############################################" |& tee -a $log
-echo "##############################################" |& tee -a $log
-echo "##############################################" |& tee -a $log
-echo $(date -R)                                       |& tee -a $log
-echo "Starting new session in directory $dir."        |& tee -a $log
-echo "Running case $case from $base$num"              |& tee -a $log
-echo "Storing log in $log"                            |& tee -a $log
-
-for i in {1..2}
-do
-    dir0=$dir/$base$num
-    num=$((num+1))
-    dir1=$dir/$base$num
-
-    echo "#--------------------------------------------#"  |& tee -a $log
-    echo "#------------------ RUN $i -------------------#" |& tee -a $log
-    echo "#--------------------------------------------#"  |& tee -a $log
-    echo $(date -R)                                        |& tee -a $log
+fi						              
+						              
+echo "##############################################"         |& tee -a $log
+echo "##############################################"         |& tee -a $log
+echo "##############################################"         |& tee -a $log
+echo $(date -R)                                               |& tee -a $log
+echo "Starting new session in directory $dir."                |& tee -a $log
+echo "Running case $case from $base$num"                      |& tee -a $log
+echo "Storing log in $log"                                    |& tee -a $log
+							      
+for ((i=1; i<=$4; i++)); do				      
+    dir0=$dir/$base$num					      
+    num=$((num+1))					      
+    dir1=$dir/$base$num					      
+							      
+    echo "#--------------------------------------------#"     |& tee -a $log
+    echo "#------------------ RUN $i -------------------#"    |& tee -a $log
+    echo "#--------------------------------------------#"     |& tee -a $log
+    echo $(date -R)                                           |& tee -a $log
 
 
     if [ ! -f $dir0/$case$rsfx ]; then
-	echo "ABORT: $dir0 does not contain $case$rsfx ."    |& tee -a $log
-	mail -s "$case autorun" $email                               < $log
-	exit
-    elif [ ! -f $dir0/i01$case$bsfx ]; then
-	echo "ABORT: $dir0 does not contain i01$case$bsfx ." |& tee -a $log
-	mail -s "$case autorun" $email                               < $log
+	echo "ABORT: $dir0 does not contain $case$rsfx ."     |& tee -a $log
+	mail -s "$case autorun" $email                                < $log
+	exit						         
+    elif [ ! -f $dir0/i01$case$bsfx ]; then		         
+	echo "ABORT: $dir0 does not contain i01$case$bsfx ."  |& tee -a $log
+	mail -s "$case autorun" $email                                < $log
 	exit
     fi
 
@@ -59,38 +60,42 @@ do
 
     cd  $dir1
 
-    echo "removing old logs and updating restart" |& tee -a $log
-    rm $res *.cobaltlog *.error *.output          |& tee -a $log
-    rm *log* *out*                                |& tee -a $log
-    mv -v $case$rsfx $res                         |& tee -a $log
+    echo "removing old logs and updating restart"             |& tee -a $log
+    rm $res *.cobaltlog *.error *.output                      |& tee -a $log
+    rm *log* *out*                                            |& tee -a $log
+    mv -v $case$rsfx $res                                     |& tee -a $log
 
     if [ ! -f $dir1/$res ]; then
-	echo "ABORT: $res not found in $dir1 ." |& tee -a $log
-	mail -s "$case autorun" $email < $log
-	exit
-    fi
+	echo "ABORT: $res not found in $dir1 ."               |& tee -a $log
+	mail -s "$case autorun" $email                                < $log
+	exit					            
+    fi						            
+						            
+    echo "restarting from $res"                               |& tee -a $log
+    head -c 130 $res                                          |& tee -a $log
+    echo "reading budgets from i##$case$bsfx"                 |& tee -a $log
+    head -c 130 i01$case$bsfx                                 |& tee -a $log
 
-    echo "restarting from $res"               |& tee -a $log
-    head -c 130 $res                          |& tee -a $log
-    echo -e '\n'                              |& tee -a $log
-    echo "reading budgets from i##$case$bsfx" |& tee -a $log
-    head -c 130 i01$case$bsfx                 |& tee -a $log
-    echo -e '\n'                              |& tee -a $log
-
-    echo "compiling..." |& tee -a $log
-    makenek $case        &>>  /dev/null
+    echo "compiling..."                                       |& tee -a $log
+    makenek $case                                              &>> /dev/null
 
     if [ ! -f $dir1/nek5000 ]; then
-	echo "ABORT: compilation failed in $dir1 ." |& tee -a $log
-	echo "Appending compiler.out to run.log ."  |& tee -a $log
-	$dir1/compiler.out                                 >> $log
-	mail -s "$case autorun" $email                      < $log
+	echo "ABORT: compilation failed in $dir1 ."           |& tee -a $log
+	echo "Appending compiler.out to log."                 |& tee -a $log
+	$dir1/compiler.out                                           >> $log
+	mail -s "$case autorun" $email                                < $log
+	exit					       
+    fi						       
+						       
+    echo "compilation successful."                            |& tee -a $log
+    tail -c 300 $dir1/compiler.out                            |& tee -a $log
+    ./my_nekqsub $case $nnodes                                |& tee -a $log
+					                      
+    if [ $? != 0 ]; then		                      
+	echo "ABORT: could not queue job."                    |& tee -a $log
+	mail -s "$case autorun" $email                                < $log
 	exit
     fi
-
-    echo "Compilation Successful." |& tee -a $log
-    tail -c 300 $dir1/compiler.out |& tee -a $log
-    ./my_nekqsub $case $nnodes     |& tee -a $log
  
     cd $dir
 
@@ -99,8 +104,7 @@ do
     echo "successfully queued job"                            |& tee -a $log
     echo "goodnight"                                          |& tee -a $log
     mail -s "$case autorun" $email                                    < $log
-
     sleep 7300
-    echo $(date -R)                            |& tee -a $log
-    echo "long time no see? time for next run" |& tee -a $log
+    echo $(date -R)                                           |& tee -a $log
+    echo "long time no see? time for next run"                |& tee -a $log
 done
