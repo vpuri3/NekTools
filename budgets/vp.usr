@@ -77,6 +77,8 @@ c
       save    gs_avg_hndl
       data    gs_avg_hndl / 0 /
 c
+      logical iifxyo,iifvo,iifpo,iifto ! for outposting
+c
       if(nid.eq.0) write(6,*) 'computing TKE.'
 c
       ntot = nx1*ny1*nz1*nelv
@@ -129,6 +131,16 @@ c
 c
       if(nid.eq.0) write(6,*) 'outposting TKE'
 c
+      iifxyo = ifxyo
+      iifvo  = ifvo
+      iifpo  = ifpo
+      iifto  = ifto
+
+      ifxyo = .true.
+      ifvo  = .true.
+      ifpo  = .true.
+      ifto  = .true.
+c
       call outpost2(cnk,prk,ptk,pdk,psk,1,'bb1')
       call outpost2(tdk,epk,vdk,tke,ppp,1,'bb2')
 c
@@ -142,6 +154,12 @@ c     epk      ! TKE viscous dissipation
 c     vdk      ! TKE viscous diffusion
 c     tke      ! TKE sum
 c     ppp      ! pres(transp - (diff + strain))
+c
+      ifxyo = iifxyo
+      ifvo  = iifvo
+      ifpo  = iifpo
+      ifto  = iifto
+c
 
       return
       end
