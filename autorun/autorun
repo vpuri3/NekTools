@@ -83,7 +83,7 @@ for ((i=1; i<=$4; i++)); do
 						       
     echo "compilation successful."                            |& tee -a $log
     tail -c 300 $dir1/compiler.out                            |& tee -a $log
-    ./my_nekqsub $case $nnodes                                |& tee -a $log
+    ./my_nekqsub $case $nnodes                                      2>> $log
 					                      
     if [ $? != 0 ]; then		                      
 	echo "ABORT: could not queue job."                    |& tee -a $log
