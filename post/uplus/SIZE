@@ -10,14 +10,14 @@ c
 
       ! BASIC
       parameter (ldim=3)               ! domain dimension (2 or 3)
-      parameter (lx1=4)                ! p-order (avoid uneven and values <6)
+      parameter (lx1=6)                ! p-order (avoid uneven and values <6)
       parameter (lxd=lx1)              ! p-order for over-integration (dealiasing) 
       parameter (lx2=lx1-0)            ! p-order for pressure (lx1 or lx1-2)
-                                     
-      parameter (lelg=8192)            ! max total number of elements
-      parameter (lpmin=64)             ! min MPI ranks
+                                       
+      parameter (lelg=2048)            ! max total number of elements
+      parameter (lpmin=1)              ! min MPI ranks
       parameter (lpmax=lelg)           ! max MPI ranks
-      parameter (ldimt=3)              ! max auxiliary fields (temperature + scalars)
+      parameter (ldimt=1)              ! max auxiliary fields (temperature + scalars)
 
       ! OPTIONAL
       parameter (lhis=100)             ! max history points
@@ -26,7 +26,7 @@ c
       parameter (toteq=5)              ! max number of conserved scalars in cmt
       parameter (nsessmax=2)           ! max sessions
       parameter (lxo=lx1)              ! max grid size on output (lxo>=lx1)
-      parameter (lelx=32,lely=8,lelz=16) ! global tensor mesh dimensions
+      parameter (lelx=1,lely=1,lelz=1) ! global tensor mesh dimensions
       parameter (mxprev=2,lgmres=4)  ! max dim of projection & Krylov space
       parameter (lorder=3)             ! max order in time
 

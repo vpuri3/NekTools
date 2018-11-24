@@ -18,16 +18,16 @@
  Number of processors:            4
  REAL    wdsize      :            8
  INTEGER wdsize      :            4
- Timer accuracy      : 1.67E-07
+ Timer accuracy      : 1.43E-07
   
  Reading /homes/vpuri/uplus/chk/smoothWavyWall.rea                                                                                           
  WARNING: lgmres might be too low!
  mapping elements to processors
  Reading /homes/vpuri/uplus/chk/smoothWavyWall.map                                                                                           
             0          250          250         1000         1000  NELV
-            1          250          250         1000         1000  NELV
-            2          250          250         1000         1000  NELV
+             2          250          250         1000         1000  NELV
             3          250          250         1000         1000  NELV
+           1          250          250         1000         1000  NELV
  RANK     0 IEG     501     502     503     504     505     506     507     508
                     509     510     511     512     513     514     515     516
                     517     518     519     520     521     522     523     524
@@ -62,7 +62,7 @@
                     949     950
   
  element load imbalance:             0          250          250
- done :: mapping   0.82645E-02 sec
+ done :: mapping   0.92931E-02 sec
 
   
             0  objects found
@@ -92,7 +92,7 @@
  101      1.00000     p101 Number of additional modes to filter
  103      0.01        p103 weight of stabilizing filter (.01)
   
- done :: read .rea file   0.35020E-01 sec
+ done :: read .rea file   0.37145E-01 sec
 
  nelgt/nelgv/lelt:        1000        1000        2052
  lx1  /lx2  /lx3 :           6           6           6
@@ -104,13 +104,13 @@
  done :: usrsetvert
 
 gs_setup: 5151 unique labels shared
-   pairwise times (avg, min, max): 5.69522e-05 5.53131e-05 5.86748e-05
-   crystal router                : 6.6936e-05 6.62088e-05 6.7687e-05
-   all reduce                    : 0.000144178 0.000143647 0.000144696
+   pairwise times (avg, min, max): 5.25653e-05 5.07832e-05 5.52654e-05
+   crystal router                : 6.07371e-05 6.00576e-05 6.14166e-05
+   all reduce                    : 0.000141203 0.000139999 0.000142741
    used all_to_all method: pairwise
    handle bytes (avg, min, max): 446068 446068 446068
    buffer bytes (avg, min, max): 43248 43248 43248
-   setupds time 2.9733E-02 seconds   0  6       68651        1000
+   setupds time 2.9582E-02 seconds   0  6       68651        1000
             8  max multiplicity
  done :: setup mesh topology
   
@@ -184,23 +184,23 @@ gs_setup: 5151 unique labels shared
 gridpoints unique/tot:        132651       216000
   dofs:                   127449                   122451
   
- Initialization successfully completed   0.58494     sec
+ Initialization successfully completed   0.60757     sec
 
  nsteps=0 -> skip time loop
  running solver in post processing mode
 
  call userchk
  in comp_uplus(...)
- area     is    1.026060630426849     
- xdrag    is   0.4000000000000095     
- ydrag    is   1.7747420369847655E-015
- zdrag    is   4.3502025268438609E-017
- drag mag is   0.4000000000000095     
+ area     is    1.000000000000005     
+ xdrag    is   6.8757885568101407E-015
+ ydrag    is    0.000000000000000     
+ zdrag    is    0.000000000000000     
+ drag mag is   6.8757885568101407E-015
  y_sctr
 gs_setup: 3600 unique labels shared
-   pairwise times (avg, min, max): 2.39193e-05 2.28405e-05 2.53439e-05
-   crystal router                : 2.69592e-05 2.64645e-05 2.77042e-05
-   all reduce                    : 0.000123006 0.000122309 0.000123739
+   pairwise times (avg, min, max): 1.51753e-05 1.22547e-05 1.80483e-05
+   crystal router                : 2.07663e-05 1.98841e-05 2.16961e-05
+   all reduce                    : 0.000111169 0.000110483 0.000112176
    used all_to_all method: pairwise
    handle bytes (avg, min, max): 248608 245008 252208
    buffer bytes (avg, min, max): 14400 14400 14400
@@ -211,7 +211,7 @@ gs_setup: 3600 unique labels shared
 
         0  0.0000E+00 done :: Write checkpoint
                               file size =      5.8    MB
-                              avg data-throughput =    46.7MB/s
+                              avg data-throughput =    31.8MB/s
                               io-nodes =     4
 
 
@@ -221,7 +221,7 @@ gs_setup: 3600 unique labels shared
 
         0  0.0000E+00 done :: Write checkpoint
                               file size =      5.8    MB
-                              avg data-throughput =    41.5MB/s
+                              avg data-throughput =    51.4MB/s
                               io-nodes =     4
 
 
@@ -231,21 +231,21 @@ gs_setup: 3600 unique labels shared
 
         0  0.0000E+00 done :: Write checkpoint
                               file size =      5.0    MB
-                              avg data-throughput =    58.6MB/s
+                              avg data-throughput =    37.1MB/s
                               io-nodes =     4
 
- error s1   5.5067062021407764E-014
+ error s1   4.9293902293356950E-014
  error s2    0.000000000000000     
  error s3    0.000000000000000     
- error s4   3.5563990664342136E-014
+ error s4   3.4283687000425410E-014
  error s5    0.000000000000000     
- error s6   3.4283687000425435E-014
- max error in x-shear is    7.9714013168086240E-014
- max error in y-shear is    2.2589630545277737E-014
- max error in z-shear is    2.6716302920809976E-014
- max error in x-normal is    5.2180482157382357E-015
- max error in y-normal is    1.9984014443252818E-015
- max error in z-normal is    7.7211019359624297E-015
+ error s6   3.4283687000425315E-014
+ max error in x-shear is    7.3132236799137303E-014
+ max error in y-shear is     0.000000000000000     
+ max error in z-shear is     0.000000000000000     
+ max error in x-normal is     0.000000000000000     
+ max error in y-normal is     0.000000000000000     
+ max error in z-normal is     0.000000000000000     
  done :: userchk
 
         0  0.0000E+00 Write checkpoint
@@ -254,16 +254,16 @@ gs_setup: 3600 unique labels shared
 
         0  0.0000E+00 done :: Write checkpoint
                               file size =      5.8    MB
-                              avg data-throughput =    34.2MB/s
+                              avg data-throughput =    40.2MB/s
                               io-nodes =     4
 
   
 run successful: dying ...
   
   
-total elapsed time             :   1.27515E+00 sec
+total elapsed time             :   1.35237E+00 sec
 total solver time w/o IO       :   0.00000E+00 sec
 time/timestep                  :   0.00000E+00 sec
 avg throughput per timestep    :   0.00000E+00 gridpts/CPUs
-total max memory usage         :   1.59794E+00 GB
+total max memory usage         :   1.59832E+00 GB
 

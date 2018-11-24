@@ -15,8 +15,8 @@ smoothWavyWall.rea
 #=======================================================================
 #
 Box
--32 -16 -16                                       nelx,nely,nelz for Box
+-10 -10 -10                                       nelx,nely,nelz for Box
 0. 1. 1.                                          x0,x1,gain  (rescaled in usrdat)
-0. 1. 1.					  y0,y1,gain
+0. 1. 1.                                          y0,y1,gain
 0. 1. 1.                                          z0,z1,gain
-p  ,p  ,W  ,W  ,p  ,p  ,                          bc's  (3 chars each!)
+O  ,O  ,W  ,W  ,O  ,O  ,                          bc's  (3 chars each!)

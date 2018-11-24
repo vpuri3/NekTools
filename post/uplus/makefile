@@ -1,23 +1,23 @@
-### makefile automatically created by makenek 11/20/2018 16:51:18 ###
+### makefile automatically created by makenek 11/23/2018 22:44:58 ###
 BINNAME=nek5000
 LIBNAME=libnek5000.a
 CASENAME:=smoothWavyWall
-CASEDIR:=/projects/wall_turb_dd/vpuri/NekRoutines/post/uplus
-S:=/projects/wall_turb_dd/Nek5000-v17.0/core
-SCMT:=/projects/wall_turb_dd/Nek5000-v17.0/core/cmt
+CASEDIR:=/homes/vpuri/uplus/chk
+S:=/homes/vpuri/Nek5000/core
+SCMT:=/homes/vpuri/Nek5000/core/cmt
 OPT_INCDIR=./
 OBJDIR=obj
 MPI:=1
 CMT:=0
 NEKNEK:=0
-FC:=mpixlf77
-CC:=mpixlc
-FFLAGS:= -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg
+FC:=mpif77
+CC:=mpicc
+FFLAGS:= -r8 -Mpreprocess
 CFLAGS:=
-PPPO=-WF,
-PPS= MPI TIMER
+PPPO=
+PPS= MPI UNDERSCORE TIMER
 USR:=
-USR_LFLAGS:= -L/projects/wall_turb_dd/Nek5000-v17.0/3rd_party/gslib/lib -lgs
+USR_LFLAGS:= -L/homes/vpuri/Nek5000/3rd_party/gslib/lib -lgs
 VISIT:=0
 VISIT_IFLAGS=
 VISIT_LFLAGS=

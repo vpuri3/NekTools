@@ -12,6 +12,12 @@ C     - userq  : local source term for scalars
 C     - userchk: general purpose routine for checking errors etc.
 C
 C-----------------------------------------------------------------------
+#define PI (4.*atan(1.))
+#define DELTA 0.1
+#define XLEN 1.
+#define YLEN 1.
+#define ZLEN 1.
+C-----------------------------------------------------------------------
       include 'uplus.usr'
 C-----------------------------------------------------------------------
       subroutine uservp(ix,iy,iz,eg) ! set variable properties
@@ -83,10 +89,13 @@ c-----------------------------------------------------------------------
       include 'TOTAL'
       include 'NEKUSE'
 
-      ux   = 1.0
-      uy   = 0.0
-      uz   = 0.0
-      temp = 0.0
+      integer idum
+      save    idum 
+      data    idum / 0 /
+
+      ux = x*x*x
+      uy = 0
+      uz = 0
 
       return
       end
@@ -95,30 +104,176 @@ c-----------------------------------------------------------------------
       include 'SIZE'
       include 'TOTAL'
 
-      integer f,idir
+      parameter(lxyz = lx1*ly1*lz1)
+      parameter(nxzf = 2*ldim)
+c
+      real upl(lx1,ly1,lz1,lelv)
+      real ypl(lx1,ly1,lz1,lelv)
+      integer f,ifld,idir
       character*3 bctyp
+c 
+      integer gs_sctr_hndl
+      save    gs_sctr_hndl
+      data    gs_sctr_hndl / 0 /
+c
+      common /uplus/ fTx(lx1,ly1,lz1,lelv) ! shear stress X-comp
+     $             , fTy(lx1,ly1,lz1,lelv) !              Y   
+     $             , fTz(lx1,ly1,lz1,lelv) !              Z
+     $             , fTm(lx1,ly1,lz1,lelv) !              Mag    
+     $             , fNx(lx1,ly1,lz1,lelv) ! face normal  X-comp
+     $             , fNy(lx1,ly1,lz1,lelv) !              Y
+     $             , fNz(lx1,ly1,lz1,lelv) !              Z 
+c
+     $             , volTx(lx1,ly1,lz1,lelv)
+     $             , volTy(lx1,ly1,lz1,lelv)
+     $             , volTz(lx1,ly1,lz1,lelv)
+     $             , volTm(lx1,ly1,lz1,lelv)
+     $             , volNx(lx1,ly1,lz1,lelv)
+     $             , volNy(lx1,ly1,lz1,lelv)
+     $             , volNz(lx1,ly1,lz1,lelv)
+c
+     $             , utan(lx1,ly1,lz1,lelv) ! tangential velocity mag
+     $             , unor(lx1,ly1,lz1,lelv) ! normal     velocity mag
+     $             , d2f (lx1,ly1,lz1,lelv) ! distance to face
+c
+      common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz)
+     $             , vr(lxyz),vs(lxyz),vt(lxyz)
+     $             , wr(lxyz),ws(lxyz),wt(lxyz)
 
-      integer gs_avg_hndl
-      save    gs_avg_hndl
-      data    gs_avg_hndl / 0 /
-
-      real up(lx1,ly1,lz1,lelv)
-      real yp(lx1,ly1,lz1,lelv)
-      call gfldr('restart0.f00001')
-
-      ifxyo = .true.
-      ifto  = .false.
+      real sij(lx1,ly1,lz1,nxzf,lelv) ! strain rate tensor
+c
+ccccccccccccccccccccccc
+      integer n,nxzf,e,i,j
+      real n1,n2,n3,x,y,z,tmp,t1,t2,t3,dsty,vsc
+      real s1(lx1,ly1,lz1,lelv)
+     $    ,s2(lx1,ly1,lz1,lelv)
+     $    ,s3(lx1,ly1,lz1,lelv)
+     $    ,s4(lx1,ly1,lz1,lelv)
+     $    ,s5(lx1,ly1,lz1,lelv)
+     $    ,s6(lx1,ly1,lz1,lelv)
+ccccccccccccccccccccccc
 
       f     = 1
       bctyp = 'W  '
-      nelx = 32
-      nely = 16
-      nelz = 16
-      ifld = 1  !velocity field
-      idir = 2  !y_direction
- 
-      call comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_avg_hndl
-     $                  ,nelx,nely,nelz,ifld,idir)
+      nelx  = 10
+      nely  = 10
+      nelz  = 10
+      ifld  = 1
+      idir  = 2
+c
+      call comp_uplus(upl,ypl,vx,vy,vz,f,bctyp,gs_sctr_hndl
+     $                      ,nelx,nely,nelz,ifld,idir)
+
+cccccccccccccccccccccccccccccc
+c     checking normal and shear stress
+cccccccccccccccccccccccccccccc
+      dsty = param(1)
+      vsc  = param(2)
+      n    = lx1*ly1*lz1*nelv
+c
+      call rzero(sij,n*nxzf)
+      call comp_sij(sij,nxzf,vx,vy,vz,ur,us,ut,vr,vs,vt,wr,ws,wt)
+c
+      do e=1,nelv
+         do i=1,lx1*ly1*lz1
+            x = xm1(1,1,i,e)
+            y = ym1(1,1,i,e)
+            z = zm1(1,1,i,e)
+c
+            s1(1,1,i,e) = 6*x*x
+            s2(1,1,i,e) = 0
+            s3(1,1,i,e) = 0
+            s4(1,1,i,e) = 0
+            s5(1,1,i,e) = 0
+            s6(1,1,i,e) = 0
+c
+            s1(1,1,i,e) = abs(sij(1,1,i,1,e)- s1(1,1,i,e)*vsc) ! 2dudx
+            s2(1,1,i,e) = abs(sij(1,1,i,2,e)- s2(1,1,i,e)*vsc) ! 2dvdy
+            s3(1,1,i,e) = abs(sij(1,1,i,3,e)- s3(1,1,i,e)*vsc) ! 2dwdz
+            s4(1,1,i,e) = abs(sij(1,1,i,4,e)- s4(1,1,i,e)*vsc) ! u_y + v_x
+            s5(1,1,i,e) = abs(sij(1,1,i,5,e)- s5(1,1,i,e)*vsc) ! v_z + w_y
+            s6(1,1,i,e) = abs(sij(1,1,i,6,e)- s6(1,1,i,e)*vsc) ! u_z + w_x
+         enddo
+      enddo
+
+      do e=1,nelv
+        if (cbc(f,e,ifld).eq.bctyp) then
+          iface  = eface1(f)   ! surface to volume shifts
+          js1    = skpdat(1,iface)
+          jf1    = skpdat(2,iface)
+          jskip1 = skpdat(3,iface)
+          js2    = skpdat(4,iface)
+          jf2    = skpdat(5,iface)
+          jskip2 = skpdat(6,iface)
+
+          k = 0
+          do j2=js2,jf2,jskip2
+          do j1=js1,jf1,jskip1
+            k = k + 1
+c
+            x = xm1(k,1,f,e)
+            y = ym1(k,1,f,e)
+            z = zm1(k,1,f,e)
+c
+            n1 = unx(k,1,f,e)
+            n2 = uny(k,1,f,e)
+            n3 = unz(k,1,f,e)
+c
+            t1 = 6*x*x*n1
+            t2 = 0
+            t3 = 0
+c
+            t1 = -t1*vsc
+            t2 = -t2*vsc
+            t3 = -t3*vsc
+c
+            tmp = 1 + ssx(x,DELTA)**2
+            tmp = sqrt(tmp)
+            n1 = ssx(x,DELTA)/tmp
+            n2 = -1.0        /tmp
+            n3 =  0.0
+c
+            fTx(j1,j2,1,e) = abs(fTx(j1,j2,1,e) - t1)
+            fTy(j1,j2,1,e) = abs(fTy(j1,j2,1,e) - t2)
+            fTz(j1,j2,1,e) = abs(fTz(j1,j2,1,e) - t3)
+c
+            fNx(j1,j2,1,e) = abs(fNx(j1,j2,1,e) - n1)
+            fNy(j1,j2,1,e) = abs(fNy(j1,j2,1,e) - n2)
+            fNz(j1,j2,1,e) = abs(fNz(j1,j2,1,e) - n3)
+c
+          enddo
+          enddo
+
+        endif
+      enddo
+
+      tmp = glmax(s1,n)
+      if(nid.eq.0) write(6,*) "error s1", tmp
+      tmp = glmax(s2,n)
+      if(nid.eq.0) write(6,*) "error s2", tmp
+      tmp = glmax(s3,n)
+      if(nid.eq.0) write(6,*) "error s3", tmp
+      tmp = glmax(s4,n)
+      if(nid.eq.0) write(6,*) "error s4", tmp
+      tmp = glmax(s5,n)
+      if(nid.eq.0) write(6,*) "error s5", tmp
+      tmp = glmax(s6,n)
+      if(nid.eq.0) write(6,*) "error s6", tmp
+c
+      tmp = glmax(fTx,n)
+      if(nid.eq.0) write(6,*) "max error in x-shear is ", tmp
+      tmp = glmax(fTy,n)
+      if(nid.eq.0) write(6,*) "max error in y-shear is ", tmp
+      tmp = glmax(fTz,n)
+      if(nid.eq.0) write(6,*) "max error in z-shear is ", tmp
+c
+      tmp = glmax(fNx,n)
+      if(nid.eq.0) write(6,*) "max error in x-normal is ", tmp
+      tmp = glmax(fNy,n)
+      if(nid.eq.0) write(6,*) "max error in y-normal is ", tmp
+      tmp = glmax(fNz,n)
+      if(nid.eq.0) write(6,*) "max error in z-normal is ", tmp
+
 
       return
       end
@@ -127,6 +282,31 @@ c-----------------------------------------------------------------------
       include 'SIZE'
       include 'TOTAL'
 
+      common /cdsmag/ ediff(lx1,ly1,lz1,lelv)
+
+      n=8*nelv
+      xmin = glmin(xc,n)
+      xmax = glmax(xc,n)
+      ymin = glmin(yc,n)
+      ymax = glmax(yc,n)
+      zmin = glmin(zc,n)
+      zmax = glmax(zc,n)
+
+      xscale = XLEN/(xmax-xmin)
+      yscale = YLEN/(ymax-ymin)
+      zscale = ZLEN/(zmax-zmin)
+
+      do i=1,n
+         xc(i,1) = xscale*xc(i,1)
+         yc(i,1) = yscale*yc(i,1)
+         zc(i,1) = zscale*zc(i,1)
+      enddo
+
+      ! element vertices unchanged since XLEN = (xmax-xmin) = 1
+
+      n = nx1*ny1*nz1*nelt 
+      call cfill(ediff,param(2),n)  ! initialize viscosity
+
       return
       end
 c-----------------------------------------------------------------------
@@ -134,49 +314,24 @@ c-----------------------------------------------------------------------
       include 'SIZE'
       include 'TOTAL'
 
-!..   declare some local variables
-      REAL*8 lambda
+       nt = nx1*ny1*nz1*nelt
+ 
+       call rescale_x(xm1, 0.0, 1.0)
+       call rescale_x(ym1, 0.0, 1.0)
+       call rescale_x(zm1, 0.0, 1.0)
+       ! box \vect{x} \in [0,1]^3
 
-      n = nx1*ny1*nz1*nelt
-
-!..   the geometry fot this domain is taken from the paper by Maass & Schumann
-!..   (Ref.: http://elib.dlr.de/31857/1/94-Maass.pdf)
-      delta  = 2.54         !.. this is the height of the crest of the wavy wall
-      lambda = 20.0*delta   !.. this is the wavelength of the wavy wall (in mm)
-      hmax   = lambda       !.. depth of the domain in mm
-
-      domainLength = 4.0*lambda
-      xStartDomain = 0.0
-      xEndDomain   = domainLength
-
-      domainHeight = 1.0*lambda
-      yStartDomain = 0.0
-      yEndDomain   = ( delta + domainHeight )
-
-      domainSpan   = 2.0*lambda
-      zStartDomain = 0.0
-      zEndDomain   = domainSpan
-
-      call rescale_x(xm1, xStartDomain, xEndDomain)
-      call rescale_x(ym1, yStartDomain, yEndDomain)
-      call rescale_x(zm1, zStartDomain, zEndDomain)
-
-      n = nx1*ny1*nz1*nelt
-      do i=1,n
-        x  = xm1(i,1,1,1)
-        y  = ym1(i,1,1,1)
-
-        yw = bottomSWW(x, delta, lambda)
-
-        yy = (1. - yw/yEndDomain)*y + yw	! 0->yw & ymax=fix
-
-        ym1(i,1,1,1) = yy 
-      enddo
-
-      scale = 1./hmax			! scale by the depth of the domain (hmax)
-      call rescale_x(xm1, xStartDomain*scale, xEndDomain*scale)
-      call rescale_x(ym1, yStartDomain*scale, yEndDomain*scale)
-      call rescale_x(zm1, zStartDomain*scale, zEndDomain*scale)
+       del = 0.2
+       do i=1,nt
+         x  = xm1(i,1,1,1)
+         y  = ym1(i,1,1,1)
+         z  = zm1(i,1,1,1)
+ 
+         yw = ss(x,DELTA)
+ 
+         yy = (1. - yw/1.0)*y + yw
+         ym1(i,1,1,1) = yy
+       enddo
 
       return
       end
@@ -187,36 +342,23 @@ c-----------------------------------------------------------------------
 
       return
       end
-C=======================================================================
-      function y_lower_lift(x,xmax)	! lift from y=0 for 0<x<xmax
-					! periodic for P BC
-      amp = 1.e-4
-      amp = 0.1
+c-----------------------------------------------------------------------
+      function ss(x,d)          ! bottom surface y = ss(x,d)
 
-      one = 1.
-      pi2 = 8.*atan(one)
-
-      xx  = x/xmax
-      yy  = cos(pi2*xx)
-      yy  = amp*yy
-
-      y_lower_lift = yy
+      ss = 1.0 - (2.0*x-1.0)**2
+      ss = ss*d
 
       return
       end
 c-----------------------------------------------------------------------
-      FUNCTION bottomSWW(x,delta,alambda)
+      function ssx(x,d)          ! d(ss)/dx
 
-      ONE = 1.0
-      PI  = 4.0*ATAN(ONE)
-
-      y   = delta*COS(2.0*PI*x/alambda)
-
-      bottomSWW = y
+      ssx = -4.0*(2.0*x-1)
+      ssx = ssx*d
 
       return
-      END
-c-----------------------------------------------------------------------
+      end
+C=======================================================================
 
 c automatically added by makenek
       subroutine usrsetvert(glo_num,nel,nx,ny,nz) ! to modify glo_num

@@ -1,6 +1,6 @@
-SOURCE_ROOT=/projects/wall_turb_dd/Nek5000-v17.0
-FC=mpixlf77
-FFLAGS= -qrealsize=8 -qdpc=e -qsuffix=cpp=f -qsuppress=cmpmsg
-CC=mpixlc
+SOURCE_ROOT=/homes/vpuri/Nek5000
+FC=mpif77
+FFLAGS= -r8 -Mpreprocess
+CC=mpicc
 CFLAGS=
-PPLIST= MPI TIMER
+PPLIST= MPI UNDERSCORE TIMER
