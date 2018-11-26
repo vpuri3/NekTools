@@ -214,35 +214,43 @@ c
           do j1=js1,jf1,jskip1
             k = k + 1
 c
-            x = xm1(k,1,f,e)
-            y = ym1(k,1,f,e)
-            z = zm1(k,1,f,e)
-c
-            n1 = unx(k,1,f,e)
-            n2 = uny(k,1,f,e)
-            n3 = unz(k,1,f,e)
-c
-            s11 = sij(j1,j2,1,1,e)
-            s21 = sij(j1,j2,1,4,e)
-            s31 = sij(j1,j2,1,6,e)
-c
-            s12 = sij(j1,j2,1,4,e)
-            s22 = sij(j1,j2,1,2,e)
-            s32 = sij(j1,j2,1,5,e)
-c
-            s13 = sij(j1,j2,1,6,e)
-            s23 = sij(j1,j2,1,5,e)
-            s33 = sij(j1,j2,1,3,e)
-c
-            t1 = -(s11*n1 + s12*n2 + s13*n3)*vsc*dsty
-            t2 = -(s21*n1 + s22*n2 + s23*n3)*vsc*dsty
-            t3 = -(s31*n1 + s32*n2 + s33*n3)*vsc*dsty
+            x = xm1(j1,j2,1,e)
+            y = ym1(j1,j2,1,e)
+            z = zm1(j1,j2,1,e)
 c
             tmp = 1 + ssx(x,DELTA)**2
             tmp = sqrt(tmp)
             n1 = ssx(x,DELTA)/tmp
             n2 = -1.0        /tmp
             n3 =  0.0
+c
+            s11 = sij(j1,j2,1,1,e) ! s1
+            s21 = sij(j1,j2,1,4,e) ! s4
+            s31 = sij(j1,j2,1,6,e) ! s6
+c
+            s12 = sij(j1,j2,1,4,e) ! s4
+            s22 = sij(j1,j2,1,2,e) ! s2
+            s32 = sij(j1,j2,1,5,e) ! s5
+c
+            s13 = sij(j1,j2,1,6,e) ! s6
+            s23 = sij(j1,j2,1,5,e) ! s5
+            s33 = sij(j1,j2,1,3,e) ! s3
+cccccccccccccccccc
+            s11 = 0.0 
+            s21 = 2*y
+            s31 = 0.0 
+c
+            s12 = 2*y
+            s22 = 0.0 
+            s32 = 0.0 
+c
+            s13 = 0.0 
+            s23 = 0.0 
+            s33 = 0.0 
+c
+            t1 = -(s11*n1 + s12*n2 + s13*n3)*vsc*dsty
+            t2 = -(s21*n1 + s22*n2 + s23*n3)*vsc*dsty
+            t3 = -(s31*n1 + s32*n2 + s33*n3)*vsc*dsty
 c
             fTx(j1,j2,1,e) = abs(fTx(j1,j2,1,e) - t1)
             fTy(j1,j2,1,e) = abs(fTy(j1,j2,1,e) - t2)
