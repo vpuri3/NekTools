@@ -1,8 +1,8 @@
-### makefile automatically created by makenek 11/23/2018 22:44:58 ###
+### makefile automatically created by makenek 11/26/2018 03:33:55 ###
 BINNAME=nek5000
 LIBNAME=libnek5000.a
 CASENAME:=smoothWavyWall
-CASEDIR:=/homes/vpuri/uplus/chk
+CASEDIR:=/homes/vpuri/NekRoutines/post/uplus
 S:=/homes/vpuri/Nek5000/core
 SCMT:=/homes/vpuri/Nek5000/core/cmt
 OPT_INCDIR=./

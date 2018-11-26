@@ -13,7 +13,7 @@ C     - userchk: general purpose routine for checking errors etc.
 C
 C-----------------------------------------------------------------------
 #define PI (4.*atan(1.))
-#define DELTA 0.1
+#define DELTA 0.2
 #define XLEN 1.
 #define YLEN 1.
 #define ZLEN 1.
@@ -93,7 +93,7 @@ c-----------------------------------------------------------------------
       save    idum 
       data    idum / 0 /
 
-      ux = x*x*x
+      ux = y*y
       uy = 0
       uz = 0
 
@@ -145,6 +145,9 @@ c
 ccccccccccccccccccccccc
       integer n,nxzf,e,i,j
       real n1,n2,n3,x,y,z,tmp,t1,t2,t3,dsty,vsc
+      real s11,s12,s13
+      real s21,s22,s23
+      real s31,s32,s33
       real s1(lx1,ly1,lz1,lelv)
      $    ,s2(lx1,ly1,lz1,lelv)
      $    ,s3(lx1,ly1,lz1,lelv)
@@ -180,10 +183,10 @@ c
             y = ym1(1,1,i,e)
             z = zm1(1,1,i,e)
 c
-            s1(1,1,i,e) = 6*x*x
+            s1(1,1,i,e) = 0
             s2(1,1,i,e) = 0
             s3(1,1,i,e) = 0
-            s4(1,1,i,e) = 0
+            s4(1,1,i,e) = 2*y
             s5(1,1,i,e) = 0
             s6(1,1,i,e) = 0
 c
@@ -219,13 +222,21 @@ c
             n2 = uny(k,1,f,e)
             n3 = unz(k,1,f,e)
 c
-            t1 = 6*x*x*n1
-            t2 = 0
-            t3 = 0
+            s11 = sij(j1,j2,1,1,e)
+            s21 = sij(j1,j2,1,4,e)
+            s31 = sij(j1,j2,1,6,e)
 c
-            t1 = -t1*vsc
-            t2 = -t2*vsc
-            t3 = -t3*vsc
+            s12 = sij(j1,j2,1,4,e)
+            s22 = sij(j1,j2,1,2,e)
+            s32 = sij(j1,j2,1,5,e)
+c
+            s13 = sij(j1,j2,1,6,e)
+            s23 = sij(j1,j2,1,5,e)
+            s33 = sij(j1,j2,1,3,e)
+c
+            t1 = -(s11*n1 + s12*n2 + s13*n3)*vsc*dsty
+            t2 = -(s21*n1 + s22*n2 + s23*n3)*vsc*dsty
+            t3 = -(s31*n1 + s32*n2 + s33*n3)*vsc*dsty
 c
             tmp = 1 + ssx(x,DELTA)**2
             tmp = sqrt(tmp)
