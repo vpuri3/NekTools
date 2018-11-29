@@ -245,20 +245,16 @@ c
       call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
       if(ifplnr) then
-         if(nid.eq.0) write(6,*) "averaging in direction ", idri2
+       if(nid.eq.0) write(6,*) "averaging in direction ", idri2
 c
-         call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                           ,idir2)
-         call plane_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                           ,idir2)
-         call plane_avg_tensor(uza,uz,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                           ,idir2)
-         call plane_avg_tensor(pra,pr,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                           ,idir2)
-         call plane_avg_tensor(Tma,volTm,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                           ,idir2)
-         call plane_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                           ,idir2)
+       call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call plane_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call plane_avg_tensor(uza,uz,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call plane_avg_tensor(pra,pr,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call plane_avg_tensor(Tma,volTm,gs_hndl2,nelx,nely,nelz,ifld
+     $                                                          ,idir2)
+       call plane_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
+     $                                                          ,idir2)
       else
          call copy(uxa,ux,n)
          call copy(uya,uy,n)
