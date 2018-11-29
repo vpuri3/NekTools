@@ -95,7 +95,7 @@ for ((i=1; i<=$4; i++)); do
     echo "successfully queued job"                            |& tee -a $log
 
     sleep 60
-    while [ ! -f $dir1/*output ]; do
+    while [ ! -f $dir1/logfile ]; do
 	echo $(date -R)                                       |& tee -a $log
 	echo "waiting in queue"                               |& tee -a $log
 	qstat --header JobId:RunTime:State:Location -u $uname |& tee -a $log
@@ -105,11 +105,11 @@ for ((i=1; i<=$4; i++)); do
     echo "job is running"                                     |& tee -a $log
  
     sleep 300
-    dead=$(tail *.output)
+    dead=$(tail logfile)
     if echo $dead | grep -Fq "dying"; then
 	echo "ABORT: job died before its time."               |& tee -a $log
 	echo "appending tail of logfile to run.log"           |& tee -a $log
-	tail -c 1000 $dir1/*output                                   >> $log
+	tail -c 1000 $dir1/logfile                                   >> $log
 	send_log
 	exit 1
     fi
