@@ -232,7 +232,7 @@ c-----------------------------------------------------------------------
       call scttr(d,dd,f,bctyp,gs_sctr_hndl,nelx,nely,nelz,ifld,idir)
 
       do i=1,n
-         d(i,1,1,1) = abs( d(i,1,1,1)-dd(i,1,1,1) )
+         d(i,1,1,1) = abs(dd(i,1,1,1)-d(i,1,1,1))
       enddo
 
       return

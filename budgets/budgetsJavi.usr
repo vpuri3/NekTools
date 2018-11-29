@@ -1813,7 +1813,7 @@ c      call col2  (pudxavg,vmult,nglob1)
         time=atime
 
      
-   !Average Convection
+c  !Average Convection
 c     call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
 c     call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
 c
