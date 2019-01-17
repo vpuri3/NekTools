@@ -3,22 +3,28 @@
 # runs nek cases every 7300 seconds.
 #
 # INPUT: $1: case name
-#        $2: base folder name
+#        $2: folder base name
 #        $3: # of last completed job
 #        $4: # of jobs to run
+#
+# EXAMPLE
+#        $ ./autorun smoothWavyWall r 7 9
+# will execute 9 consecutive runs of case smoothWavyWall
+# and save then in folders r8,r9,..,r16
 ##----------------------------------------------------##
-
-case=$1
-base=$2
-num=$3
 
 uname="vpuri"               # username
 email="vpuri3@illinois.edu" # email log after queuing
 res="restart0.f00001"       # name of restart file
 rsfx="0.f00002"             # suffix of file used to restart next run
 bsfx="0.f00001"             # suffix for budgets file to read for next run
-sub="./my_nekqsub"          # job submission script
+sub="my_nekqsub"            # job submission script
 nnodes="256"                # # of nodes
+
+case=$1
+base=$2
+num=$3
+njobs=$4
 
 dir=$PWD
 log=$dir/run.log
@@ -37,7 +43,7 @@ echo "Starting new session in directory $dir."                |& tee -a $log
 echo "Running case $case from $base$num $4 times."            |& tee -a $log
 echo "Storing log in $log."                                   |& tee -a $log
 							      
-for ((i=1; i<=$4; i++)); do				      
+for ((i=1; i<=$njobs; i++)); do				      
     dir0=$dir/$base$num					      
     num=$((num+1))					      
     dir1=$dir/$base$num					      
@@ -46,7 +52,6 @@ for ((i=1; i<=$4; i++)); do
     echo "#------------------ RUN $i -------------------#"    |& tee -a $log
     echo "#--------------------------------------------#"     |& tee -a $log
     echo $(date -R)                                           |& tee -a $log
-
 
     if [ ! -f $dir0/$case$rsfx ]; then
 	echo "ABORT: $dir0 does not contain $case$rsfx ."     |& tee -a $log
@@ -89,7 +94,7 @@ for ((i=1; i<=$4; i++)); do
 						       
     echo "compilation successful."                            |& tee -a $log
     tail -c 300 $dir1/compiler.out                            |& tee -a $log
-    $sub $case $nnodes                                        |& tee -a $log
+    ./$sub $case $nnodes                                      |& tee -a $log
 					                      
     if [ $? != 0 ]; then		                      
 	echo "ABORT: could not queue job."                    |& tee -a $log
