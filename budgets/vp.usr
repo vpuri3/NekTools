@@ -1,81 +1,17 @@
 c-----------------------------------------------------------------------
-      subroutine avg_grad()
+      subroutine budget_post(gs_hndl1,nelx,nely,nelz,ifld,idir,ifplnr
+     $                                                        ,ifsamp)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
       INCLUDE 'AVGINCOMP'
       INCLUDE 'REFERENCE'
       INCLUDE 'BUDGETSINCOMP'
- 
-      if(nid.eq.0) write(6,*) 'computing gradient of <u>,<v>,<w>,<p>'
- 
-      ntot = nx1*ny1*nz1*nelv
- 
-      call rzero(udxavg,ntot)
-      call rzero(udyavg,ntot)
-      call rzero(udzavg,ntot)
-      call rzero(vdxavg,ntot)
-      call rzero(vdyavg,ntot)
-      call rzero(vdzavg,ntot)
-      call rzero(wdxavg,ntot)
-      call rzero(wdyavg,ntot)
-      call rzero(wdzavg,ntot)
-      call rzero(dpdxavg,ntot)
-      call rzero(dpdyavg,ntot)
-      call rzero(dpdzavg,ntot)
- 
-      call gradm1(udxavg,udyavg,udzavg,uavg)
-      call gradm1(vdxavg,vdyavg,vdzavg,vavg)
-      call gradm1(wdxavg,wdyavg,wdzavg,wavg)
-      call gradm1(dpdxavg,dpdyavg,dpdzavg,pm1avg)
- 
-      ! Reconcile gradients at element boundaries
- 
-      call opcolv (udxavg,udyavg,udzavg,bm1)
-      call opdssum(udxavg,udyavg,udzavg)
-      call opcolv (udxavg,udyavg,udzavg,binvm1)
- 
-      call opcolv (vdxavg,vdyavg,vdzavg,bm1)
-      call opdssum(vdxavg,vdyavg,vdzavg)
-      call opcolv (vdxavg,vdyavg,vdzavg,binvm1)
- 
-      call opcolv (wdxavg,wdyavg,wdzavg,bm1)
-      call opdssum(wdxavg,wdyavg,wdzavg)
-      call opcolv (wdxavg,wdyavg,wdzavg,binvm1)
- 
-      call opcolv (dpdxavg,dpdyavg,dpdzavg,bm1)
-      call opdssum(dpdxavg,dpdyavg,dpdzavg)
-      call opcolv (dpdxavg,dpdyavg,dpdzavg,binvm1)
- 
-      return
-      end
-c-----------------------------------------------------------------------
-      subroutine budget_post()
-      INCLUDE 'SIZE'  
-      INCLUDE 'TOTAL' 
-      INCLUDE 'AVG'
-      INCLUDE 'AVGINCOMP'
-      INCLUDE 'REFERENCE'
-      INCLUDE 'BUDGETSINCOMP'
+      INCLUDE 'TKEINCOMP'
 
-      real tke(lx1,ly1,lz1,lelv) ! TKE sum
-      real cnk(lx1,ly1,lz1,lelv) ! TKE convection
-      real prk(lx1,ly1,lz1,lelv) ! TKE proudction
-      real ptk(lx1,ly1,lz1,lelv) ! TKE pressure transport
-      real pdk(lx1,ly1,lz1,lelv) ! TKE pressure diffusion
-      real psk(lx1,ly1,lz1,lelv) ! TKE pressure strain -- should be zero!
-      real tdk(lx1,ly1,lz1,lelv) ! TKE turbulent diffusion
-      real epk(lx1,ly1,lz1,lelv) ! TKE viscous dissipation
-      real vdk(lx1,ly1,lz1,lelv) ! TKE viscous diffusion
-c
-      real ppp(lx1,ly1,lz1,lelv) ! check if pres(transp = diff + strain)
-c
-      integer f,idir
-      character*3 bctyp
-c
-      integer gs_avg_hndl
-      save    gs_avg_hndl
-      data    gs_avg_hndl / 0 /
+      integer nelx,nely,nelz
+      integer ifld,idir,gs_hndl1
+      logical ifplnr,ifsamp
 c
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 c
@@ -92,13 +28,18 @@ c
       call rzero(tdk,ntot)
       call rzero(epk,ntot)
       call rzero(vdk,ntot)
-c
       call rzero(ppp,ntot)
 c
-      call rzero(tka,ntnt)
-      call rzero(pka,ntot)
-      call rzero(upa,ntot)
-      call rzero(ypa,ntot)
+      call rzero(tkea,ntnt)
+      call rzero(cnka,ntot)
+      call rzero(prka,ntot)
+      call rzero(ptka,ntot)
+      call rzero(pdka,ntot)
+      call rzero(pska,ntot)
+      call rzero(tdka,ntot)
+      call rzero(epka,ntot)
+      call rzero(vdka,ntot)
+      call rzero(pppa,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -124,13 +65,36 @@ c
          tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
       enddo
+c
+      if(ifplnr) then
+       if(nid.eq.0) write(6,*) "Averaging in direction ", idir
+c
+       call plane_avg_tensor(tkea,tke,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(cnka,cnk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(prka,prk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(ptka,ptk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(pdka,pdk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(pska,psk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(tdka,tdk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(epka,epk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(vdka,vdk,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(pppa,ppp,gs_hndl1,nelx,nely,nelz,ifld,idir)
 
-      f     = 1
-      idir  = 2
-      bctyp = 'W  '
-c
-      if(nid.eq.0) write(6,*) 'outposting TKE'
-c
+      else
+       call copy(tkea,tke,ntot)
+       call copy(cnka,cnk,ntot)
+       call copy(prka,prk,ntot)
+       call copy(ptka,ptk,ntot)
+       call copy(pdka,pdk,ntot)
+       call copy(pska,psk,ntot)
+       call copy(tdka,tdk,ntot)
+       call copy(epka,epk,ntot)
+       call copy(vdka,vdk,ntot)
+       call copy(pppa,ppp,ntot)
+      endif
+
+!     Outpost
+
       iifxyo = ifxyo
       iifvo  = ifvo
       iifpo  = ifpo
@@ -141,25 +105,18 @@ c
       ifpo  = .true.
       ifto  = .true.
 c
-      call outpost2(cnk,prk,ptk,pdk,psk,1,'bb1')
-      call outpost2(tdk,epk,vdk,tke,ppp,1,'bb2')
-c
-c     cnk      ! TKE convection
-c     prk      ! TKE proudction
-c     ptk      ! TKE pressure transport
-c     pdk      ! TKE pressure diffusion
-c     psk      ! TKE pressure strain -- should be zero!
-c     tdk      ! TKE turbulent diffusion
-c     epk      ! TKE viscous dissipation
-c     vdk      ! TKE viscous diffusion
-c     tke      ! TKE sum
-c     ppp      ! pres(transp - (diff + strain))
+      call outpost2(cnka,prka,ptka,pdk,pska,1,'bb1')
+      call outpost2(tdka,epka,vdka,tke,pppa,1,'bb2')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
       ifpo  = iifpo
       ifto  = iifto
 c
+      if(ifsamp) then 
+         call sample(ptk,pdk,psk,ppp,prk,'ppp',
+     $              'transp','diff','strain','ppp','prod')
+      endif
 
       return
       end
