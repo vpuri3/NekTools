@@ -155,14 +155,12 @@ c-----------------------------------------------------------------------
         call avg1    (vavg,vy,alpha,beta,ntot ,'vm  ',ifverbose)
         call avg1    (wavg,vz,alpha,beta,ntot ,'wm  ',ifverbose)
         call avg1    (pm1avg,pm1,alpha,beta,ntot ,'prm ',ifverbose)
-        call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
+cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
 
-        if(ldimt.gt.1) then
-        do i = 2,ldimt
+        do i = 1,ldimt
           call avg1 (tavg(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
      &                 ntott,'psav',ifverbose)
         enddo
-        endif
 
        !=========
         !Compute averages E(X^2)
@@ -171,14 +169,12 @@ c-----------------------------------------------------------------------
         call avg2    (vrms,vy,alpha,beta,ntot ,'vms ',ifverbose)
         call avg2    (wrms,vz,alpha,beta,ntot ,'wms ',ifverbose)
         call avg2    (pmrms,pm1,alpha,beta,ntot ,'prms',ifverbose)
-        call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
+cvp     call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
 
-        if(ldimt.gt.1) then
-        do i = 2,ldimt
+        do i = 1,ldimt
           call avg2 (trms(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
      &                 ntott,'psms',ifverbose)
         enddo
-        endif
 
       !=========
         !Compute averages E(XY)

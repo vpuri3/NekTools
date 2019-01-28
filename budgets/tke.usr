@@ -1,6 +1,28 @@
 c-----------------------------------------------------------------------
-      subroutine budget_post(gs_hndl1,nelx,nely,nelz,ifld,idir,ifplnr
-     $                                                        ,ifsamp)
+c
+c     integer gs_avg_hndl
+c     save    gs_avg_hndl
+c     data    gs_avg_hndl / 0 /
+c
+c     f         = 1
+c     bctyp     = 'W  '
+c     nelx      = 64
+c     nely      = 16
+c     nelz      = 32
+c     ifld      = 1
+c     idir      = 3
+c     ifavg     = .true. ! average over homogeneous direction idir_avg
+c     ifsample  = .true.
+c
+c     ifplnr_avg = .false.
+c     ifsample   = .false.
+c
+c     call comp_tke(gs_avg_hndl,nelx,nely,nelz,ifld,idir,ifplnr_avg
+c    $                                                       ,ifsample)
+c
+c-----------------------------------------------------------------------
+      subroutine comp_tke(gs_hndl1,nelx,nely,nelz,ifld,idir,ifplnr_avg
+     $                                                        ,ifsample)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -11,7 +33,7 @@ c-----------------------------------------------------------------------
 
       integer nelx,nely,nelz
       integer ifld,idir,gs_hndl1
-      logical ifplnr,ifsamp
+      logical ifplnr_avg,ifsample
 c
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 c
@@ -66,7 +88,7 @@ c
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
       enddo
 c
-      if(ifplnr) then
+      if(ifplnr_avg) then
        if(nid.eq.0) write(6,*) "Averaging in direction ", idir
 c
        call plane_avg_tensor(tkea,tke,gs_hndl1,nelx,nely,nelz,ifld,idir)
@@ -113,7 +135,7 @@ c
       ifpo  = iifpo
       ifto  = iifto
 c
-      if(ifsamp) then 
+      if(ifsample) then 
          call sample(ptk,pdk,psk,ppp,prk,'ppp',
      $              'transp','diff','strain','ppp','prod')
       endif

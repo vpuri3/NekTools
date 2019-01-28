@@ -53,15 +53,15 @@ c     integer gs_avg_hndl
 c     save    gs_avg_hndl
 c     data    gs_avg_hndl / 0 /
 c
-c     f         = 1
-c     bctyp     = 'W  '
-c     nelx      = 64
-c     nely      = 16
-c     nelz      = 32
-c     ifld      = 1
-c     idir_sctr = 2
-c     idir_avg  = 3
-c     ifavg     = .true. ! average over homogeneous direction idir_avg
+c     f          = 1
+c     bctyp      = 'W  '
+c     nelx       = 64
+c     nely       = 16
+c     nelz       = 32
+c     ifld       = 1
+c     idir_sctr  = 2
+c     idir_avg   = 3
+c     ifplnr_avg = .true. ! average over homogeneous direction idir_avg
 c     ifsample  = .true.
 c
 c     call comp_uplus(upl,ypl,vx,vy,vz,f,bctyp,gs_sctr_hndl,gs_avg_hndl,
@@ -72,7 +72,8 @@ C-----------------------------------------------------------------------
 c     include 'plavg.usr'
 C-----------------------------------------------------------------------
       subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2,
-     $                 nelx,nely,nelz,ifld,idir1,idir2,ifplnr,ifsamp)
+     $                 nelx,nely,nelz,ifld,idir1,idir2,ifplnr_avg
+     $                                                        ,ifsample)
       include 'SIZE'
       include 'TOTAL'
       include 'UPLUS'
@@ -85,7 +86,7 @@ C-----------------------------------------------------------------------
       integer f,ifld,idir1,idir2,gs_hndl1,gs_hndl2
       integer nelx,nely,nelz
       character*3 bctyp
-      logical ifplnr,ifsamp
+      logical ifplnr_avg,ifsample
 
       common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
      $             , vr(lxyz),vs(lxyz),vt(lxyz)
@@ -244,7 +245,7 @@ c
       ! distance in direction parallel to idir
       call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-      if(ifplnr) then
+      if(ifplnr_avg) then
        if(nid.eq.0) write(6,*) "averaging in direction ", idri2
 c
        call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
@@ -300,15 +301,15 @@ c
       call outpost(fTx,fTy,fTz,fTm,Tma,'wsh')
       call outpost(up,yp,utn,volTm,d2f,'upl')
 c
-      if(ifplnr) call outpost(ux,uy,uz,pra,t,'pla')
+      if(ifplnr_avg) call outpost(ux,uy,uz,pra,t,'pla')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
       ifpo  = iifpo
       ifto  = iifto
 c
-      if(ifsamp) call sample(up,yp,utn,Tma,d2f,'upl',
-     $                    'up','yp','utn','Tma','d2f')
+      if(ifsample) call sample(up,yp,utn,Tma,d2f,'upl',
+     $                      'up','yp','utn','Tma','d2f')
 c
       return
       end
