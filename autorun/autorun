@@ -1,6 +1,6 @@
 #!/bin/bash
 ##----------------------------------------------------##
-# runs nek cases every 7300 seconds.
+# runs nek cases in succession
 #
 # INPUT: $1: case name
 #        $2: folder base name
@@ -13,18 +13,25 @@
 # and save then in folders r8,r9,..,r16
 ##----------------------------------------------------##
 
-uname="vpuri"               # username
 email="vpuri3@illinois.edu" # email log after queuing
 res="restart0.f00001"       # name of restart file
-rsfx="0.f00002"             # suffix of file used to restart next run
-bsfx="0.f00001"             # suffix for budgets file to read for next run
+rsfx="0.f00002"             # suffix of output file to restart from.
+                            #      if "0.f00000" then restarts from
+                            #      last file in directory.
+bsfx="0.f00001"             # suffix of output file to read budgets from.
+                            #      if "0.f00000" don't read budgets.
 sub="my_nekqsub"            # job submission script
 nnodes="256"                # # of nodes
+
+##-------------------------------------------------------------------------##
+##-------------------------------------------------------------------------##
 
 case=$1
 base=$2
 num=$3
 njobs=$4
+
+me=$(whoami)
 
 dir=$PWD
 log=$dir/run.log
@@ -40,46 +47,75 @@ echo "##############################################"         |& tee -a $log
 echo "##############################################"         |& tee -a $log
 echo $(date -R)                                               |& tee -a $log
 echo "Starting new session in directory $dir."                |& tee -a $log
-echo "Running case $case from $base$num $4 times."            |& tee -a $log
+echo "Running case $case from $base$num $njobs times."        |& tee -a $log
 echo "Storing log in $log."                                   |& tee -a $log
 							      
-for ((i=1; i<=$njobs; i++)); do				      
-    dir0=$dir/$base$num					      
+
+findrsfx=false
+if [ "$rsfx" = "0.f00000" ]; then
+    findrsfx=true
+    echo "rsfx=$rsfx. Restart from last output file."         |& tee -a $log
+fi
+
+budgets=true
+if [ "$bsfx" = "0.f00000" ]; then
+    budgets=false
+    echo "bsfx=$bsfx. No budgets."                            |& tee -a $log
+fi
+
+for ((i=1; i<=$njobs; i++)); do
+    dir0=$dir/$base$num
     num=$((num+1))					      
-    dir1=$dir/$base$num					      
+    dir1=$dir/$base$num
 							      
     echo "#--------------------------------------------#"     |& tee -a $log
     echo "#------------------ RUN $i -------------------#"    |& tee -a $log
     echo "#--------------------------------------------#"     |& tee -a $log
     echo $(date -R)                                           |& tee -a $log
 
-    if [ ! -f $dir0/$case$rsfx ]; then
-	echo "ABORT: $dir0 does not contain $case$rsfx ."     |& tee -a $log
-	send_log; exit 1
-    elif [ ! -f $dir0/i01$case$bsfx ]; then		         
-	echo "ABORT: $dir0 does not contain i01$case$bsfx ."  |& tee -a $log
-	send_log; exit 1
+    if [ ! -f $dir0/$case$"0.f"* ]; then
+ 	echo "ABORT: $dir0 does not contain output files ."   |& tee -a $log
+ 	send_log; exit 1
+    fi
+
+    if [ "$budgets" = true ]; then
+	if [ ! -f $dir1/i01$case$bsfx ]; then
+ 	    echo "ABORT: i01$case$bsfx not found in $dir0."   |& tee -a $log
+ 	    send_log; exit 1
+	fi
     fi
 
     echo "copying $dir0 to $dir1"                             |& tee -a $log
     cp -r $dir0 $dir1                                         |& tee -a $log
 
     if [ $? != 0 ]; then		                      
-	echo "ABORT: could not copy $dir0 to $dir1."          |& tee -a $log
+	echo "ABORT: error in copying $dir0 to $dir1."        |& tee -a $log
 	send_log; exit 1
     fi
 
     cd  $dir1
 
+    if [ "$findrsfx" = true ]; then
+	echo "finding latest output file in $dir1"            |& tee -a $log
+	rsfx=$(ls -t $dir1/$case"0.f"*)
+	rsfx=$($rsfx)
+	rsfx=${rsfx[0]}
+	rsfx=${rsfx:${#list}-8:8};
+	echo "latest output file is $case$rsfx."              |& tee -a $log
+    fi
+
     echo "removing old logs and updating restart"             |& tee -a $log
-    rm $res *.cobaltlog *.error *.output                      |& tee -a $log
-    rm *log* *out*                                            |& tee -a $log
+    rm $res *.cobaltlog *.error *.output *log* *out*          |& tee -a $log
     mv -v $case$rsfx $res                                     |& tee -a $log
+    rm $case"0.f00"*                                          |& tee -a $log
 						            
     echo "restarting from $res"                               |& tee -a $log
     head -c 130 $res                                          |& tee -a $log
-    echo "reading budgets from i##$case$bsfx"                 |& tee -a $log
-    head -c 130 i01$case$bsfx                                 |& tee -a $log
+
+    if [ "$budgets" != true ]; then
+	echo "reading budgets from i##$case$bsfx"             |& tee -a $log
+	head -c 130 i01$case$bsfx                             |& tee -a $log
+    fi
 
     echo "compiling..."                                       |& tee -a $log
     echo "using makenek" $(which makenek)                     |& tee -a $log
@@ -96,21 +132,21 @@ for ((i=1; i<=$njobs; i++)); do
     tail -c 300 $dir1/compiler.out                            |& tee -a $log
     ./$sub $case $nnodes                                      |& tee -a $log
 					                      
-    if [ $? != 0 ]; then		                      
+    if [ $? != 0 ]; then
 	echo "ABORT: could not queue job."                    |& tee -a $log
 	send_log; exit 1
     fi
 
+    echo "successfully queued job"                            |& tee -a $log
     sleep 10
     qstat --header JobId:User:RunTime:WallTime:State:Location |& tee -a $log
-    echo "successfully queued job"                            |& tee -a $log
 
     sleep 60
     while [ ! -f $dir1/logfile ]; do
 	echo $(date -R)                                       |& tee -a $log
 	echo "waiting in queue"                               |& tee -a $log
-	qstat --header JobId:RunTime:State:Location -u $uname |& tee -a $log
-	sleep 60
+	qstat --header JobId:RunTime:State:Location -u $me    |& tee -a $log
+	sleep 300
     done
    
     echo "job is running"                                     |& tee -a $log
@@ -120,7 +156,7 @@ for ((i=1; i<=$njobs; i++)); do
     if echo $dead | grep -Fq "dying"; then
 	echo "ABORT: job died before its time."               |& tee -a $log
 	echo "appending tail of logfile to run.log"           |& tee -a $log
-	tail -c 1000 $dir1/logfile                                   >> $log
+	tail -c 1000 $dir1/logfile                            |& tee -a $log
 	send_log; exit 1
     fi
 
