@@ -4,16 +4,11 @@ c     integer gs_avg_hndl
 c     save    gs_avg_hndl
 c     data    gs_avg_hndl / 0 /
 c
-c     f         = 1
-c     bctyp     = 'W  '
 c     nelx      = 64
 c     nely      = 16
 c     nelz      = 32
 c     ifld      = 1
 c     idir      = 3
-c     ifavg     = .true. ! average over homogeneous direction idir_avg
-c     ifsample  = .true.
-c
 c     ifplnr_avg = .false.
 c     ifsample   = .false.
 c

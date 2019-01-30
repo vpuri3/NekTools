@@ -21,7 +21,7 @@ rsfx="0.f00000"             # suffix of output file to restart from.
 bsfx="0.f00000"             # suffix of output file to read budgets from.
                             #      if "0.f00000" don't read budgets.
 sub="my_nekqsub"            # job submission script
-nnodes="32"                 # # of nodes
+nnodes="256"                # # of nodes
 
 ##-------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------##
@@ -38,8 +38,8 @@ log=$dir/run.log
 
 function send_log { mail -s "$case autorun" $email < $log; }
 
-if [ -f $log ]; then
-    mv run.log run.log2
+if [ ! -f $log ]; then
+    touch $log
 fi
 						              
 echo "##############################################"         |& tee -a $log
@@ -93,7 +93,15 @@ for ((i=1; i<=$njobs; i++)); do
 	send_log; exit 1
     fi
 
-    cd  $dir1
+    echo "changing write permissions for $dir0"               |& tee -a $log
+    for f in $dir0; do
+	[ -L "$f" ] && cp --remove-destination "$(readlink "$f")" "$f"]
+    done
+    chmod -R -wx $dir0                                        |& tee -a $log
+
+    echo "onto $dir1"                                         |& tee -a $log
+
+    cd  $dir1                                                 |& tee -a $log
 
     if [ "$findrsfx" = true ]; then
 	echo "finding latest output file in $dir1"            |& tee -a $log

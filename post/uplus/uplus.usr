@@ -36,14 +36,14 @@ c             \     distance to face                    |  |
 c              \                                        |  |
 c               \_______________________________________|  +----> Y
 c
-c     real vlx(lx1,ly1,lz1,lelv)
-c     real vly(lx1,ly1,lz1,lelv)
-c     real vlz(lx1,ly1,lz1,lelv)
+c     real ux(lx1,ly1,lz1,lelv)
+c     real uy(lx1,ly1,lz1,lelv)
+c     real uz(lx1,ly1,lz1,lelv)
 c     real up(lx1,ly1,lz1,lelv)
 c     real yp(lx1,ly1,lz1,lelv)
 c     integer f,ifld,idir_sctr,idir_avg
 c     character*3 bctyp
-c     logical ifavg,ifsample
+c     logical ifplnr_avg,ifsample
 c
 c     integer gs_sctr_hndl
 c     save    gs_sctr_hndl
@@ -64,16 +64,16 @@ c     idir_avg   = 3
 c     ifplnr_avg = .true. ! average over homogeneous direction idir_avg
 c     ifsample  = .true.
 c
-c     call comp_uplus(upl,ypl,vx,vy,vz,f,bctyp,gs_sctr_hndl,gs_avg_hndl,
-c    $            nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifavg,ifsample)
+c     call comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_sctr_hndl,gs_avg_hndl
+c    $      ,nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifplnr_avg,ifsample)
 c
 C-----------------------------------------------------------------------
       include 'scttr.usr'
 c     include 'plavg.usr'
 C-----------------------------------------------------------------------
       subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2,
-     $                 nelx,nely,nelz,ifld,idir1,idir2,ifplnr_avg
-     $                                                        ,ifsample)
+     $              nelx,nely,nelz,ifld,idir1,idir2,ifplnr_avg,ifsample)
+
       include 'SIZE'
       include 'TOTAL'
       include 'UPLUS'
