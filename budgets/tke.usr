@@ -30,13 +30,40 @@ c-----------------------------------------------------------------------
       integer ifld,idir,gs_hndl1
       logical ifplnr_avg,ifsample
 c
+      integer ntot
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 c
-      if(nid.eq.0) write(6,*) 'computing TKE.'
+      ntot = lx1*ly1*lz1*nelv
 c
-      ntot = nx1*ny1*nz1*nelv
+      if(nid.eq.0) write(6,*) 'computing TKE...'
 c
-      call rzero(tke,ntnt)
+cccccccccccccccccccccccccccc
+      call rzero(tke_pt,ntot) ! pres transp (-1/dens0)*<p',j * u'j>
+      call rzero(tke_ps,ntot) ! pres strain <p' * u'i,i>
+      call rzero(tka_ps,ntot) ! planar avg of tke_ps
+      call rzero(chkdiv,ntot) ! <ui,i> == 0
+      call rzero(chkpdv,ntot) ! <p * ui,i>
+      do i=1,ntot
+         tke_pt(i,1,1,1) = -1/dens0*
+     $              (udpdxavg(i,1,1,1) - uavg(i,1,1,1)*dpdxavg(i,1,1,1)
+     $              +vdpdyavg(i,1,1,1) - vavg(i,1,1,1)*dpdyavg(i,1,1,1)
+     $              +wdpdzavg(i,1,1,1) - wavg(i,1,1,1)*dpdzavg(i,1,1,1))
+c
+         tke_ps(i,1,1,1) = -1/dens0*
+     $              (pudxavg(i,1,1,1) - pm1avg(i,1,1,1)*udxavg(i,1,1,1)
+     $              +pvdyavg(i,1,1,1) - pm1avg(i,1,1,1)*vdyavg(i,1,1,1)
+     $              +pwdzavg(i,1,1,1) - pm1avg(i,1,1,1)*wdzavg(i,1,1,1))
+c
+         chkdiv(i,1,1,1) = udxavg(i,1,1,1) + vdyavg(i,1,1,1)
+     $                    +vdzavg(i,1,1,1)
+c
+         chkpdv(i,1,1,1) = pudxavg(i,1,1,1) + pvdyavg(i,1,1,1)
+     $                    +pwdzavg(i,1,1,1)
+
+      enddo
+cccccccccccccccccccccccccccc
+c
+      call rzero(tke,ntot)
       call rzero(cnk,ntot)
       call rzero(prk,ntot)
       call rzero(ptk,ntot)
@@ -45,9 +72,8 @@ c
       call rzero(tdk,ntot)
       call rzero(epk,ntot)
       call rzero(vdk,ntot)
-      call rzero(ppp,ntot)
 c
-      call rzero(tkea,ntnt)
+      call rzero(tkea,ntot)
       call rzero(cnka,ntot)
       call rzero(prka,ntot)
       call rzero(ptka,ntot)
@@ -56,7 +82,6 @@ c
       call rzero(tdka,ntot)
       call rzero(epka,ntot)
       call rzero(vdka,ntot)
-      call rzero(pppa,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -77,8 +102,6 @@ c
          epk(i,1,1,1) = epk(i,1,1,1) * 0.5
          vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
 c
-         ppp(i,1,1,1) = ptk(i,1,1,1) - (pdk(i,1,1,1) + psk(i,1,1,1))
-c
          tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
       enddo
@@ -86,7 +109,6 @@ c
       if(ifplnr_avg) then
        if(nid.eq.0) write(6,*) "Averaging in direction ", idir
 c
-       call plane_avg_tensor(tkea,tke,gs_hndl1,nelx,nely,nelz,ifld,idir)
        call plane_avg_tensor(cnka,cnk,gs_hndl1,nelx,nely,nelz,ifld,idir)
        call plane_avg_tensor(prka,prk,gs_hndl1,nelx,nely,nelz,ifld,idir)
        call plane_avg_tensor(ptka,ptk,gs_hndl1,nelx,nely,nelz,ifld,idir)
@@ -95,10 +117,12 @@ c
        call plane_avg_tensor(tdka,tdk,gs_hndl1,nelx,nely,nelz,ifld,idir)
        call plane_avg_tensor(epka,epk,gs_hndl1,nelx,nely,nelz,ifld,idir)
        call plane_avg_tensor(vdka,vdk,gs_hndl1,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(pppa,ppp,gs_hndl1,nelx,nely,nelz,ifld,idir)
+       call plane_avg_tensor(tkea,tke,gs_hndl1,nelx,nely,nelz,ifld,idir)
+c
+       call plane_avg_tensor(tka_ps,tke_ps,gs_hndl1,nelx,nely,nelz
+     $                                                       ,ifld,idir)
 
       else
-       call copy(tkea,tke,ntot)
        call copy(cnka,cnk,ntot)
        call copy(prka,prk,ntot)
        call copy(ptka,ptk,ntot)
@@ -107,7 +131,9 @@ c
        call copy(tdka,tdk,ntot)
        call copy(epka,epk,ntot)
        call copy(vdka,vdk,ntot)
-       call copy(pppa,ppp,ntot)
+       call copy(tkea,tke,ntot)
+c
+       call copy(tka_ps,tke_ps,ntot)
       endif
 
 !     Outpost
@@ -122,8 +148,9 @@ c
       ifpo  = .true.
       ifto  = .true.
 c
-      call outpost2(cnka,prka,ptka,pdk,pska,1,'bb1')
-      call outpost2(tdka,epka,vdka,tke,pppa,1,'bb2')
+      call outpost2(cnka,prka,ptka,pdk,pska,1,'tk1')
+      call outpost2(tdka,epka,vdka,tke,tka_ps,1,'tk2')
+      call outpost2(chkdiv,chkpdv,tke_ps,pm1avg,tke_pt,1,'chk')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
@@ -131,8 +158,8 @@ c
       ifto  = iifto
 c
       if(ifsample) then 
-         call sample(ptk,pdk,psk,ppp,prk,'ppp',
-     $              'transp','diff','strain','ppp','prod')
+         call sample(ptka,pdka,pska,tke_pt,prk,'tke',
+     $            'ptkAvg','pdkAvg','pskAvg','tke_pt','prod')
       endif
 
       return

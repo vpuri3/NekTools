@@ -1,6 +1,5 @@
 C     Turbulent Kinetic Energy for Incompressible Flow
 
-
       COMMON /TKEINCOMP/
      $  tke(lx1,ly1,lz1,lelv) ! sum
      $ ,cnk(lx1,ly1,lz1,lelv) ! convection
@@ -11,7 +10,6 @@ C     Turbulent Kinetic Energy for Incompressible Flow
      $ ,tdk(lx1,ly1,lz1,lelv) ! turbulent diffusion
      $ ,epk(lx1,ly1,lz1,lelv) ! viscous dissipation
      $ ,vdk(lx1,ly1,lz1,lelv) ! viscous diffusion
-     $ ,ppp(lx1,ly1,lz1,lelv) ! (pdk + psk) - ptk -- should be zero!
 c
      $ ,tkea(lx1,ly1,lz1,lelv) ! sum
      $ ,cnka(lx1,ly1,lz1,lelv) ! convection
@@ -22,4 +20,9 @@ c
      $ ,tdka(lx1,ly1,lz1,lelv) ! turbulent diffusion
      $ ,epka(lx1,ly1,lz1,lelv) ! viscous dissipation
      $ ,vdka(lx1,ly1,lz1,lelv) ! viscous diffusion
-     $ ,pppa(lx1,ly1,lz1,lelv) ! (pdk + psk) - ptk -- should be zero!
+c
+     $ ,tke_pt(lx1,ly1,lz1,lelv) ! pres transp (-1/dens0)*<p',j * u'j>
+     $ ,tke_ps(lx1,ly1,lz1,lelv) ! pres strain (-1/dens0)*<p' * u'i,i>
+     $ ,tka_ps(lx1,ly1,lz1,lelv) ! pres strain (-1/dens0)*<p' * u'i,i>
+     $ ,chkdiv(lx1,ly1,lz1,lelv) ! <u i>,i == 0
+     $ ,chkpdv(lx1,ly1,lz1,lelv) ! <u i>,i == 0
