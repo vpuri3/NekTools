@@ -4,7 +4,7 @@ C=======================================================================
 
 c----------------------------------------------------------------------
 c---Standard Averaging for Incompressible Flows
-c-----------------------------------------------------------------------
+c-----------------------------------------------------------------------   
 
       subroutine standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
 
@@ -155,9 +155,9 @@ c-----------------------------------------------------------------------
         call avg1    (vavg,vy,alpha,beta,ntot ,'vm  ',ifverbose)
         call avg1    (wavg,vz,alpha,beta,ntot ,'wm  ',ifverbose)
         call avg1    (pm1avg,pm1,alpha,beta,ntot ,'prm ',ifverbose)
-cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
+        call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
 
-        do i = 1,ldimt
+        do i = 2,ldimt
           call avg1 (tavg(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
      &                 ntott,'psav',ifverbose)
         enddo
@@ -169,9 +169,8 @@ cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
         call avg2    (vrms,vy,alpha,beta,ntot ,'vms ',ifverbose)
         call avg2    (wrms,vz,alpha,beta,ntot ,'wms ',ifverbose)
         call avg2    (pmrms,pm1,alpha,beta,ntot ,'prms',ifverbose)
-cvp     call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
-
-        do i = 1,ldimt
+        call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
+        do i = 2,ldimt
           call avg2 (trms(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
      &                 ntott,'psms',ifverbose)
         enddo
@@ -384,9 +383,6 @@ c
       real tSTATFREQ,tSTATSTART
       integer lxyze
       integer readStats
-
-cvp
-      logical iifxyo
 
       lxyze = lx1*ly1*lz1*lelt
 
@@ -609,10 +605,6 @@ c       We change time momentaneously to write down averaging time
         temp_time=time
         time = atime
 
-cvp     Do not outpost mesh.
-        iifxyo = ifxyo
-        ifxyo  = .false.
-
         call outpost2(udxavg,udyavg,udzavg,vdxavg,vdyavg,1,'i01')
         call outpost2(vdzavg,wdxavg,wdyavg,wdzavg,udxrms,1,'i02')
         call outpost2(udyrms,udzrms,vdxrms,vdyrms,vdzrms,1,'i03')
@@ -628,9 +620,6 @@ cvp     Do not outpost mesh.
      &                wdpdyavg,1,'i12')
         call outpost2(wdpdzavg,dpdxavg,dpdyavg,dpdzavg,
      &                dpdzavg,1,'i13')
-
-cvp
-        ifxyo = iifxyo
 
         time = temp_time
 
@@ -1031,7 +1020,7 @@ c-----------------------------------------------------------------------
      &              'rms',readStats,avtime,ldimt,.false.)
 
       call load_avg3(uvms,wums,vwms,
-     &               'rm2',readStats,avtime,.false.)
+     &               'rm2',readStats,avtime,.true.)
 
       return
       end   
@@ -1819,41 +1808,41 @@ c      call col2  (pudxavg,vmult,nglob1)
         time=atime
 
      
-c  !Average Convection
-c     call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
-c     call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
-c
-c  !Average Dissipation   
-c     call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
-c     call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
-c    
-c  !Average Pressure transport
-c     call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
-c     call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
-c
-c  !Average Production   
-c     call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
-c     call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
-c    
-c  !Average Turbulent Diffusion    
-c     call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
-c     call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
-c
-c  !Average Pressure Diffusion    
-c     call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
-c     call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
-c    
-c  !Average Pressure Strain   
-c     call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
-c     call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
-c
-c  !Average Viscous Strain  
-c     call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
-c     call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
-c    
-c  !Average Buoyancy 
-c     call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
-c     call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
+   !Average Convection
+      call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
+      call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
+
+   !Average Dissipation   
+      call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
+      call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
+     
+   !Average Pressure transport
+      call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
+      call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
+
+   !Average Production   
+      call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
+      call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
+     
+   !Average Turbulent Diffusion    
+      call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
+      call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
+
+   !Average Pressure Diffusion    
+      call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
+      call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
+     
+   !Average Pressure Strain   
+      call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
+      call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
+
+   !Average Viscous Strain  
+      call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
+      call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
+     
+   !Average Buoyancy 
+      call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
+      call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
 
       time=temp_time
 
@@ -3308,7 +3297,7 @@ c-----------------------------------------------------------------------
       INCLUDE 'ZPER'
       INCLUDE 'TOTAL'
 
-      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt)
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
       character (3) cname
       integer readStats
       real avtime 
@@ -3348,9 +3337,9 @@ c-----------------------------------------------------------------------
       INCLUDE 'TOTAL'
 
       real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
-     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt)
+     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt),
       character (3) cname
-      integer readStats
+      integer readStats,ldimtRead
       real avtime 
       logical lastRead
 
@@ -3392,15 +3381,10 @@ c-----------------------------------------------------------------------
       INCLUDE 'TOTAL'
 
       logical lastRead
-      real avtime
+      real avtime 
       integer readStats,ldimtRead
-      parameter(ltot1=lx1*ly1*lz1*lelt)
-      parameter(ltot2=lx2*ly2*lz2*lelt)
-      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(ltot1,ldimtRead)
-
-      real temp_time
-      common /outtmp/  w1(ltot1),w2(ltot1),w3(ltot1),wp(ltot2)
-     &                ,wt(ltot1,ldimt)
+      parameter(lt=lx1*ly1*lz1*lelt)
+      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(lt,1)
 
       integer nFieldsToRead
       common /size/ lname
@@ -3415,40 +3399,25 @@ c-----------------------------------------------------------------------
       character (1) initcOld(132)
       character (3) cname
 
-      ntot1 = lx1*ly1*lz1*nelt
+      if(nid.eq.0) write(6,*) "in load_avg(), cname = ", cname
+
+      ntot  = lx1*ly1*lz1*nelt
       ntot2 = lx2*ly2*lz2*nelt
     
-      if(ldimtRead.gt.ldimt) then
-        write(6,*) 'ABORT: Reading too many fields (ldimtRead>ldimt)!'
-        call exitt
-      endif
+      ! Don't overwrite memory that is not declared!
 
-c     zero out solution arrays
-      if (nFieldsToRead.gt.4) then
+      if (nFieldsToRead.gt.4) 
          do i=1,ldimtRead
-            call rzero(avgq5(1,i),ntot1)
+            call rzero(avgq51,i),ntot)
          enddo
       endif
-      if (nFieldsToRead.gt.3) call rzero(avgq4,ntot2)
-      if (nFieldsToRead.gt.2) call rzero(avgq3,ntot1)
-      if (nFieldsToRead.gt.1) call rzero(avgq2,ntot1)
-                              call rzero(avgq1,ntot1)
-
-c     store state variables
-      call copy(w1,vx,ntot1)
-      call copy(w2,vy,ntot1)
-      call copy(w3,vz,ntot1)
-      call copy(wp,pr,ntot2)
-      do i=1,ldimt
-         call copy(wt(1,i),t(1,1,1,1,i),ntot1)
-      enddo
-      
-      temp_time = time
-
-c     store initc
+      if (nFieldsToRead.gt.3) call rzero(avgq4,ntot)
+      if (nFieldsToRead.gt.2) call rzero(avgq3,ntot)
+      if (nFieldsToRead.gt.1) call rzero(avgq2,ntot)
+                              call rzero(avgq1,ntot)
+            
       call chcopy(initcOld(1),initc(1),132)
       
-c     modify initc
       call blank(fileName,132)
       call blank(format_string,132)
       call blank(lstr,132)
@@ -3458,8 +3427,8 @@ c     modify initc
       call chcopy(fileName(4),session,ls) 
       call chcopy(fileName(4+ls),'0.f',3) 
 
-      call chcopy(auxName,fileName,ls+7)
-
+      call chcopy(auxName,fileName,ls+7) 
+    
       write(lstr,"(I2)") ltrunc(fileName,132)
 
       format_string = "(A"//trim(lstr)//",I5.5)"
@@ -3467,21 +3436,21 @@ c     modify initc
       write(fpath,format_string)auxName,readStats
 
       INQUIRE(FILE=fpath,EXIST=there)
-c     read data into solution arrays
+      
       if (THERE) then
         WRITE(initc(1),format_string)auxName,readStats
         call restart(1)
         call nekgsync()         
 
-        if (nFieldsToRead.gt.4) then
+        if (nFieldsToRead.gt.4) 
            do i=1,ldimtRead
-              call copy(avgq5(1,i),t(1,1,1,1,i),ntot1)
+              call copy(avgq5(1,i),t(1,1,1,1,i),ntot)
            enddo
         endif
         if (nFieldsToRead.gt.3) call copy(avgq4,pr,ntot2)
-        if (nFieldsToRead.gt.2) call copy(avgq3,vz,ntot1)
-        if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot1)
-                                call copy(avgq1,vx,ntot1)
+        if (nFieldsToRead.gt.2) call copy(avgq3,vx,ntot)
+        if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot)
+                                call copy(avgq1,vz,ntot)
             
         if (nid.eq.0) write(6,*)'Reading statistics for atime: ',time
         avtime = time
@@ -3491,29 +3460,14 @@ c     read data into solution arrays
         call exitt
       endif
 
-c     restore init c
       call blank(initc(1),132)
       call chcopy(initc(1),initcOld(1),132)
 
-c     restore state variables
-      call copy(vx,w1,ntot1)
-      call copy(vy,w2,ntot1)
-      call copy(vz,w3,ntot1)
-      call copy(pr,wp,ntot2)
-      do i=1,ldimt
-         call copy(t(1,1,1,1,i),wt(1,i),ntot1)
-      enddo
-
-      time = temp_time
-
-
-c     don't use disk like an auxillary array
-
-c     if (lastRead) then
-c       if (nid.eq.0) write(6,*)'Reading back initial fields:'
-c       call restart(1)
-c       call nekgsync()         
-c     endif
+      if (lastRead) then
+        if (nid.eq.0) write(6,*)'Reading back initial fields:'
+        call restart(1)
+        call nekgsync()         
+      endif
 
       return
       end

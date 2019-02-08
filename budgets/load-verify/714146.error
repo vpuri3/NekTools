@@ -1,0 +1,14 @@
+2019-02-07 23:29:22.535 (INFO ) [0x40000bfbdd0] ibm.runjob.AbstractOptions: using properties file /bgsys/local/etc/bg.properties
+2019-02-07 23:29:22.536 (INFO ) [0x40000bfbdd0] ibm.runjob.AbstractOptions: max open file descriptors: 65536
+2019-02-07 23:29:22.536 (INFO ) [0x40000bfbdd0] ibm.runjob.AbstractOptions: core file limit: 18446744073709551615
+2019-02-07 23:29:22.538 (INFO ) [0x40000bfbdd0] 22972:tatu.runjob.client: scheduler job id is 714146
+2019-02-07 23:29:22.542 (INFO ) [0x400005c34d0] 22972:tatu.runjob.monitor: monitor started
+2019-02-07 23:29:22.694 (INFO ) [0x400005c34d0] 22972:tatu.runjob.monitor: task record 2148645 created
+2019-02-07 23:29:22.695 (INFO ) [0x40000bfbdd0] VST-02400-13731-128:22972:ibm.runjob.client.options.Parser: set local socket to runjob_mux from properties file
+2019-02-07 23:29:30.789 (INFO ) [0x40000bfbdd0] VST-02400-13731-128:2317855:ibm.runjob.client.Job: job 2317855 started
+2019-02-07 23:29:33.090 (INFO ) [0x400005c34d0] 22972:tatu.runjob.monitor: tracklib completed
+2019-02-07 23:30:12.592 (INFO ) [0x40000bfbdd0] VST-02400-13731-128:2317855:ibm.runjob.client.Job: exited with status 228
+2019-02-07 23:30:12.592 (WARN ) [0x40000bfbdd0] VST-02400-13731-128:2317855:ibm.runjob.client.Job: normal termination with status 228 from rank 0
+2019-02-07 23:30:12.593 (INFO ) [0x40000bfbdd0] tatu.runjob.client: task exited with status 228
+2019-02-07 23:30:12.593 (INFO ) [0x400005c34d0] 22972:tatu.runjob.monitor: monitor terminating
+2019-02-07 23:30:12.597 (INFO ) [0x40000bfbdd0] tatu.runjob.client: monitor completed

@@ -4,18 +4,18 @@
 #
 # INPUT: $1: case name
 #        $2: folder base name
-#        $3: # of last completed job
+#        $3: # of folder to start from
 #        $4: # of jobs to run
 #
 # EXAMPLE
 #        $ ./autorun smoothWavyWall r 7 9
 # will execute 9 consecutive runs of case smoothWavyWall
-# and save then in folders r8,r9,..,r16
+# and save then in folders r7,r8,..,r15
 ##----------------------------------------------------##
 
 email="vpuri3@illinois.edu" # email log after queuing
 res="restart0.f00001"       # name of restart file
-rsfx="0.f00002"             # suffix of output file to restart from.
+rsfx="0.f00001"             # suffix of output file to restart from.
                             #      if "0.f00000" then restarts from
                             #      last file in directory.
 bsfx="0.f00001"             # suffix of output file to read budgets from.
@@ -38,8 +38,8 @@ log=$dir/run.log
 
 function send_log { mail -s "$case autorun" $email < $log; }
 
-if [ -f $log ]; then
-    mv run.log run.log2
+if [ ! -f $log ]; then
+    touch $log
 fi
 						              
 echo "##############################################"         |& tee -a $log
@@ -64,43 +64,58 @@ if [ "$bsfx" = "0.f00000" ]; then
 fi
 
 for ((i=1; i<=$njobs; i++)); do
-    dir0=$dir/$base$num
-    num=$((num+1))					      
-    dir1=$dir/$base$num
-							      
     echo "#--------------------------------------------#"     |& tee -a $log
     echo "#------------------ RUN $i -------------------#"    |& tee -a $log
     echo "#--------------------------------------------#"     |& tee -a $log
     echo $(date -R)                                           |& tee -a $log
 
-    if [ ! -f $dir0/$case$"0.f"* ]; then
- 	echo "ABORT: $dir0 does not contain output files ."   |& tee -a $log
- 	send_log; exit 1
-    fi
 
-    if [ "$budgets" = true ]; then
-	if [ ! -f $dir1/i01$case$bsfx ]; then
- 	    echo "ABORT: i01$case$bsfx not found in $dir0."   |& tee -a $log
+#   Organization
+    dir0=$dir/$base$num
+    if [ $i = 1 ]; then
+	dir1=$dir0
+	echo "starting from $dir1"                            |& tee -a $log
+    else
+	num=$((num+1))
+	dir1=$dir/$base$num
+
+#	checks
+	if [ ! -f $dir0/$case$"0.f00001" ]; then
+ 	    echo "ABORT: $dir0 does not have output files."   |& tee -a $log
  	    send_log; exit 1
 	fi
-    fi
+	if [ "$budgets" = true ]; then
+	    if [ ! -f $dir0/i01$case$bsfx ]; then
+ 		echo "ABORT: no i01$case$bsfx in $dir0."      |& tee -a $log
+ 		send_log; exit 1
+	    fi
+	fi
 
-    echo "copying $dir0 to $dir1"                             |& tee -a $log
-    cp -r $dir0 $dir1                                         |& tee -a $log
+#	copying directories.
+	echo "copying $dir0 to $dir1"                         |& tee -a $log
+	cp -r $dir0 $dir1                                     |& tee -a $log
+	if [ $? != 0 ]; then		                  
+	    echo "ABORT: error in copying $dir0 to $dir1."    |& tee -a $log
+	    send_log; exit 1
+	fi
 
-    if [ $? != 0 ]; then		                      
-	echo "ABORT: error in copying $dir0 to $dir1."        |& tee -a $log
-	send_log; exit 1
+#	changing write permission for $dir0
+#       echo "changing write permissions for $dir0"           |& tee -a $log
+#       cd $dir0
+#       for f in $dir0; do
+#           [ -L "$f" ] && cp --remove-destination "$(readlink "$f")" "$f"]
+#       done
+#       chmod -R -wx $dir0                                    |& tee -a $log
+    
     fi
 
     cd  $dir1
 
+#   updating restart
     if [ "$findrsfx" = true ]; then
 	echo "finding latest output file in $dir1"            |& tee -a $log
-	rsfx=$(ls -t $dir1/$case"0.f"*)
-	rsfx=$($rsfx)
-	rsfx=${rsfx[0]}
-	rsfx=${rsfx:${#list}-8:8};
+	rsfx=$(ls -t $case"0.f"* | head -1)
+	rsfx=${rsfx:${#rsfx}-8:8}
 	echo "latest output file is $case$rsfx."              |& tee -a $log
     fi
 
@@ -111,14 +126,21 @@ for ((i=1; i<=$njobs; i++)); do
 						            
     echo "restarting from $res"                               |& tee -a $log
     head -c 130 $res                                          |& tee -a $log
+    echo -e "\n"                                              |& tee -a $log
 
-    if [ "$budgets" != true ]; then
+    if [ $? != 0 ]; then		                      
+	echo "ABORT: something wrong with $dir1/$res."        |& tee -a $log
+	send_log; exit 1
+    fi
+
+    if [ "$budgets" = true ]; then
 	echo "reading budgets from i##$case$bsfx"             |& tee -a $log
 	head -c 130 i01$case$bsfx                             |& tee -a $log
+	echo -e "\n"                                          |& tee -a $log
     fi
 
     echo "compiling..."                                       |& tee -a $log
-    echo "using makenek" $(which makenek)                     |& tee -a $log
+    echo "using makenek " $(which makenek)                    |& tee -a $log
     makenek $case                                              &>> /dev/null
 
     if [ ! -f $dir1/nek5000 ]; then
@@ -129,7 +151,7 @@ for ((i=1; i<=$njobs; i++)); do
     fi						       
 						       
     echo "compilation successful."                            |& tee -a $log
-    tail -c 300 $dir1/compiler.out                            |& tee -a $log
+#   tail -c 300 $dir1/compiler.out                            |& tee -a $log
     ./$sub $case $nnodes                                      |& tee -a $log
 					                      
     if [ $? != 0 ]; then

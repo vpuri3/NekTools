@@ -36,14 +36,14 @@ c             \     distance to face                    |  |
 c              \                                        |  |
 c               \_______________________________________|  +----> Y
 c
-c     real vlx(lx1,ly1,lz1,lelv)
-c     real vly(lx1,ly1,lz1,lelv)
-c     real vlz(lx1,ly1,lz1,lelv)
+c     real ux(lx1,ly1,lz1,lelv)
+c     real uy(lx1,ly1,lz1,lelv)
+c     real uz(lx1,ly1,lz1,lelv)
 c     real up(lx1,ly1,lz1,lelv)
 c     real yp(lx1,ly1,lz1,lelv)
 c     integer f,ifld,idir_sctr,idir_avg
 c     character*3 bctyp
-c     logical ifavg,ifsample
+c     logical ifplnr_avg,ifsample
 c
 c     integer gs_sctr_hndl
 c     save    gs_sctr_hndl
@@ -53,26 +53,27 @@ c     integer gs_avg_hndl
 c     save    gs_avg_hndl
 c     data    gs_avg_hndl / 0 /
 c
-c     f         = 1
-c     bctyp     = 'W  '
-c     nelx      = 64
-c     nely      = 16
-c     nelz      = 32
-c     ifld      = 1
-c     idir_sctr = 2
-c     idir_avg  = 3
-c     ifavg     = .true. ! average over homogeneous direction idir_avg
+c     f          = 1
+c     bctyp      = 'W  '
+c     nelx       = 64
+c     nely       = 16
+c     nelz       = 32
+c     ifld       = 1
+c     idir_sctr  = 2
+c     idir_avg   = 3
+c     ifplnr_avg = .true. ! average over homogeneous direction idir_avg
 c     ifsample  = .true.
 c
-c     call comp_uplus(upl,ypl,vx,vy,vz,f,bctyp,gs_sctr_hndl,gs_avg_hndl,
-c    $            nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifavg,ifsample)
+c     call comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_sctr_hndl,gs_avg_hndl
+c    $      ,nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifplnr_avg,ifsample)
 c
 C-----------------------------------------------------------------------
       include 'scttr.usr'
 c     include 'plavg.usr'
 C-----------------------------------------------------------------------
       subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2,
-     $                 nelx,nely,nelz,ifld,idir1,idir2,ifplnr,ifsamp)
+     $              nelx,nely,nelz,ifld,idir1,idir2,ifplnr_avg,ifsample)
+
       include 'SIZE'
       include 'TOTAL'
       include 'UPLUS'
@@ -85,14 +86,14 @@ C-----------------------------------------------------------------------
       integer f,ifld,idir1,idir2,gs_hndl1,gs_hndl2
       integer nelx,nely,nelz
       character*3 bctyp
-      logical ifplnr,ifsamp
+      logical ifplnr_avg,ifsample
 
       common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
      $             , vr(lxyz),vs(lxyz),vt(lxyz)
      $             , wr(lxyz),ws(lxyz),wt(lxyz)
 
       real sij(lx1,ly1,lz1,nxzf,lelv) ! strain rate tensor
-      integer e,k
+      integer e,k,ntot
       real Tmg,vsc,dsty
       real n1 ,n2 ,n3
       real s11,s12,s13
@@ -105,37 +106,37 @@ C-----------------------------------------------------------------------
 
       if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
 c
-      n = nx1*ny1*nz1*nelv
+      ntot = lx1*ly1*lz1*nelv
 c
-      call rzero(up,n)
-      call rzero(yp,n)
+      call rzero(up,ntot)
+      call rzero(yp,ntot)
 c
-      call rzero(fNx,n)
-      call rzero(fNy,n)
-      call rzero(fNz,n)
-      call rzero(fTx,n)
-      call rzero(fTy,n)
-      call rzero(fTz,n)
-      call rzero(fTm,n)
-      call rzero(fUf,n)
+      call rzero(fNx,ntot)
+      call rzero(fNy,ntot)
+      call rzero(fNz,ntot)
+      call rzero(fTx,ntot)
+      call rzero(fTy,ntot)
+      call rzero(fTz,ntot)
+      call rzero(fTm,ntot)
+      call rzero(fUf,ntot) ! friction vel on face
 c
-      call rzero(volNx,n)
-      call rzero(volNy,n)
-      call rzero(volNz,n)
-      call rzero(volTm,n)
-      call rzero(volUf,n)
+      call rzero(volNx,ntot)
+      call rzero(volNy,ntot)
+      call rzero(volNz,ntot)
+      call rzero(volTm,ntot)
+      call rzero(volUf,ntot) ! friction vel in vol
 c
-      call rzero(utn,n)
-      call rzero(d2f,n)
+      call rzero(utn,ntot)
+      call rzero(d2f,ntot)
 c
-      call rzero(uxa,n)
-      call rzero(uya,n)
-      call rzero(uza,n)
-      call rzero(pra,n)
-      call rzero(Tma,n)
-      call rzero(Ufa,n)
+      call rzero(uxa,ntot)
+      call rzero(uya,ntot)
+      call rzero(uza,ntot)
+      call rzero(pra,ntot)
+      call rzero(Tma,ntot)
+      call rzero(Ufa,ntot) ! avg friction vel
 c
-      call rzero(sij,n*nxzf)
+      call rzero(sij,ntot*nxzf)
 
       a     = 0.                ! drag on face
       xdrg  = 0.                ! drag on face X-comp
@@ -148,7 +149,7 @@ c
       dsty = param(1)
 
       ! initialize viscocity
-      if (istep.eq.0) call cfill(vdiff,param(2),n)
+      if (istep.eq.0) call cfill(vdiff,param(2),ntot)
 
       ! strain rate tensor
       call comp_sij(sij,nxzf,ux,uy,uz,ur,us,ut,vr,vs,vt,wr,ws,wt)
@@ -239,12 +240,12 @@ c
       call scttr(volNy,fNy,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
       call scttr(volNz,fNz,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
       call scttr(volTm,fTm,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
-      call scttr(volUf,fUf,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
+      call scttr(volUf,fUf,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1) ! friction velocity
 c
       ! distance in direction parallel to idir
       call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-      if(ifplnr) then
+      if(ifplnr_avg) then
        if(nid.eq.0) write(6,*) "averaging in direction ", idri2
 c
        call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
@@ -256,15 +257,15 @@ c
        call plane_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
      $                                                          ,idir2)
       else
-         call copy(uxa,ux,n)
-         call copy(uya,uy,n)
-         call copy(uza,uz,n)
-         call copy(pra,pr,n)
-         call copy(Tma,volTm,n)
-         call copy(Ufa,volUf,n)
+         call copy(uxa,ux,ntot)
+         call copy(uya,uy,ntot)
+         call copy(uza,uz,ntot)
+         call copy(pra,pr,ntot)
+         call copy(Tma,volTm,ntot)
+         call copy(Ufa,volUf,ntot)
       endif
 c
-      do i=1,n                                    ! u-plus,y-plus
+      do i=1,ntot                                 ! u-plus,y-plus
          u   = uxa  (i,1,1,1)
          v   = uya  (i,1,1,1)
          w   = uza  (i,1,1,1)
@@ -273,13 +274,13 @@ c
          n3  = volNz(i,1,1,1)
          Tmg = Tma  (i,1,1,1)
 c
-c        ufr = Ufa  (i,1,1,1)                     ! =avg(sqrt(Tmg/rho))
-         ufr = sqrt(Tmg/dsty)                     ! =sqrt(avg(Tmg)/rho)
+c        ufr = Ufa  (i,1,1,1)                     ! =plnr_avg(sqrt(Tmg/rho))
+         ufr = sqrt(Tmg/dsty)                     ! =sqrt(plnr_avg(Tmg)/rho)
 c
-         un = u*n1 + v*n2 + w*n3                  ! normal vel
+         un = u*n1 + v*n2 + w*n3                  ! normal component magniture
          un = u*u  + v*v  + w*w - un*un
          un = sqrt(un)
-         utn(i,1,1,1) = un                        ! tangential vel
+         utn(i,1,1,1) = un                        ! tangential component magnitude
 c
          up(i,1,1,1) = utn(i,1,1,1)/ufr
          yp(i,1,1,1) = d2f(i,1,1,1)*ufr/vsc
@@ -300,15 +301,15 @@ c
       call outpost(fTx,fTy,fTz,fTm,Tma,'wsh')
       call outpost(up,yp,utn,volTm,d2f,'upl')
 c
-      if(ifplnr) call outpost(ux,uy,uz,pra,t,'pla')
+      if(ifplnr_avg) call outpost(ux,uy,uz,pra,t,'pla')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
       ifpo  = iifpo
       ifto  = iifto
 c
-      if(ifsamp) call sample(up,yp,utn,Tma,d2f,'upl',
-     $                    'up','yp','utn','Tma','d2f')
+      if(ifsample) call sample(up,yp,Tma,d2f,utn,'upl',
+     $                      'upAvg','ypAvg','TmAvg','d2f','utn')
 c
       return
       end
