@@ -18,15 +18,15 @@
  Number of processors: 8192
  REAL    wdsize      : 8
  INTEGER wdsize      : 4
- Timer accuracy      : 1.85E-07
+ Timer accuracy      : 1.91E-07
   
- Reading /projects/wall_turb_dd/vpuri/load-verify/smoothWavyWall.rea                                                                         
- Reading /projects/wall_turb_dd/vpuri/load-verify/smoothWavyWall.re2                                                                         
+ Reading /projects/wall_turb_dd/vpuri/NekRoutines/budgets/load-verify/smoothWavyWall.rea                                                     
+ Reading /projects/wall_turb_dd/vpuri/NekRoutines/budgets/load-verify/smoothWavyWall.re2                                                     
  mapping elements to processors
- Reading /projects/wall_turb_dd/vpuri/load-verify/smoothWavyWall.ma2                                                                         
+ Reading /projects/wall_turb_dd/vpuri/NekRoutines/budgets/load-verify/smoothWavyWall.ma2                                                     
   
  element load imbalance:  0 4 4
- done :: mapping    .13474     sec
+ done :: mapping    .15619     sec
 
   
   preading mesh 
@@ -61,7 +61,7 @@
  101      1.00000     p101 Number of additional modes to filter
  103      0.01        p103 weight of stabilizing filter (.01)
   
- done :: read .rea file    1.8439     sec
+ done :: read .rea file    1.8574     sec
 
  nelgt/nelgv/lelt:       32768       32768           8
  lx1  /lx2  /lx3 :           8           8           8
@@ -73,12 +73,12 @@
  done :: usrsetvert
 
 gs_setup: 3034276 unique labels shared
-   pairwise times (avg, min, max): 0.000567899 0.000471114 0.000698788
-   crystal router                : 0.00329289 0.00325152 0.00337981
+   pairwise times (avg, min, max): 0.000566987 0.000479709 0.000699879
+   crystal router                : 0.00328309 0.00324192 0.00335694
    used all_to_all method: pairwise
    handle bytes (avg, min, max): 27625.2 22140 32636
    buffer bytes (avg, min, max): 17632.1 12176 25008
-   setupds time 4.0025E-01 seconds   0  8     4261888       32768
+   setupds time 4.0072E-01 seconds   0  8     4261888       32768
  8  max multiplicity
  done :: setup mesh topology
   
@@ -147,7 +147,7 @@ gs_setup: 3034276 unique labels shared
        FILE:innsmoothWavyWall0.f00001                                                                                                           
 
         0  1.0000E+03 done :: Read checkpoint data
-                              avg data-throughput =   249.8MBps
+                              avg data-throughput =   265.4MBps
                               io-nodes =  8192
 
  xyz min     .00000E+00   .00000E+00   .00000E+00
@@ -165,7 +165,7 @@ gridpoints unique/tot:      11339776     16777216
   dofs: 11139072 11339776
   
  Initial time:  .1000000E+04
- Initialization successfully completed    4.1354     sec
+ Initialization successfully completed    4.0426     sec
 
  nsteps=0 -> skip time loop
  running solver in post processing mode
@@ -175,10 +175,15 @@ gridpoints unique/tot:      11339776     16777216
        FILE:innsmoothWavyWall0.f00001                                                                                                           
 
         0  1.0000E+03 done :: Read checkpoint data
-                              avg data-throughput =   249.3MBps
+                              avg data-throughput =   248.3MBps
                               io-nodes =  8192
 
  Reading statistics for atime:  1000.00009997100005
+ max val in vx 1.24787271022796631
+ max val in vy 0.123352892696857452
+ max val in vz 0.461565256118774414E-01
+ max val in pr 0.110306166112422943
+ max val in scalar 0.000000000000000000E+00
  error in vx 0.000000000000000000E+00
  error in vy 0.000000000000000000E+00
  error in vz 0.000000000000000000E+00
@@ -187,21 +192,21 @@ gridpoints unique/tot:      11339776     16777216
  done :: userchk
 
         0  1.0000E+03 Write checkpoint
-       FILE:/projects/wall_turb_dd/vpuri/load-verify/smoothWavyWall0.f00001                                                                     
+       FILE:/projects/wall_turb_dd/vpuri/NekRoutines/budgets/load-verify/smoothWavyWall0.f00001                                                 
 
         0  1.0000E+03 done :: Write checkpoint
                               file size =     450.E+00MB
-                              avg data-throughput =   171.4MB/s
+                              avg data-throughput =   195.0MB/s
                               io-nodes =  8192
 
   
 run successful: dying ...
   
   
-total elapsed time             :   8.58491E+00 sec
+total elapsed time             :   8.18699E+00 sec
 total solver time w/o IO       :   0.00000E+00 sec
 time/timestep                  :   0.00000E+00 sec
 avg throughput per timestep    :   0.00000E+00 gridpts/CPUs
 total max memory usage         :   4.99229E+02 GB
 
-auto_perf: ERROR- task -1 failed to open the file /gpfs/vesta-fs0/logs/autoperf/2019/2/7/ap-714146-2317855
+auto_perf: ERROR- task -1 failed to open the file /gpfs/vesta-fs0/logs/autoperf/2019/2/8/ap-714322-2318026

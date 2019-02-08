@@ -1,8 +1,8 @@
-### makefile automatically created by makenek 02/07/2019 17:27:40 ###
+### makefile automatically created by makenek 02/08/2019 16:02:34 ###
 BINNAME=nek5000
 LIBNAME=libnek5000.a
 CASENAME:=smoothWavyWall
-CASEDIR:=/projects/wall_turb_dd/vpuri/load-verify
+CASEDIR:=/projects/wall_turb_dd/vpuri/NekRoutines/budgets/load-verify
 S:=/home/vpuri/Nek5000/core
 SCMT:=/home/vpuri/Nek5000/core/cmt
 OPT_INCDIR=./

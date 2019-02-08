@@ -131,6 +131,20 @@ c-----------------------------------------------------------------------
       call load_avg5(w1,w2,w3,wp,wt,
      &               'inn',1,time,ldimt,5,.true.)
 
+      tmp = glmax(w1,ntot1)
+      if(nid.eq.0) write(6,*) "max val in vx", tmp
+      tmp = glmax(w2,ntot1)    
+      if(nid.eq.0) write(6,*) "max val in vy", tmp
+      tmp = glmax(w3,ntot1)    
+      if(nid.eq.0) write(6,*) "max val in vz", tmp
+      tmp = glmax(wp,ntot1)    
+      if(nid.eq.0) write(6,*) "max val in pr", tmp
+
+      do j=1,ldimt
+         tmp = glmax(wt(1,1,1,1,j),ntot1)
+         if(nid.eq.0) write(6,*) "max val in scalar", tmp
+      enddo
+
       do i=1,ntot1
          w1(i,1,1,1)=vx(i,1,1,1)-w1(i,1,1,1)
          w2(i,1,1,1)=vy(i,1,1,1)-w2(i,1,1,1)
