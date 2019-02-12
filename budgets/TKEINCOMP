@@ -21,8 +21,5 @@ c
      $ ,epka(lx1,ly1,lz1,lelv) ! viscous dissipation
      $ ,vdka(lx1,ly1,lz1,lelv) ! viscous diffusion
 c
-     $ ,tke_pt(lx1,ly1,lz1,lelv) ! pres transp (-1/dens0)*<p',j * u'j>
-     $ ,tke_ps(lx1,ly1,lz1,lelv) ! pres strain (-1/dens0)*<p' * u'i,i>
-     $ ,tka_ps(lx1,ly1,lz1,lelv) ! pres strain (-1/dens0)*<p' * u'i,i>
-     $ ,chkdiv(lx1,ly1,lz1,lelv) ! <u i>,i == 0
-     $ ,chkpdv(lx1,ly1,lz1,lelv) ! <u i>,i == 0
+     $ ,div(lx1,ly1,lz1,lelv) ! <u i,i> == 0
+     $ ,diva(lx1,ly1,lz1,lelv)
