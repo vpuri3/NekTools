@@ -52,3 +52,4 @@ Fri Feb 08 22:04:16 2019 +0000 (UTC) Info: stdout sent to /gpfs/vesta-fs0/projec
 Fri Feb 08 22:04:16 2019 +0000 (UTC) Info: stderr sent to /gpfs/vesta-fs0/projects/wall_turb_dd/vpuri/NekRoutines/budgets/load-verify/714322.error
 Fri Feb 08 22:04:16 2019 +0000 (UTC) 
 Fri Feb 08 22:04:17 2019 +0000 (UTC) vpuri/714322: Block VST-02440-13771-128 for location VST-02440-13771-128 successfully booted (Initiating). 
+Fri Feb 08 22:05:10 2019 +0000 (UTC) Info: task completed normally with an exit code of 228; initiating job cleanup and removal
