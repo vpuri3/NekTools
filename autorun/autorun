@@ -42,9 +42,9 @@ if [ ! -f $log ]; then
     touch $log
 fi
 						              
-echo "##############################################"         |& tee -a $log
-echo "##############################################"         |& tee -a $log
-echo "##############################################"         |& tee -a $log
+echo "######################################################" |& tee -a $log
+echo "######################################################" |& tee -a $log
+echo "######################################################" |& tee -a $log
 echo $(date -R)                                               |& tee -a $log
 echo "Starting new session in directory $dir."                |& tee -a $log
 echo "Running case $case from $base$num $njobs times."        |& tee -a $log
@@ -64,9 +64,9 @@ if [ "$bsfx" = "0.f00000" ]; then
 fi
 
 for ((i=1; i<=$njobs; i++)); do
-    echo "#--------------------------------------------#"     |& tee -a $log
-    echo "#------------------ RUN $i -------------------#"    |& tee -a $log
-    echo "#--------------------------------------------#"     |& tee -a $log
+    echo "#------------------------------------------------#" |& tee -a $log
+    echo "#------------------ RUN $i ----------------------#" |& tee -a $log
+    echo "#------------------------------------------------#" |& tee -a $log
     echo $(date -R)                                           |& tee -a $log
 
 
@@ -120,9 +120,9 @@ for ((i=1; i<=$njobs; i++)); do
     fi
 
     echo "removing old logs and updating restart"             |& tee -a $log
-    rm $res *.cobaltlog *.error *.output *log* *out*          |& tee -a $log
+    rm $res *.cobaltlog *.error *.output *log* *out* #        |& tee -a $log
     mv -v $case$rsfx $res                                     |& tee -a $log
-    rm $case"0.f00"*                                          |& tee -a $log
+    rm $case"0.f00"*                                 #        |& tee -a $log
 						            
     echo "restarting from $res"                               |& tee -a $log
     head -c 130 $res                                          |& tee -a $log
@@ -141,7 +141,7 @@ for ((i=1; i<=$njobs; i++)); do
 
     echo "compiling..."                                       |& tee -a $log
     echo "using makenek " $(which makenek)                    |& tee -a $log
-    makenek $case                                              &>> /dev/null
+    makenek $case      #                                       &>> /dev/null
 
     if [ ! -f $dir1/nek5000 ]; then
 	echo "ABORT: compilation failed in $dir1 ."           |& tee -a $log
@@ -186,5 +186,5 @@ for ((i=1; i<=$njobs; i++)); do
     send_log
     sleep 7000
     echo $(date -R)                                           |& tee -a $log
-    echo "long time no see? time for next run"                |& tee -a $log
+    [ ! $i = $njobs] && echo "long time no see?"              |& tee -a $log
 done

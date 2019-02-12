@@ -34,6 +34,21 @@ c     call outpost(vxa,vya,vza,pra,t,'zav')! X & no PT?
 c     call exitti(" Exit after plane_avg_tensor, E=$",nelgt)
 c
 c-----------------------------------------------------------------------
+      subroutine plane_avg_wrapper(u,gs_hndl,nelx,nely,nelz,ifld,idir)
+      include 'SIZE'
+      include 'TOTAL'
+      real u(lx1,ly1,lz1,lelt)
+      real w1(lx1,ly1,lz1,lelt)
+
+      call plane_avg_tensor(w1,u,gs_hndl,nelx,nely,nelz,ifld,idir)
+
+      do i=1,lx1*ly1*lz1*nelt
+         u(i,1,1,1) = w1(i,1,1,1)
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
       subroutine plane_avg_tensor(ua,u,gs_hndl,nelx,nely,nelz,ifld,idir)
       include 'SIZE'
       include 'TOTAL'

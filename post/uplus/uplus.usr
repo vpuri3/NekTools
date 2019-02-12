@@ -68,11 +68,12 @@ c     call comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_sctr_hndl,gs_avg_hndl
 c    $      ,nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifplnr_avg,ifsample)
 c
 C-----------------------------------------------------------------------
-      include 'scttr.usr'
 c     include 'plavg.usr'
+c     include 'lnavg.usr'
+      include 'scttr.usr'
 C-----------------------------------------------------------------------
-      subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2,
-     $              nelx,nely,nelz,ifld,idir1,idir2,ifplnr_avg,ifsample)
+      subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2
+     $                 ,nelx,nely,nelz,ifld,idir1,idir2,avgtyp,ifsample)
 
       include 'SIZE'
       include 'TOTAL'
@@ -86,7 +87,8 @@ C-----------------------------------------------------------------------
       integer f,ifld,idir1,idir2,gs_hndl1,gs_hndl2
       integer nelx,nely,nelz
       character*3 bctyp
-      logical ifplnr_avg,ifsample
+      character*4 avgtyp
+      logical ifsample
 
       common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
      $             , vr(lxyz),vs(lxyz),vt(lxyz)
@@ -118,7 +120,7 @@ c
       call rzero(fTy,ntot)
       call rzero(fTz,ntot)
       call rzero(fTm,ntot)
-      call rzero(fUf,ntot) ! friction vel on face
+      call rzero(fUf,ntot)   ! friction vel on face
 c
       call rzero(volNx,ntot)
       call rzero(volNy,ntot)
@@ -245,8 +247,9 @@ c
       ! distance in direction parallel to idir
       call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-      if(ifplnr_avg) then
-       if(nid.eq.0) write(6,*) "averaging in direction ", idri2
+      ! averaging over homogeneous directions
+      if(avgtyp.eq.'plnr') then
+       if(nid.eq.0) write(6,*) "Planar averaging in direction ", idri2
 c
        call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call plane_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld,idir2)
@@ -256,6 +259,19 @@ c
      $                                                          ,idir2)
        call plane_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
      $                                                          ,idir2)
+
+      elseif(avgtyp.eq.'line') then
+       if(nid.eq.0) write(6,*) "Line averaging in direction ", idir2
+c
+       call line_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call line_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call line_avg_tensor(uza,uz,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call line_avg_tensor(pra,pr,gs_hndl2,nelx,nely,nelz,ifld,idir2)
+       call line_avg_tensor(Tma,volTm,gs_hndl2,nelx,nely,nelz,ifld
+     $                                                          ,idir2)
+       call line_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
+     $                                                          ,idir2)
+
       else
          call copy(uxa,ux,ntot)
          call copy(uya,uy,ntot)
@@ -298,10 +314,8 @@ c
       ifpo  = .true.
       ifto  = .true.
 c
-      call outpost(fTx,fTy,fTz,fTm,Tma,'wsh')
+c     call outpost(fTx,fTy,fTz,fTm,Tma,'wsh')
       call outpost(up,yp,utn,volTm,d2f,'upl')
-c
-      if(ifplnr_avg) call outpost(ux,uy,uz,pra,t,'pla')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
