@@ -10,21 +10,25 @@
 # EXAMPLE
 #        $ ./autorun smoothWavyWall r 7 9
 # will execute 9 consecutive runs of case smoothWavyWall
-# and save then in folders r7,r8,..,r15
+# and save them in folders r7,r8,..,r15
 ##----------------------------------------------------##
 
-email="vpuri3@illinois.edu" # email log after queuing
-res="restart0.f00001"       # name of restart file
-rsfx="0.f00001"             # suffix of output file to restart from.
-                            #      if "0.f00000" then restarts from
-                            #      last file in directory.
-bsfx="0.f00001"             # suffix of output file to read budgets from.
-                            #      if "0.f00000" don't read budgets.
-sub="my_nekqsub"            # job submission script
-nnodes="256"                # # of nodes
+# enter the following variables in run.conf
+
+#  email="vpuri3@illinois.edu" # email log after queuing
+#  res="restart0.f00001"       # name of restart file
+#  rsfx="0.f00001"             # suffix of output file to restart from.
+#                              #      if "0.f00000" then restarts from
+#                              #      last file in directory.
+#  bsfx="0.f00001"             # suffix of output file to read budgets from.
+#                              #      if "0.f00000" don't read budgets.
+#  sub="my_nekqsub"            # job submission script
+#  nnodes="256"                # # of nodes
 
 ##-------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------##
+[ ! -f ./run.conf ] && echo "ABORT: no run.conf found.";
+[   -f ./run.conf ] && echo "run.conf found."; source run.conf;
 
 case=$1
 base=$2
@@ -49,8 +53,15 @@ echo $(date -R)                                               |& tee -a $log
 echo "Starting new session in directory $dir."                |& tee -a $log
 echo "Running case $case from $base$num $njobs times."        |& tee -a $log
 echo "Storing log in $log."                                   |& tee -a $log
-							      
-
+#
+echo "from run.conf:"                                         |& tee -a $log
+echo "email  is $email"                                       |& tee -a $log
+echo "res    is $res"                                         |& tee -a $log
+echo "rsfx   is $rsfx"                                        |& tee -a $log
+echo "bsfx   is $bsfx"                                        |& tee -a $log
+echo "sub    is $sub"                                         |& tee -a $log
+echo "nnodes is $nnodes"                                      |& tee -a $log
+#
 findrsfx=false
 if [ "$rsfx" = "0.f00000" ]; then
     findrsfx=true
@@ -68,7 +79,6 @@ for ((i=1; i<=$njobs; i++)); do
     echo "#------------------ RUN $i ----------------------#" |& tee -a $log
     echo "#------------------------------------------------#" |& tee -a $log
     echo $(date -R)                                           |& tee -a $log
-
 
 #   Organization
     dir0=$dir/$base$num
@@ -99,13 +109,12 @@ for ((i=1; i<=$njobs; i++)); do
 	    send_log; exit 1
 	fi
 
-#	changing write permission for $dir0
 #       echo "changing write permissions for $dir0"           |& tee -a $log
 #       cd $dir0
-#       for f in $dir0; do
+#       for f in $dir0; do # de-link
 #           [ -L "$f" ] && cp --remove-destination "$(readlink "$f")" "$f"]
 #       done
-#       chmod -R -wx $dir0                                    |& tee -a $log
+#       chmod -wx $dir0                                       |& tee -a $log
     
     fi
 
@@ -120,14 +129,15 @@ for ((i=1; i<=$njobs; i++)); do
     fi
 
     echo "removing old logs and updating restart"             |& tee -a $log
-    rm $res *.cobaltlog *.error *.output *log* *out* #        |& tee -a $log
+    rm $res *.cobaltlog *.error *.output *log* *out*
     mv -v $case$rsfx $res                                     |& tee -a $log
-    rm $case"0.f00"*                                 #        |& tee -a $log
+    rm $case"0.f00"*
 						            
     echo "restarting from $res"                               |& tee -a $log
     head -c 130 $res                                          |& tee -a $log
     echo -e "\n"                                              |& tee -a $log
 
+# check
     if [ $? != 0 ]; then		                      
 	echo "ABORT: something wrong with $dir1/$res."        |& tee -a $log
 	send_log; exit 1
@@ -138,10 +148,10 @@ for ((i=1; i<=$njobs; i++)); do
 	head -c 130 i01$case$bsfx                             |& tee -a $log
 	echo -e "\n"                                          |& tee -a $log
     fi
-
+# compiling
     echo "compiling..."                                       |& tee -a $log
     echo "using makenek " $(which makenek)                    |& tee -a $log
-    makenek $case      #                                       &>> /dev/null
+    makenek $case                                              >>  /dev/null
 
     if [ ! -f $dir1/nek5000 ]; then
 	echo "ABORT: compilation failed in $dir1 ."           |& tee -a $log
@@ -151,7 +161,6 @@ for ((i=1; i<=$njobs; i++)); do
     fi						       
 						       
     echo "compilation successful."                            |& tee -a $log
-#   tail -c 300 $dir1/compiler.out                            |& tee -a $log
     ./$sub $case $nnodes                                      |& tee -a $log
 					                      
     if [ $? != 0 ]; then
@@ -165,7 +174,6 @@ for ((i=1; i<=$njobs; i++)); do
 
     sleep 60
     while [ ! -f $dir1/logfile ]; do
-	echo $(date -R)                                       |& tee -a $log
 	echo "waiting in queue"                               |& tee -a $log
 	qstat --header JobId:RunTime:State:Location -u $me    |& tee -a $log
 	sleep 300
