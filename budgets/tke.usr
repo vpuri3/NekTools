@@ -40,7 +40,7 @@ c
 c
       ntot = lx1*ly1*lz1*nelv
 c
-      if(nid.eq.0) write(6,*) 'computing TKE ...'
+      if(nid.eq.0) write(6,*) 'in comp_tke(...)'
 c
       call rzero(cnk,ntot)
       call rzero(prk,ntot)
@@ -185,6 +185,8 @@ c-----------------------------------------------------------------------
 
       integer gs_hndl,nelx,nely,nelz,ifld,idir
       character*4 avgtyp
+
+      if(nid.eq.0) write(6,*) 'in geom_avg_tke(...)'
 
       if(avgtyp.eq.'plnr') then
        if(nid.eq.0) write(6,*) 'planar averaging in direction', idir
