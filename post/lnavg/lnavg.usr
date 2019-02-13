@@ -35,13 +35,18 @@ c-----------------------------------------------------------------------
       subroutine line_avg_wrapper(u,gs_hndl,nelx,nely,nelz,ifld,idir)
       include 'SIZE'
       include 'TOTAL'
-      real u(lx1,ly1,lz1,lelt)
-      real w1(lx1,ly1,lz1,lelt)
+      real u(lx1*ly1*lz1*lelt)
+      real w1(lx1*ly1*lz1*lelt)
+      integer nt
+
+      nt = lx1*ly1*lz1*nelt
 
       call line_avg_tensor(w1,u,gs_hndl,nelx,nely,nelz,ifld,idir)
 
-      do i=1,lx1*ly1*lz1*nelt
-         u(i,1,1,1) = w1(i,1,1,1)
+      call rzero(u,nt)
+
+      do i=1,nt
+         u(i) = w1(i)
       enddo
 
       return
