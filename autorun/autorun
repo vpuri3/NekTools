@@ -121,28 +121,36 @@ for ((i=1; i<=$njobs; i++)); do
     cd  $dir1
 
 #   updating restart
-    if [ "$findrsfx" = true ]; then
-	echo "finding latest output file in $dir1"            |& tee -a $log
-	rsfx=$(ls -t $case"0.f"* | head -1)
-	rsfx=${rsfx:${#rsfx}-8:8}
-	echo "latest output file is $case$rsfx."              |& tee -a $log
+    echo "removing old logs and updating restart"             |& tee -a $log
+    rm *.cobaltlog *.error *.output *log* *out*
+
+    if [ $i = 1 ]; then
+        # switching restart file to $res
+	[ "$fresh" == false ] &&   mv -v $case$rsfx $res      |& tee -a $log
     fi
 
-    echo "removing old logs and updating restart"             |& tee -a $log
-    rm $res *.cobaltlog *.error *.output *log* *out*
-    mv -v $case$rsfx $res                                     |& tee -a $log
+    if [ ! $i = 1 ]; then
+        # get restart suffix
+	if [ "$findrsfx" = true ]; then
+	    echo "finding latest output file in $dir1"        |& tee -a $log
+	    rsfx=$(ls -t $case"0.f"* | head -1)
+	    rsfx=${rsfx:${#rsfx}-8:8}
+	    echo "latest output file is $case$rsfx."          |& tee -a $log
+	fi
+        # switching restart file to $res
+	mv -v $case$rsfx $res                                 |& tee -a $log
+    fi
+
     rm $case"0.f00"*
-						            
     echo "restarting from $res"                               |& tee -a $log
     head -c 130 $res                                          |& tee -a $log
-    echo -e "\n"                                              |& tee -a $log
 
 # check
     if [ $? != 0 ]; then		                      
 	echo "ABORT: something wrong with $dir1/$res."        |& tee -a $log
 	send_log; exit 1
     fi
-
+    echo -e "\n"                                              |& tee -a $log
     if [ "$budgets" = true ]; then
 	echo "reading budgets from i##$case$bsfx"             |& tee -a $log
 	head -c 130 i01$case$bsfx                             |& tee -a $log
