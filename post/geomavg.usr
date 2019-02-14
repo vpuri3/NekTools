@@ -28,9 +28,10 @@ c-----------------------------------------------------------------------
       integer gs_hndl,e,ex,ey,ez,eg
       integer nrepeat
 
-      nelxy = nelx*nely
-      nelyz = nely*nelz
-      nelzx = nelz*nelx
+      if(nrepeat.eq.0) call exitt
+c     nelxy = nelx*nely
+c     nelyz = nely*nelz
+c     nelzx = nelz*nelx
 
       if (gs_hndl.eq.0) then
        if (idir.eq.1)
@@ -68,7 +69,7 @@ c     Set the x-average handle
       nel = nelfld(ifld)
       do e=1,nel
        eg = lglel(e)
-       call get_exyz(ex,ey,ez,eg,nelx,nelyz,1)
+       call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
        ex_g = ey       ! Ensure int*8 promotion
        do k=1,nz1      ! Enumerate points in the y-z plane
        do j=1,ny1
@@ -96,7 +97,7 @@ c     Set the y-average handle
       nel = nelfld(ifld)
       do e=1,nel
        eg = lglel(e)
-       call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)            
+       call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
        ex_g = (ez-1)*nelx+ex       ! Ensure int*8 promotion
        do k=1,nz1      ! Enumerate points in the x-z plane
        do j=1,ny1
@@ -124,12 +125,17 @@ c     Set the z-average handle
       nel = nelfld(ifld)
       do e=1,nel
        eg = lglel(e)
-       call get_exyz(ex,ey,ez,eg,nelxy,1,1)
+       call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
        ex_g = ex       ! Ensure int*8 promotion
        do k=1,nz1      ! Enumerate points in the x-y plane
        do j=1,ny1
        do i=1,nx1
-          glo_num(i,j,k,e) = i+nx1*(j-1) + nx1*ny1*(ex_g-1)
+          lx = nelx*(nx1-1)+1
+          ly = nely*(ny1-1)+1
+          lpl= lx*ly
+          lb4=      lpl*(k-1+(ez-1)*(nz1-1)) 
+          lb4= lb4 + lx*(i-1+(ex-1)*(nx1-1))
+          glo_num(i,j,k,e) = lb4 + j + (ey-1)*(ny1-1) 
        enddo
        enddo
        enddo
