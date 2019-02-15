@@ -151,13 +151,13 @@ c-------------------------------------------------------------------------------
       idir    = 3
       nrepeat = 22 
 
-c     call gfldr('restart0.f00001')
+c     ! call gfldr('restart0.f00001')
       call geom_avg_wrapper(vx,gs_avg_hndl,nelx,nely,nelz,ifld,idir
      $     ,nrepeat)
-      call geom_avg_wrapper(vy,gs_avg_hndl,nelx,nely,nelz,ifld,idir
-     $     ,nrepeat)
-      call geom_avg_wrapper(vz,gs_avg_hndl,nelx,nely,nelz,ifld,idir
-     $     ,nrepeat)
+c     call geom_avg_wrapper(vy,gs_avg_hndl,nelx,nely,nelz,ifld,idir
+c    $     ,nrepeat)
+c     call geom_avg_wrapper(vz,gs_avg_hndl,nelx,nely,nelz,ifld,idir
+c    $     ,nrepeat)
 
       return
       end
