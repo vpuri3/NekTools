@@ -7,3 +7,6 @@ obj
 *.ma2
 *.re2
 .*
+makefile
+compiler.out
+*.log.*

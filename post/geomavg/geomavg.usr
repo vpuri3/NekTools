@@ -9,7 +9,8 @@ c-----------------------------------------------------------------------
 
       nt = lx1*ly1*lz1*nelt
 
-      call geom_avg_tensor(w1,u,gs_hndl,nelx,nely,nelz,ifld,idir)
+      call geom_avg_tensor(w1,u,gs_hndl,nelx,nely,nelz,ifld,idir
+     $     ,nrepeat)
 
       call rzero(u,nt)
 
@@ -29,7 +30,6 @@ c-----------------------------------------------------------------------
       integer gs_hndl,e,ex,ey,ez,eg
       integer nrepeat
 
-      if(nid.eq.0) write(6,*) 'in geom_avg_tensor()'
 
       if(nrepeat.eq.0) call exitt
 
@@ -42,7 +42,6 @@ c-----------------------------------------------------------------------
      $       call set_gs_zgeom_hndl(gs_hndl,nelx,nely,nelz,ifld,nrepeat)
       endif
 
-      if(nid.eq.0) write(6,*) 'back in geom_avg_tensor()'
       nel = nelfld(ifld)
       n   = nx1*ny1*nz1*nel
 
@@ -123,33 +122,32 @@ c     Set the z-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
       integer*8 glo_num
-      integer*8 lx,ly,lpl,lb4
+      integer*8 erepeat,e_num,lx,ly,lpl,lb4
 
-      if(nid.eq.0) write(6,*) 'in set_gs_zgeom_hndl()'
       nel = nelfld(ifld)
-      lx = nelx*(nx1-1)+1
-      ly = nely*(ny1-1)+1
-      lpl= lx*ly
+      erepeat = int(nelz/nrepeat)
+
+      lx  = nelx*(nx1-1)+1
+      ly  = nely*(ny1-1)+1
+      lpl = lx*ly
 
       do e=1,nel
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
-c      ex_g = mod1(ez,nrepreat)
+       e_num = mod1(ez,erepeat) 
        do k=1,nz1      ! Enumerate points in the x-y plane
        do j=1,ny1
        do i=1,nx1
-c         lb4=                lpl*(k-1+(ez-1)*(nz1-1)) 
-c         lb4= lb4 +           lx*(i-1+(ex-1)*(nx1-1))
-c         glo_num(i,j,k,e) = lb4 + j + (ey-1)*(ny1-1) 
-         glo_num(i,j,k,e) = k+nz1*(i-1) + nx1*nz1*(ex_g-1) 
+          lb4=      lpl*(k+(e_num-1)*(nz1-1)-1) 
+          lb4= lb4 + lx*(j+(ey   -1)*(ny1-1)-1)
+          glo_num(i,j,k,e)=lb4+i+(ex-1)*(nx1-1) 
        enddo
        enddo
        enddo
       enddo
-      if(nid.eq.0) write(6,*) 'done with numbering'
+
       n = nel*nx1*ny1*nz1
       call fgslib_gs_setup(gs_avg_hndl,glo_num,n,nekcomm,mp)
-      if(nid.eq.0) write(6,*) 'set gs_z handle'
 
       return
       end
