@@ -64,21 +64,33 @@ c     Set the x-average handle
       integer gs_avg_hndl,e,ex,ey,ez,eg,nelx,nely,nelz
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
-      integer*8 glo_num,ex_g
+
+      integer*8 glo_num
+      integer*8 erepeat,e_num,lx,ly,lpl,lb4
 
       nel = nelfld(ifld)
+      erepeat = int(nelx/nrepeat)
+
+      lx  = nelx*(nx1-1)+1
+      ly  = nely*(ny1-1)+1
+      lz  = nelz*(nz1-1)+1
+      lpl = ly*lz
+
       do e=1,nel
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
-       ex_g = ey       ! Ensure int*8 promotion
-       do k=1,nz1      ! Enumerate points in the y-z plane
+       e_num = mod1(ex,erepeat) 
+       do k=1,nz1      ! Enumerate points in the x-y plane
        do j=1,ny1
        do i=1,nx1
-          glo_num(i,j,k,e) = j+ny1*(k-1) + ny1*nz1*(ex_g-1)
+          lb4=      lpl*(i+(e_num-1)*(nx1-1)-1) 
+          lb4= lb4 + ly*(k+(ez   -1)*(nz1-1)-1)
+          glo_num(i,j,k,e)=lb4+j+(ey-1)*(ny1-1) 
        enddo
        enddo
        enddo
       enddo
+
       n = nel*nx1*ny1*nz1
       call fgslib_gs_setup(gs_hndl,glo_num,n,nekcomm,mp)
 
@@ -92,21 +104,33 @@ c     Set the y-average handle
       integer gs_avg_hndl,e,ex,ey,ez,eg,nelx,nely,nelz
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
-      integer*8 glo_num,ex_g
+
+      integer*8 glo_num
+      integer*8 erepeat,e_num,lx,ly,lpl,lb4
 
       nel = nelfld(ifld)
+      erepeat = int(nely/nrepeat)
+
+      lx  = nelx*(nx1-1)+1
+      ly  = nely*(ny1-1)+1
+      lz  = nelz*(nz1-1)+1
+      lpl = lx*lz
+
       do e=1,nel
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
-       ex_g = (ez-1)*nelx+ex       ! Ensure int*8 promotion
-       do k=1,nz1      ! Enumerate points in the x-z plane
+       e_num = mod1(ey,erepeat) 
+       do k=1,nz1      ! Enumerate points in the x-y plane
        do j=1,ny1
        do i=1,nx1
-           glo_num(i,j,k,e) = k+nz1*(i-1) + nx1*nz1*(ex_g-1) 
+          lb4=      lpl*(j+(e_num-1)*(ny1-1)-1) 
+          lb4= lb4 + lx*(k+(ez   -1)*(nz1-1)-1)
+          glo_num(i,j,k,e)=lb4+i+(ex-1)*(nx1-1) 
        enddo
        enddo
        enddo
       enddo
+
       n = nel*nx1*ny1*nz1
       call fgslib_gs_setup(gs_hndl,glo_num,n,nekcomm,mp)
 
@@ -129,6 +153,7 @@ c     Set the z-average handle
 
       lx  = nelx*(nx1-1)+1
       ly  = nely*(ny1-1)+1
+      lz  = nelz*(nz1-1)+1
       lpl = lx*ly
 
       do e=1,nel

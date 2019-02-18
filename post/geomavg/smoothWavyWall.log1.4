@@ -18,7 +18,7 @@
  Number of processors:            4
  REAL    wdsize      :            8
  INTEGER wdsize      :            4
- Timer accuracy      : 3.10E-07
+ Timer accuracy      : 7.15E-08
   
  Reading /homes/vpuri/NekRoutines/post/geomavg/smoothWavyWall.rea                                                                            
  WARNING: lgmres might be too low!
@@ -26,9 +26,9 @@
  mapping elements to processors
  Reading /homes/vpuri/NekRoutines/post/geomavg/smoothWavyWall.ma2                                                                            
             0          384          384         1536         1536  NELV
-            2          384          384         1536          1536  NELV            3          384            1          384          384         1536         1536
-         384         1536         1536  NELV
+             3          384          384         1536         1536  NELV           1          384          384         1536         1536            2
   NELV
+          384          384         1536         1536  NELV
  RANK     0 IEG     140     141     145     146     147     150     151     152
                     153     154     155     156     157     158     159     160
                     161     162     163     164     165     166     167     168
@@ -79,12 +79,12 @@
                    1529    1530    1531    1532    1533    1534    1535    1536
   
  element load imbalance:             0          384          384
- done :: mapping   0.71297E-02 sec
+ done :: mapping   0.65691E-02 sec
 
   
   preading mesh 
   preading bc for ifld            1
- done :: read .re2 file   0.19E-01 sec
+ done :: read .re2 file   0.48E-01 sec
 
             0  objects found
  118   Parameters from file:
@@ -113,7 +113,7 @@
  101      1.00000     p101 Number of additional modes to filter
  103      0.01        p103 weight of stabilizing filter (.01)
   
- done :: read .rea file   0.32118E-01 sec
+ done :: read .rea file   0.59313E-01 sec
 
  nelgt/nelgv/lelt:        1536        1536         516
  lx1  /lx2  /lx3 :           8           8           8
@@ -125,13 +125,13 @@
  done :: usrsetvert
 
 gs_setup: 28224 unique labels shared
-   pairwise times (avg, min, max): 0.000124592 0.000123453 0.000125813
-   crystal router                : 0.000175226 0.000174975 0.000175476
-   all reduce                    : 0.000515234 0.000514627 0.000515819
+   pairwise times (avg, min, max): 0.000184822 0.000182462 0.000189662
+   crystal router                : 0.000208867 0.000205827 0.000212574
+   all reduce                    : 0.0006899 0.000684476 0.000695395
    used all_to_all method: pairwise
    handle bytes (avg, min, max): 1.52588e+06 1525876 1525876
    buffer bytes (avg, min, max): 225792 225792 225792
-   setupds time 1.5131E-01 seconds   0  8      195072        1536
+   setupds time 1.3256E-01 seconds   0  8      195072        1536
             8  max multiplicity
  done :: setup mesh topology
   
@@ -205,32 +205,19 @@ gs_setup: 28224 unique labels shared
 gridpoints unique/tot:        526848       786432
   dofs:                   526848                   526848
   
- Initialization successfully completed    1.7093     sec
+ Initialization successfully completed    1.8155     sec
 
  nsteps=0 -> skip time loop
  running solver in post processing mode
 
  call userchk
 gs_setup: 33687 unique labels shared
-   pairwise times (avg, min, max): 0.000200462 0.000195527 0.000204563
-   crystal router                : 0.000297493 0.000296474 0.000298476
-   all reduce                    : 0.000886339 0.000884748 0.000887728
+   pairwise times (avg, min, max): 0.000295132 0.000287604 0.000301838
+   crystal router                : 0.000381744 0.000381017 0.000382853
+   all reduce                    : 0.000929582 0.000927567 0.000931096
    used all_to_all method: pairwise
    handle bytes (avg, min, max): 2.46104e+06 2422044 2500044
    buffer bytes (avg, min, max): 269496 243504 295488
-gs_setup: 276963 unique labels shared
-   pairwise times (avg, min, max): 0.00259911 0.00259578 0.00260146
-   crystal router                : 0.0204965 0.0204632 0.0205191
-   used all_to_all method: pairwise
-   handle bytes (avg, min, max): 4.67132e+06 4671324 4671324
-   buffer bytes (avg, min, max): 2.53718e+06 2537184 2537184
-gs_setup: 11455 unique labels shared
-   pairwise times (avg, min, max): 8.10504e-05 7.64608e-05 8.44717e-05
-   crystal router                : 0.000107533 0.000107288 0.000107837
-   all reduce                    : 0.00034169 0.000341082 0.000342083
-   used all_to_all method: pairwise
-   handle bytes (avg, min, max): 2.29056e+06 2251220 2329892
-   buffer bytes (avg, min, max): 91640 65424 117856
  done :: userchk
 
         0  0.0000E+00 Write checkpoint
@@ -239,16 +226,16 @@ gs_setup: 11455 unique labels shared
 
         0  0.0000E+00 done :: Write checkpoint
                               file size =      21.    MB
-                              avg data-throughput =    69.1MB/s
+                              avg data-throughput =    66.3MB/s
                               io-nodes =     4
 
   
 run successful: dying ...
   
   
-total elapsed time             :   6.10789E+00 sec
+total elapsed time             :   2.44650E+00 sec
 total solver time w/o IO       :   0.00000E+00 sec
 time/timestep                  :   0.00000E+00 sec
 avg throughput per timestep    :   0.00000E+00 gridpts/CPUs
-total max memory usage         :   1.37101E+00 GB
+total max memory usage         :   1.17831E+00 GB
 

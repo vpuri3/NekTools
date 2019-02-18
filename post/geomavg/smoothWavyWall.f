@@ -157,10 +157,16 @@ c-------------------------------------------------------------------------------
       nrepeat = 2 
 
 c     ! call gfldr('restart0.f00001')
+      idir = 1
+      gs_avg_hndl = 0
       call geom_avg_wrapper(vx,gs_avg_hndl,nelx,nely,nelz,ifld,idir
      $     ,nrepeat)
+      idir = 2
+      gs_avg_hndl = 0
       call geom_avg_wrapper(vy,gs_avg_hndl,nelx,nely,nelz,ifld,idir
      $     ,nrepeat)
+      idir = 3
+      gs_avg_hndl = 0
       call geom_avg_wrapper(vz,gs_avg_hndl,nelx,nely,nelz,ifld,idir
      $     ,nrepeat)
 
