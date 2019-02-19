@@ -8,7 +8,9 @@ ccc                  in direction idir1
       parameter(nxzf  = 2*ldim)
       parameter(lxyzv = lelv*lxyz)
 
-      common /uplus/ fNx(lx1,ly1,lz1,lelv) ! face normal  X
+      common /uplus/ up (lx1,ly1,lz1,lelv) ! U-Plus
+     $             , yp (lx1,ly1,lz1,lelv) ! Y-Plus
+     $             , fNx(lx1,ly1,lz1,lelv) ! face normal  X
      $             , fNy(lx1,ly1,lz1,lelv) !              Y
      $             , fNz(lx1,ly1,lz1,lelv) !              Z 
      $             , fTx(lx1,ly1,lz1,lelv) ! shear stress X-comp
@@ -30,7 +32,6 @@ c
       common /plnr/ uxa(lx1,ly1,lz1,lelv) ! planar averages in direction
      $             ,uya(lx1,ly1,lz1,lelv) ! idir2
      $             ,uza(lx1,ly1,lz1,lelv)
-     $             ,pra(lx1,ly1,lz1,lelv)
      $             ,Tma(lx1,ly1,lz1,lelv) ! shear stress mag =avg(Tmg)
      $             ,Ufa(lx1,ly1,lz1,lelv) ! friction velocity=
 c                                         ! avg(sqrt(Tmg)/rho)

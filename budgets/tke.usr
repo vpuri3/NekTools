@@ -16,12 +16,13 @@ c     subroutine comp_tke(gs_hndl1,nelx,nely,nelz,ifld,idir,ifplnr_avg
 c    $                                              ifline_avg,ifsample)
 c
 c-----------------------------------------------------------------------
+c     include 'budgetsJavi.usr'
 c     include 'plavg.usr'
 c     include 'lnavg.usr'
-c     include 'budgetsJavi.usr'
+c     include 'geomavg.usr'
 c-----------------------------------------------------------------------
-      subroutine comp_tke(gs_hndl,nelx,nely,nelz,ifld,idir,avgtyp
-     $                                                        ,ifsample)
+      subroutine comp_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld,idir1,
+     $     ,idir2,atyp,ifsample)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -33,7 +34,7 @@ c-----------------------------------------------------------------------
       integer nelx,nely,nelz
       integer ifld,idir,gs_hndl1
       logical ifsample
-      character*4 avgtyp
+      integer atyp
 c
       integer ntot
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
@@ -52,17 +53,6 @@ c
       call rzero(vdk,ntot)
       call rzero(tke,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
-c
-      call rzero(cnka,ntot)
-      call rzero(prka,ntot)
-      call rzero(ptka,ntot)
-      call rzero(pdka,ntot)
-      call rzero(pska,ntot)
-      call rzero(tdka,ntot)
-      call rzero(epka,ntot)
-      call rzero(vdka,ntot)
-      call rzero(tkea,ntot)
-      call rzero(diva,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -102,46 +92,53 @@ c
 c
       enddo
 c
-      if(avgtyp.eq.'plnr') then
-       if(nid.eq.0) write(6,*) "Planar averaging in direction ", idir
+      if(atyp.lt.0) then
+       if(nid.eq.0) write(6,*) "Planar averaging in direction ", idir1
 c
-       call plane_avg_tensor(cnka,cnk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(prka,prk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(ptka,ptk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(pdka,pdk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(pska,psk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(tdka,tdk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(epka,epk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(vdka,vdk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(tkea,tke,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_tensor(diva,div,gs_hndl,nelx,nely,nelz,ifld,idir)
-
-      elseif(avgtyp.eq.'line') then
-       if(nid.eq.0) write(6,*) "Line averaging in direction ", idir
-c
-       call line_avg_tensor(cnka,cnk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(prka,prk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(ptka,ptk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(pdka,pdk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(pska,psk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(tdka,tdk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(epka,epk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(vdka,vdk,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(tkea,tke,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_tensor(diva,div,gs_hndl,nelx,nely,nelz,ifld,idir)
-
-      else
-       call copy(cnka,cnk,ntot)
-       call copy(prka,prk,ntot)
-       call copy(ptka,ptk,ntot)
-       call copy(pdka,pdk,ntot)
-       call copy(pska,psk,ntot)
-       call copy(tdka,tdk,ntot)
-       call copy(epka,epk,ntot)
-       call copy(vdka,vdk,ntot)
-       call copy(tkea,tke,ntot)
-       call copy(diva,div,ntot)
+       call plane_avg_wrapper(cnk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(prk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(ptk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(psk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(tdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(epk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
+      if(atyp.eq.0) then
+       if(nid.eq.0) write(6,*) "Line averaging in direction ", idir1
+c
+       call line_avg_wrapper(cnk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(prk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(ptk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(pdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(psk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(tdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(epk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      endif
+      if(abs(atyp).gt.1) then
+       at = abs(atyp)
+       if(nid.eq.0) write(6,*) "Geom averaging in direction ", idir2
+       if(nid.eq.0) write(6,*) "nrepeat is ", at
+c
+       call geom_avg_wrapper(cnk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(prk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(ptk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(pdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(psk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(tdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(epk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(vdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(tke,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(div,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+      endif
+      if(atyp.eq.1) then
+       if(nid.eq.0) write(6,*) "no averaging"
+      endif         
 
 !     Outpost
 
@@ -155,8 +152,8 @@ c
       ifpo  = .true.
       ifto  = .true.
 c
-      call outpost2(cnka,prka,ptka,pdk,pska,1,'tk1')
-      call outpost2(tdka,epka,vdka,tke,diva,1,'tk2')
+      call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
+      call outpost2(tdk,epk,vdk,tke,div,1,'tk2')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
@@ -164,18 +161,19 @@ c
       ifto  = iifto
 c
       if(ifsample) then 
-         call sample(cnka,prka,ptka,pdka,diva,'tk1',
+         call sample(cnk,prk,ptk,pdk,div,'tk1',
      $            'conv','prod','pres_tr','pres_df','garbage')
-         call sample(pska,tdka,epka,vdka,prka,'tk2',
+         call sample(psk,tdk,epk,vdk,prk,'tk2',
      $            'pres_st','turb_df','diss','visc_df','garbage')
-         call sample(tkea,diva,cnka,prka,pdka,'tk3',
+         call sample(tke,div,cnk,prk,pdk,'tk3',
      $            'tke','div','garbage','garbage','garbage')
       endif
 
       return
       end
 c-----------------------------------------------------------------------
-      subroutine geom_avg_tke(gs_hndl,nelx,nely,nelz,ifld,idir,avgtyp)
+      subroutine geom_avg_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld
+     $     ,idir1,idir2,atyp)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -184,229 +182,456 @@ c-----------------------------------------------------------------------
       INCLUDE 'BUDGETSINCOMP'
 
       integer gs_hndl,nelx,nely,nelz,ifld,idir
-      character*4 avgtyp
+      integer atyp
 
       if(nid.eq.0) write(6,*) 'in geom_avg_tke(...)'
 
-      if(avgtyp.eq.'plnr') then
-       if(nid.eq.0) write(6,*) 'planar averaging in direction', idir
+      if(atyp.lt.0) then
+       if(nid.eq.0) write(6,*) 'planar averaging in direction', idir1
        ! AVG
-       call plane_avg_wrapper(uavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        do i=1,ldimt
-          call plane_avg_wrapper(tavg(1,1,1,1,i),gs_hndl,nelx,nely
-     $         ,nelz,ifld,idir)
+          call plane_avg_wrapper(tavg(1,1,1,1,i),gs_hndl1,nelx,nely
+     $         ,nelz,ifld,idir1)
        enddo
 
-       call plane_avg_wrapper(urms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(prms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(urms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(prms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        do i=1,ldimt
-          call plane_avg_wrapper(trms(1,1,1,1,i),gs_hndl,nelx,nely
-     $         ,nelz,ifld,idir)
+          call plane_avg_wrapper(trms(1,1,1,1,i),gs_hndl1,nelx,nely
+     $         ,nelz,ifld,idir1)
        enddo
 
-       call plane_avg_wrapper(vwms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wums,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uvms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(vwms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wums,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        ! AVGINCOMP
-       call plane_avg_wrapper(pm1avg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pmrms ,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(pm1avg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pmrms ,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
-       call plane_avg_wrapper(uvari,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vvari,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wvari,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uvcov,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vwcov,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wucov,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pvari,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvcov,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwcov,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wucov,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        ! BUDGETSINCOMP
-       call plane_avg_wrapper(udxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udxrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udyrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udzrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdxrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdyrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdzrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdxrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdyrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdzrms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(udxavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udyavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udzavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdxavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdyavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdzavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdxavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdyavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdzavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udxrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udyrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udzrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdxrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdyrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdzrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdxrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdyrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdzrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call plane_avg_wrapper(uvdxms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uvdyms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uvdzms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uwdxms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uwdyms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uwdzms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vwdxms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vwdyms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vwdzms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uvdxms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvdyms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvdzms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwdxms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwdyms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwdzms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwdxms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwdyms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwdzms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call plane_avg_wrapper(upavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vpavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wpavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(utavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vtavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wtavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(upavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vpavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wpavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(utavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vtavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wtavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call plane_avg_wrapper(uuuavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uuvavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uuwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uvvavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uvwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(uwwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vvvavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vvwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vwwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wwwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uuuavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uuvavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uuwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvvavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vvvavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vvwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wwwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call plane_avg_wrapper(pudxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pudyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pudzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pvdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pvdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pvdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pwdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pwdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(pwdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(pudxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pudyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pudzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pvdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pvdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pvdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pwdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pwdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pwdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
 c
-       call plane_avg_wrapper(dpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(dpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(dpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(udpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(vdpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call plane_avg_wrapper(wdpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-
-      elseif(avgtyp.eq.'line') then
-       if(nid.eq.0) write(6,*) 'line averaging in direction', idir
+       call plane_avg_wrapper(dpdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(dpdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(dpdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(udpdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(udpdyavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(udpdzavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(vdpdxavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(vdpdyavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(vdpdzavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(wdpdxavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(wdpdyavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(wdpdzavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+      endif
+      if(atyp.eq.0) then
+       if(nid.eq.0) write(6,*) 'line averaging in direction', idir1
        ! AVG
-       call line_avg_wrapper(uavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        do i=1,ldimt
-          call line_avg_wrapper(tavg(1,1,1,1,i),gs_hndl,nelx,nely
-     $         ,nelz,ifld,idir)
+          call plane_avg_wrapper(tavg(1,1,1,1,i),gs_hndl1,nelx,nely
+     $         ,nelz,ifld,idir1)
        enddo
 
-       call line_avg_wrapper(urms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(prms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(urms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(prms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        do i=1,ldimt
-          call line_avg_wrapper(trms(1,1,1,1,i),gs_hndl,nelx,nely
-     $         ,nelz,ifld,idir)
+          call plane_avg_wrapper(trms(1,1,1,1,i),gs_hndl1,nelx,nely
+     $         ,nelz,ifld,idir1)
        enddo
 
-       call line_avg_wrapper(vwms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wums,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uvms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(vwms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wums,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        ! AVGINCOMP
-       call line_avg_wrapper(pm1avg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pmrms ,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(pm1avg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pmrms ,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
-       call line_avg_wrapper(uvari,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vvari,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wvari,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uvcov,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vwcov,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wucov,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pvari,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvcov,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwcov,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wucov,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(pvari,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 
        ! BUDGETSINCOMP
-       call line_avg_wrapper(udxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udxrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udyrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udzrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdxrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdyrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdzrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdxrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdyrms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdzrms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(udxavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udyavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udzavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdxavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdyavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdzavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdxavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdyavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdzavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udxrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udyrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(udzrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdxrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdyrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vdzrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdxrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdyrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wdzrms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call line_avg_wrapper(uvdxms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uvdyms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uvdzms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uwdxms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uwdyms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uwdzms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vwdxms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vwdyms,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vwdzms,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uvdxms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvdyms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvdzms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwdxms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwdyms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwdzms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwdxms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwdyms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwdzms,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call line_avg_wrapper(upavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vpavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wpavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(utavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vtavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wtavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(upavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vpavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wpavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(utavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vtavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wtavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
-       call line_avg_wrapper(uuuavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uuvavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uuwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uvvavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uvwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(uwwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vvvavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vvwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vwwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wwwavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call plane_avg_wrapper(uuuavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uuvavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uuwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvvavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uvwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(uwwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vvvavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vvwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(vwwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(wwwavg,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+c
+       call plane_avg_wrapper(pudxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pudyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pudzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pvdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pvdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pvdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pwdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pwdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(pwdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+c
+       call plane_avg_wrapper(dpdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(dpdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(dpdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(udpdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(udpdyavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(udpdzavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(vdpdxavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(vdpdyavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(vdpdzavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(wdpdxavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(wdpdyavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+       call plane_avg_wrapper(wdpdzavg,gs_hndl,nelx,nely,nelz,ifld
+     $      ,idir1)
+
+      elseif((atyp.eq.1).or.(atyp.gt.1)) then
+       at = atyp
+       if(nid.eq.0) write(6,*) "Geom averaging in direction ", idir2
+       if(nid.eq.0) write(6,*) "nrepeat is ", at
+c
+       ! AVG
+       call geom_avg_wrapper(uavg,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(vavg,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(wavg,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(pavg,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+
+       do i=1,ldimt
+          call geom_avg_wrapper(tavg(1,1,1,1,i),gs_hndl2,nelx,nely
+     $         ,nelz,ifld,idir2,at)
+       enddo
+
+       call geom_avg_wrapper(urms,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(vrms,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(wrms,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(prms,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+
+       do i=1,ldimt
+          call geom_avg_wrapper(trms(1,1,1,1,i),gs_hndl2,nelx,nely
+     $         ,nelz,ifld,idir2,at)
+       enddo
+
+       call geom_avg_wrapper(vwms,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(wums,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(uvms,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+
+       ! AVGINCOMP
+       call geom_avg_wrapper(pm1avg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pmrms ,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uvari,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vvari,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wvari,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uvcov,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vwcov,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wucov,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pvari,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+
+       ! BUDGETSINCOMP
+       call geom_avg_wrapper(udxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udxrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udyrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udzrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdxrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdyrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdzrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdxrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdyrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdzrms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+c
+       call geom_avg_wrapper(uvdxms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uvdyms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uvdzms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uwdxms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uwdyms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uwdzms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vwdxms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vwdyms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vwdzms,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+c
+       call geom_avg_wrapper(upavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vpavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wpavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(utavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vtavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wtavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+c
+       call geom_avg_wrapper(uuuavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uuvavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uuwavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uvvavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uvwavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(uwwavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vvvavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vvwavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vwwavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wwwavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
 c           
-       call line_avg_wrapper(pudxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pudyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pudzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pvdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pvdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pvdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pwdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pwdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(pwdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-c           
-       call line_avg_wrapper(dpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(dpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(dpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(udpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(vdpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdpdxavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdpdyavg,gs_hndl,nelx,nely,nelz,ifld,idir)
-       call line_avg_wrapper(wdpdzavg,gs_hndl,nelx,nely,nelz,ifld,idir)
+       call geom_avg_wrapper(pudxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pudyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pudzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pvdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pvdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pvdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pwdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pwdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(pwdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+c            
+       call geom_avg_wrapper(dpdxavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir2,at)                                            
+       call geom_avg_wrapper(dpdyavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir2,at)                                            
+       call geom_avg_wrapper(dpdzavg,gs_hndl1,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udpdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udpdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(udpdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdpdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdpdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(vdpdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdpdxavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdpdyavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
+       call geom_avg_wrapper(wdpdzavg,gs_hndl2,nelx,nely,nelz,ifld
+     $      ,idir2,at)
 
       endif
 

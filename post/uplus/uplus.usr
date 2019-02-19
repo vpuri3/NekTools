@@ -70,24 +70,23 @@ c
 C-----------------------------------------------------------------------
 c     include 'plavg.usr'
 c     include 'lnavg.usr'
+c     include 'geomavg.usr'
       include 'scttr.usr'
 C-----------------------------------------------------------------------
-      subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2
-     $                 ,nelx,nely,nelz,ifld,idir1,idir2,avgtyp,ifsample)
+      subroutine comp_uplus(ux,uy,uz,f,bctyp,gs_hndl1,gs_hndl2,gs_hndl3
+     $          ,nelx,nely,nelz,ifld,idir1,idir2,idir3,atyp,ifsample)
 
       include 'SIZE'
       include 'TOTAL'
       include 'UPLUS'
 
-      real up(lx1,ly1,lz1,lelv) ! U-plus
-      real yp(lx1,ly1,lz1,lelv) ! Y-plus
       real ux(lx1,ly1,lz1,lelv) ! X-Velocity
       real uy(lx1,ly1,lz1,lelv) ! Y-Velocity
       real uz(lx1,ly1,lz1,lelv) ! Z-Velocity
       integer f,ifld,idir1,idir2,gs_hndl1,gs_hndl2
       integer nelx,nely,nelz
       character*3 bctyp
-      character*4 avgtyp
+      integer atyp
       logical ifsample
 
       common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
@@ -134,7 +133,6 @@ c
       call rzero(uxa,ntot)
       call rzero(uya,ntot)
       call rzero(uza,ntot)
-      call rzero(pra,ntot)
       call rzero(Tma,ntot)
       call rzero(Ufa,ntot) ! avg friction vel
 c
@@ -238,47 +236,60 @@ c
       endif
 c
       ! scatter face data into domain
-      call scttr(volNx,fNx,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
-      call scttr(volNy,fNy,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
-      call scttr(volNz,fNz,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
-      call scttr(volTm,fTm,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1)
-      call scttr(volUf,fUf,f,bctyp,gs_hndl1,nelx,nely,nelz1,ifld,idir1) ! friction velocity
+      call scttr(volNx,fNx,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volNy,fNy,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volNz,fNz,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volTm,fTm,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volUf,fUf,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1) ! friction velocity
 c
       ! distance in direction parallel to idir
       call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
       ! averaging over homogeneous directions
-      if(avgtyp.eq.'plnr') then
+      if(atyp.lt.0) then
        if(nid.eq.0) write(6,*) "Planar averaging in direction ", idri2
 c
        call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call plane_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call plane_avg_tensor(uza,uz,gs_hndl2,nelx,nely,nelz,ifld,idir2)
-       call plane_avg_tensor(pra,pr,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call plane_avg_tensor(Tma,volTm,gs_hndl2,nelx,nely,nelz,ifld
      $                                                          ,idir2)
        call plane_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
      $                                                          ,idir2)
-
-      elseif(avgtyp.eq.'line') then
+      endif
+      if(atyp.eq.0) then
        if(nid.eq.0) write(6,*) "Line averaging in direction ", idir2
 c
        call line_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call line_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call line_avg_tensor(uza,uz,gs_hndl2,nelx,nely,nelz,ifld,idir2)
-       call line_avg_tensor(pra,pr,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call line_avg_tensor(Tma,volTm,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                          ,idir2)
+     $      ,idir2)
        call line_avg_tensor(Ufa,volUf,gs_hndl2,nelx,nely,nelz,ifld
-     $                                                          ,idir2)
-
-      else
-         call copy(uxa,ux,ntot)
-         call copy(uya,uy,ntot)
-         call copy(uza,uz,ntot)
-         call copy(pra,pr,ntot)
-         call copy(Tma,volTm,ntot)
-         call copy(Ufa,volUf,ntot)
+     $      ,idir2)
+      endif
+      if(abs(atyp).gt.1) then
+       at = abs(atyp)
+       if(nid.eq.0) write(6,*) "Geom averaging in direction ", idir3 
+       if(nid.eq.0) write(6,*) "nrepeat is", at
+c
+       call geom_avg_tensor(uxa,ux,gs_hndl3,nelx,nely,nelz,ifld
+     $      ,idir3,at)
+       call geom_avg_tensor(uya,uy,gs_hndl3,nelx,nely,nelz,ifld
+     $      ,idir3,at)
+       call geom_avg_tensor(uza,uz,gs_hndl3,nelx,nely,nelz,ifld
+     $      ,idir3,at)
+       call geom_avg_tensor(Tma,volTm,gs_hndl3,nelx,nely,nelz,ifld
+     $      ,idir3,at)
+       call geom_avg_tensor(Ufa,volUf,gs_hndl3,nelx,nely,nelz,ifld
+     $      ,idir3,at)
+      endif
+      if(atyp.eq.1) then
+       call copy(uxa,ux,ntot)
+       call copy(uya,uy,ntot)
+       call copy(uza,uz,ntot)
+       call copy(Tma,volTm,ntot)
+       call copy(Ufa,volUf,ntot)
       endif
 c
       do i=1,ntot                                 ! u-plus,y-plus

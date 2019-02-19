@@ -11,15 +11,4 @@ C     Turbulent Kinetic Energy for Incompressible Flow
      $ ,epk(lx1,ly1,lz1,lelv) ! viscous dissipation
      $ ,vdk(lx1,ly1,lz1,lelv) ! viscous diffusion
 c
-     $ ,tkea(lx1,ly1,lz1,lelv) ! sum
-     $ ,cnka(lx1,ly1,lz1,lelv) ! convection
-     $ ,prka(lx1,ly1,lz1,lelv) ! proudction
-     $ ,ptka(lx1,ly1,lz1,lelv) ! pressure transport
-     $ ,pdka(lx1,ly1,lz1,lelv) ! pressure diffusion
-     $ ,pska(lx1,ly1,lz1,lelv) ! pressure strain -- should be zero!
-     $ ,tdka(lx1,ly1,lz1,lelv) ! turbulent diffusion
-     $ ,epka(lx1,ly1,lz1,lelv) ! viscous dissipation
-     $ ,vdka(lx1,ly1,lz1,lelv) ! viscous diffusion
-c
      $ ,div(lx1,ly1,lz1,lelv) ! <u i,i> == 0
-     $ ,diva(lx1,ly1,lz1,lelv)
