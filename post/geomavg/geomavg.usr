@@ -45,7 +45,7 @@ c-----------------------------------------------------------------------
       nel = nelfld(ifld)
       n   = nx1*ny1*nz1*nel
 
-      call copy(ua,bm1,n)              ! Set the averaging weights
+      call copy(ua,bm1,n)                 ! Set the averaging weights
       call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
 
       do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
@@ -74,7 +74,8 @@ c     Set the x-average handle
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
       integer*8 glo_num
-      integer*8 erepeat,e_num,lx,ly,lpl,lb4
+      integer*8 e_num,lx,ly,lpl,lb4
+      integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nelx/nrepeat)
@@ -114,7 +115,8 @@ c     Set the y-average handle
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
       integer*8 glo_num
-      integer*8 erepeat,e_num,lx,ly,lpl,lb4
+      integer*8 e_num,lx,ly,lpl,lb4
+      integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nely/nrepeat)
@@ -153,8 +155,10 @@ c     Set the z-average handle
       integer gs_avg_hndl,e,ex,ey,ez,eg,nelx,nely,nelz
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
+
       integer*8 glo_num
-      integer*8 erepeat,e_num,lx,ly,lpl,lb4
+      integer*8 e_num,lx,ly,lpl,lb4
+      integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nelz/nrepeat)
