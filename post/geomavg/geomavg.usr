@@ -45,22 +45,22 @@ c-----------------------------------------------------------------------
       nel = nelfld(ifld)
       n   = nx1*ny1*nz1*nel
 
-c     call copy(ua,bm1,n)              ! Set the averaging weights
-c     call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
+      call copy(ua,bm1,n)              ! Set the averaging weights
+      call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
 
-c     do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
-c        ua(i,1,1,1) = bm1(i,1,1,1)*u(i,1,1,1)/ua(i,1,1,1)
-c     enddo
+      do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
+         ua(i,1,1,1) = bm1(i,1,1,1)*u(i,1,1,1)/ua(i,1,1,1)
+      enddo
 
-c     call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weighted values
-
-      onebyn = 1/nrepeat
-      call copy(ua,u,n)
       call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weighted values
 
-      do i=1,n
-         ua(i,1,1,1) = ua(i,1,1,1)*onebyn
-      enddo
+c     onebyn = 1/real(nrepeat)
+c     call copy(ua,u,n)
+c     call fgslib_gs_op(gs_hndl,ua,1,1,0)
+c     if(nid.eq.0) write(6,*) "1/nrepeat is", onebyn 
+c     do i=1,n
+c        ua(i,1,1,1) = ua(i,1,1,1)*onebyn
+c     enddo
 
       return
       end

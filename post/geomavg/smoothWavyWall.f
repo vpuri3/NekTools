@@ -139,6 +139,10 @@ c     perturb
       if(y .gt. 0.5*YLEN) uy = 0.25*YLEN - (2*(y-0.5*YLEN)/YLEN)
       if(z .gt. 0.5*ZLEN) uz = 0.25*ZLEN - (2*(z-0.5*ZLEN)/ZLEN)
 
+c     ux = x
+c     uy = y
+c     uz = z
+
       return
       end
 c-------------------------------------------------------------------------------
