@@ -9,4 +9,4 @@ obj
 .*
 makefile
 compiler.out
-*.log.*
+*.log*
