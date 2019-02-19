@@ -14,9 +14,9 @@ C
 C-----------------------------------------------------------------------
 #define PI (4.*atan(1.))
 #define DELTA 1.
-#define XLEN (2.*PI)
-#define YLEN (2*DELTA)
-#define ZLEN PI
+#define XLEN (1*DELTA)
+#define YLEN (1*DELTA)
+#define ZLEN (1*DELTA)
 #define NUMBER_ELEMENTS_X 16
 #define NUMBER_ELEMENTS_Y 12
 #define NUMBER_ELEMENTS_Z 8
@@ -131,10 +131,13 @@ c     perturb
       uy = ux
       uz = ux
 
-      ux = x
-      uy = y
-      uz = z
+      ux = -0.25*XLEN + (2*x/XLEN)
+      uy = -0.25*YLEN + (2*y/YLEN)
+      uz = -0.25*ZLEN + (2*z/ZLEN)
 
+      if(x .gt. 0.5*XLEN) ux = 0.25*XLEN - (2*(x-0.5*XLEN)/XLEN)
+      if(y .gt. 0.5*YLEN) uy = 0.25*YLEN - (2*(y-0.5*YLEN)/YLEN)
+      if(z .gt. 0.5*ZLEN) uz = 0.25*ZLEN - (2*(z-0.5*ZLEN)/ZLEN)
 
       return
       end
@@ -154,7 +157,7 @@ c-------------------------------------------------------------------------------
       nelz    = 8
       ifld    = 1
       idir    = 3
-      nrepeat = 2 
+      nrepeat = 2
 
 c     ! call gfldr('restart0.f00001')
       idir = 1
