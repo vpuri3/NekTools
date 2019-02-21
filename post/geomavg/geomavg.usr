@@ -73,13 +73,13 @@ c     Set the x-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
+      integer nrepeat
       integer*8 glo_num
       integer*8 e_num,lx,ly,lpl,lb4
       integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nelx/nrepeat)
-
       lx  = nelx*(nx1-1)+1
       ly  = nely*(ny1-1)+1
       lz  = nelz*(nz1-1)+1
@@ -89,7 +89,7 @@ c     Set the x-average handle
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
        e_num = mod1(ex,erepeat) 
-       do k=1,nz1      ! Enumerate points in the x-y plane
+       do k=1,nz1
        do j=1,ny1
        do i=1,nx1
           lb4=      lpl*(i+(e_num-1)*(nx1-1)-1) 
@@ -114,6 +114,7 @@ c     Set the y-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
+      integer nrepeat
       integer*8 glo_num
       integer*8 e_num,lx,ly,lpl,lb4
       integer erepeat
@@ -130,7 +131,7 @@ c     Set the y-average handle
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
        e_num = mod1(ey,erepeat) 
-       do k=1,nz1      ! Enumerate points in the x-y plane
+       do k=1,nz1
        do j=1,ny1
        do i=1,nx1
           lb4=      lpl*(j+(e_num-1)*(ny1-1)-1) 
@@ -156,6 +157,7 @@ c     Set the z-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
+      integer nrepeat
       integer*8 glo_num
       integer*8 e_num,lx,ly,lpl,lb4
       integer erepeat
@@ -172,7 +174,7 @@ c     Set the z-average handle
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
        e_num = mod1(ez,erepeat) 
-       do k=1,nz1      ! Enumerate points in the x-y plane
+       do k=1,nz1
        do j=1,ny1
        do i=1,nx1
           lb4=      lpl*(k+(e_num-1)*(nz1-1)-1) 

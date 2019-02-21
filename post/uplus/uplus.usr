@@ -83,10 +83,9 @@ C-----------------------------------------------------------------------
       real ux(lx1,ly1,lz1,lelv) ! X-Velocity
       real uy(lx1,ly1,lz1,lelv) ! Y-Velocity
       real uz(lx1,ly1,lz1,lelv) ! Z-Velocity
-      integer f,ifld,idir1,idir2,gs_hndl1,gs_hndl2
+      integer f,ifld,gs_hndl1,gs_hndl2,gs_hndl3,idir1,idir2,idir3
       integer nelx,nely,nelz
       character*3 bctyp
-      integer atyp
       logical ifsample
 
       common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
@@ -102,7 +101,7 @@ C-----------------------------------------------------------------------
       real s31,s32,s33
       real a, xdrg, ydrg, zdrg, mdrg
       real u,v,w,un,ufr
-
+      integer atyp, at
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
@@ -247,7 +246,7 @@ c
 c
       ! averaging over homogeneous directions
       if(atyp.lt.0) then
-       if(nid.eq.0) write(6,*) "Planar averaging in direction ", idri2
+       if(nid.eq.0) write(6,*) "Planar averaging in direction ", idir2
 c
        call plane_avg_tensor(uxa,ux,gs_hndl2,nelx,nely,nelz,ifld,idir2)
        call plane_avg_tensor(uya,uy,gs_hndl2,nelx,nely,nelz,ifld,idir2)
@@ -269,7 +268,7 @@ c
      $      ,idir2)
       endif
       if(abs(atyp).gt.1) then
-       at = abs(atyp)
+       at = int(abs(atyp))
        if(nid.eq.0) write(6,*) "Geom averaging in direction ", idir3 
        if(nid.eq.0) write(6,*) "nrepeat is", at
 c
