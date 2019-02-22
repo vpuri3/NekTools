@@ -60,7 +60,8 @@ echo "res    is $res"                                         |& tee -a $log
 echo "rsfx   is $rsfx"                                        |& tee -a $log
 echo "bsfx   is $bsfx"                                        |& tee -a $log
 echo "sub    is $sub"                                         |& tee -a $log
-echo "nnodes is $nnodes"                                      |& tee -a $log
+echo "nnodes is $nnodes"                                      |& tee -a $lo
+echo "fresh is $fresh"                                        |& tee -a $log
 #
 findrsfx=false
 if [ "$rsfx" = "0.f00000" ]; then
@@ -123,6 +124,13 @@ for ((i=1; i<=$njobs; i++)); do
 #   updating restart
     echo "removing old logs and updating restart"             |& tee -a $log
     rm *.cobaltlog *.error *.output *log* *out*
+    # get restart suffix
+    if [ "$findrsfx" = true ]; then
+	echo "finding latest output file in $dir1"            |& tee -a $log
+	rsfx=$(ls -t $case"0.f"* | head -1)
+	rsfx=${rsfx:${#rsfx}-8:8}
+	echo "latest output file is $case$rsfx."              |& tee -a $log
+    fi
 
     if [ $i = 1 ]; then
         # switching restart file to $res
@@ -130,14 +138,7 @@ for ((i=1; i<=$njobs; i++)); do
     fi
 
     if [ ! $i = 1 ]; then
-        # get restart suffix
-	if [ "$findrsfx" = true ]; then
-	    echo "finding latest output file in $dir1"        |& tee -a $log
-	    rsfx=$(ls -t $case"0.f"* | head -1)
-	    rsfx=${rsfx:${#rsfx}-8:8}
-	    echo "latest output file is $case$rsfx."          |& tee -a $log
-	fi
-        # switching restart file to $res
+            # switching restart file to $res
 	mv -v $case$rsfx $res                                 |& tee -a $log
     fi
 
@@ -202,5 +203,5 @@ for ((i=1; i<=$njobs; i++)); do
     send_log
     sleep 7000
     echo $(date -R)                                           |& tee -a $log
-    [ ! $i = $njobs] && echo "long time no see?"              |& tee -a $log
+    [ ! $i = $njobs ] && echo "long time no see?"             |& tee -a $log
 done
