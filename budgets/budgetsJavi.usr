@@ -1868,56 +1868,56 @@ c     call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')
        call sample(conv_uu, conv_vv,  conv_ww,  pm1avg,  tavg,'cn1',
      &            'conv_uu','conv_vv','conv_ww','pm1avg','tavg')
 
-       call sample(conv_uv,  conv_uw,  conv_vw,  pm1avg,  tavg,'cn2',
-     &            'conv_uv','conv_uw','conv_vw','pm1avg','tavg')
+c      call sample(conv_uv,  conv_uw,  conv_vw,  pm1avg,  tavg,'cn2',
+c    &            'conv_uv','conv_uw','conv_vw','pm1avg','tavg')
 
        call sample(eps_uu,  eps_vv,  eps_ww,  pm1avg,  tavg,'ep1',
      &            'eps_uu','eps_vv','eps_ww','pm1avg','tavg')
 
-       call sample(eps_uv, eps_uw,  eps_vw,  pm1avg,  tavg,'ep2',
-     &            'eps_uv','eps_uw','eps_vw','pm1avg','tavg')
+c      call sample(eps_uv, eps_uw,  eps_vw,  pm1avg,  tavg,'ep2',
+c    &            'eps_uv','eps_uw','eps_vw','pm1avg','tavg')
 
        call sample(prd_uu,  prd_vv,  prd_ww,  pm1avg,  tavg,'pr1',
      &            'prd_uu','prd_vv','prd_ww','pm1avg','tavg')
 
-       call sample(prd_uv,  prd_uw,  prd_vw,  pm1avg,  tavg,'pr2',
-     &            'prd_uv','prd_uw','prd_vw','pm1avg','tavg')
+c      call sample(prd_uv,  prd_uw,  prd_vw,  pm1avg,  tavg,'pr2',
+c    &            'prd_uv','prd_uw','prd_vw','pm1avg','tavg')
 
        call sample(ptr_uu,  ptr_vv,  ptr_ww,  pm1avg,  tavg,'pt1',
      &            'ptr_uu','ptr_vv','ptr_ww','pm1avg','tavg')
 
-       call sample(ptr_uv,  ptr_uw,  ptr_vw,  pm1avg,  tavg,'pt2',
-     &            'ptr_uv','ptr_uw','ptr_vw','pm1avg','tavg')
+c      call sample(ptr_uv,  ptr_uw,  ptr_vw,  pm1avg,  tavg,'pt2',
+c    &            'ptr_uv','ptr_uw','ptr_vw','pm1avg','tavg')
 
        call sample(tdf_uu,  tdf_vv,  tdf_ww,  pm1avg, tavg,'td1',
      &            'tdf_uu','tdf_vv','tdf_ww','pm1avg','tavg')
 
-       call sample(tdf_uv,  tdf_uw,  tdf_vw,  pm1avg,  tavg,'td2',
-     &            'tdf_uv','tdf_uw','tdf_vw','pm1avg','tavg')
+c      call sample(tdf_uv,  tdf_uw,  tdf_vw,  pm1avg,  tavg,'td2',
+c    &            'tdf_uv','tdf_uw','tdf_vw','pm1avg','tavg')
 
        call sample(pdf_uu,  pdf_vv,  pdf_ww,  pm1avg,  tavg,'pd1',
      &            'pdf_uu','pdf_vv','pdf_ww','pm1avg','tavg')
 
-       call sample(pdf_uv,  pdf_uw,  pdf_vw,  pm1avg,  tavg,'pd2',
-     &            'pdf_uv','pdf_uw','pdf_vw','pm1avg','tavg')
+c      call sample(pdf_uv,  pdf_uw,  pdf_vw,  pm1avg,  tavg,'pd2',
+c    &            'pdf_uv','pdf_uw','pdf_vw','pm1avg','tavg')
 
        call sample(pst_uu,  pst_vv,  pst_ww,  pm1avg,  tavg,'ps1',
      &            'pst_uu','pst_vv','pst_ww','pm1avg','tavg')
 
-       call sample(pst_uv,  pst_uw,  pst_vw,  pm1avg,  tavg,'ps2',
-     &            'pst_uv','pst_uw','pst_vw','pm1avg','tavg')   
+c      call sample(pst_uv,  pst_uw,  pst_vw,  pm1avg,  tavg,'ps2',
+c    &            'pst_uv','pst_uw','pst_vw','pm1avg','tavg')   
 
        call sample(vdf_uu,  vdf_vv,  vdf_ww,  pm1avg,  tavg,'vd1',
      &            'vdf_uu','vdf_vv','vdf_ww','pm1avg','tavg')
 
-       call sample(vdf_uv,  vdf_uw,  vdf_vw,  pm1avg,  tavg,'vd2',
-     &            'vdf_uv','vdf_uw','vdf_vw','pm1avg','tavg')     
+c      call sample(vdf_uv,  vdf_uw,  vdf_vw,  pm1avg,  tavg,'vd2',
+c    &            'vdf_uv','vdf_uw','vdf_vw','pm1avg','tavg')     
 
-       call sample(buo_uu,  buo_vv,  buo_ww,  pm1avg,  tavg,'bu1',
-     &            'buo_uu','buo_vv','buo_ww','pm1avg','tavg')
+c      call sample(buo_uu,  buo_vv,  buo_ww,  pm1avg,  tavg,'bu1',
+c    &            'buo_uu','buo_vv','buo_ww','pm1avg','tavg')
 
-       call sample(buo_uv,  buo_uw,  buo_vw,  pm1avg,  tavg,'bu2',     
-     &            'buo_uv','buo_uw','buo_vw','pm1avg','tavg')     
+c      call sample(buo_uv,  buo_uw,  buo_vw,  pm1avg,  tavg,'bu2',     
+c    &            'buo_uv','buo_uw','buo_vw','pm1avg','tavg')     
 
       time=temp_time
 
