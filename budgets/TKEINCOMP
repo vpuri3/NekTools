@@ -11,4 +11,7 @@ C     Turbulent Kinetic Energy for Incompressible Flow
      $ ,epk(lx1,ly1,lz1,lelv) ! viscous dissipation
      $ ,vdk(lx1,ly1,lz1,lelv) ! viscous diffusion
 c
-     $ ,div(lx1,ly1,lz1,lelv) ! <u i,i> == 0
+     $ ,div(lx1,ly1,lz1,lelv)  ! <u i,i> == 0
+     $ ,rsuu(lx1,ly1,lz1,lelv) ! imbalance in uu
+     $ ,rsvv(lx1,ly1,lz1,lelv) ! imbalance in vv
+     $ ,rsww(lx1,ly1,lz1,lelv) ! imbalance in ww

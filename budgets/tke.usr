@@ -22,7 +22,7 @@ c     include 'lnavg.usr'
 c     include 'geomavg.usr'
 c-----------------------------------------------------------------------
       subroutine comp_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld,idir1
-     $     ,idir2,atyp,ifsample)
+     $          ,idir2,atyp,ifsample,ifverbose)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -32,11 +32,12 @@ c-----------------------------------------------------------------------
       INCLUDE 'TKEINCOMP'
 
       integer nelx,nely,nelz
-      integer ifld,idir,gs_hndl1
-      logical ifsample
-      integer atyp, at
+      integer gs_hndl1,gs_hndl2,ifld,idir1,idir2
+      logical ifsample,ifverbose
+      integer atyp
 c
-      integer ntot
+      integer ntot, at
+      real tmp
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 c
       ntot = lx1*ly1*lz1*nelv
@@ -53,6 +54,9 @@ c
       call rzero(vdk,ntot)
       call rzero(tke,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
+      call rzero(rsuu,ntot)
+      call rzero(rsvv,ntot)
+      call rzero(rsww,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -64,6 +68,18 @@ c
          epk(i,1,1,1)= eps_uu(i,1,1,1)+ eps_vv(i,1,1,1)+ eps_ww(i,1,1,1)
          vdk(i,1,1,1)= vdf_uu(i,1,1,1)+ vdf_vv(i,1,1,1)+ vdf_ww(i,1,1,1)
 c
+         tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
+     $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
+
+         rsuu(i,1,1,1)=-conv_uu(i,1,1,1)+prd_uu(i,1,1,1)+ptr_uu(i,1,1,1)
+     $                 + tdf_uu(i,1,1,1)+eps_uu(i,1,1,1)+vdf_uu(i,1,1,1)
+
+         rsvv(i,1,1,1)=-conv_vv(i,1,1,1)+prd_vv(i,1,1,1)+ptr_vv(i,1,1,1)
+     $                 + tdf_vv(i,1,1,1)+eps_vv(i,1,1,1)+vdf_vv(i,1,1,1)
+
+         rsww(i,1,1,1)=-conv_ww(i,1,1,1)+prd_ww(i,1,1,1)+ptr_ww(i,1,1,1)
+     $                 + tdf_ww(i,1,1,1)+eps_ww(i,1,1,1)+vdf_ww(i,1,1,1)
+c
          cnk(i,1,1,1) = cnk(i,1,1,1) * 0.5
          prk(i,1,1,1) = prk(i,1,1,1) * 0.5
          ptk(i,1,1,1) = ptk(i,1,1,1) * 0.5
@@ -73,11 +89,6 @@ c
          epk(i,1,1,1) = epk(i,1,1,1) * 0.5
          vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
 c
-         tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
-     $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
-c
-         div(i,1,1,1) = udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
-c
 c        div(i,1,1,1) = -1/dens0*
 c    $              (pudxavg(i,1,1,1) - pm1avg(i,1,1,1)*udxavg(i,1,1,1)
 c    $              +pvdyavg(i,1,1,1) - pm1avg(i,1,1,1)*vdyavg(i,1,1,1)
@@ -86,7 +97,9 @@ c
 c        div(i,1,1,1) = pm1avg(i,1,1,1) *
 c    $                 (udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1))
 c
-         ! why is it nonzero?
+c
+         div(i,1,1,1) = udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
+        ! why is it nonzero?
          div(i,1,1,1) = pudxavg(i,1,1,1) + pvdyavg(i,1,1,1)
      $                + pwdzavg(i,1,1,1)
 c
@@ -105,6 +118,9 @@ c
        call plane_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(rsuu,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(rsvv,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(rsww,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
       if(atyp.eq.0) then
        if(nid.eq.0) write(6,*) "Line averaging in direction ", idir1
@@ -119,6 +135,9 @@ c
        call line_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(rsuu,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(rsvv,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(rsww,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
       if(abs(atyp).gt.1) then
        at = abs(atyp)
@@ -135,6 +154,9 @@ c
        call geom_avg_wrapper(vdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(tke,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(div,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(rsuu,gs_hndl2,nelx,nely,nelz,ifld,idir1,at)
+       call geom_avg_wrapper(rsvv,gs_hndl2,nelx,nely,nelz,ifld,idir1,at)
+       call geom_avg_wrapper(rsww,gs_hndl2,nelx,nely,nelz,ifld,idir1,at)
       endif
       if(atyp.eq.1) then
        if(nid.eq.0) write(6,*) "no averaging"
@@ -152,8 +174,8 @@ c
       ifpo  = .true.
       ifto  = .true.
 c
-      call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
-      call outpost2(tdk,epk,vdk,tke,div,1,'tk2')
+c     call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
+c     call outpost2(tdk,epk,vdk,tke,div,1,'tk2')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
@@ -167,6 +189,17 @@ c
      $            'pres_st','turb_df','diss','visc_df','garbage')
          call sample(tke,div,cnk,prk,pdk,'tk3',
      $            'tke','div','garbage','garbage','garbage')
+      endif
+
+      if(ifverbose) then
+         tmp = glmax(rsuu,ntot)
+         if(nid.eq.0) write(6,*) "max imbalance in uu is  ", tmp
+         tmp = glmax(rsvv,ntot)
+         if(nid.eq.0) write(6,*) "max imbalance in vv is  ", tmp
+         tmp = glmax(rsww,ntot)
+         if(nid.eq.0) write(6,*) "max imbalance in ww is  ", tmp
+         tmp = glmax(tke,ntot)
+         if(nid.eq.0) write(6,*) "max imbalance in tke is ", tmp
       endif
 
       return
