@@ -39,6 +39,7 @@ c
       integer ntot, at
       real tmp
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
+      real imbalance(4,500)
 c
       ntot = lx1*ly1*lz1*nelv
 c
@@ -191,15 +192,26 @@ c
      $            'tke','div','garbage','garbage','garbage')
       endif
 
+
       if(ifverbose) then
          tmp = glmax(rsuu,ntot)
+         imbalance(1,istep-100) = tmp
          if(nid.eq.0) write(6,*) "max imbalance in uu is  ", tmp
          tmp = glmax(rsvv,ntot)
+         imbalance(2,istep-100) = tmp
          if(nid.eq.0) write(6,*) "max imbalance in vv is  ", tmp
          tmp = glmax(rsww,ntot)
+         imbalance(3,istep-100) = tmp
          if(nid.eq.0) write(6,*) "max imbalance in ww is  ", tmp
          tmp = glmax(tke,ntot)
+         imbalance(4,istep-100) = tmp
          if(nid.eq.0) write(6,*) "max imbalance in tke is ", tmp
+
+         if((nid.eq.0).and.(istep.eq.600)) then
+            open(11,file="imbal")
+            write(11,"(4(D23.16))") imbalance 
+            close(11)
+         endif
       endif
 
       return

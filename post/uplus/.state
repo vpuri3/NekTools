@@ -1,6 +1,0 @@
-SOURCE_ROOT=/homes/vpuri/Nek5000
-FC=mpif77
-FFLAGS= -r8 -Mpreprocess
-CC=mpicc
-CFLAGS=
-PPLIST= MPI UNDERSCORE TIMER

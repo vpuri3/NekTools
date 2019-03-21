@@ -1,0 +1,162 @@
+C-----------------------------------------------------------------------
+      subroutine comp_wallShear(Tx,Ty,Tz,ux,uy,uz,f,bctyp,ifld)
+      implicit none
+      include 'SIZE'
+      include 'TOTAL'
+
+      integer lxyz,nxzf
+      parameter(lxyz = lx1*ly1*lz1)
+      parameter(nxzf = 2*ldim)
+
+      real Tx(lx1,ly1,lz1,lelv) ! Shear Stress
+      real Ty(lx1,ly1,lz1,lelv)
+      real Tz(lx1,ly1,lz1,lelv)
+      real ux(lx1,ly1,lz1,lelv) ! Velocity Field
+      real uy(lx1,ly1,lz1,lelv)
+      real uz(lx1,ly1,lz1,lelv)
+      integer f,ifld
+      character*3 bctyp
+
+      real Tm(lx1,ly1,lz1,lelv) ! Shear-Mag
+      real ur,us,ut,vr,vs,vt,wr,ws,wt
+      common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
+     $             , vr(lxyz),vs(lxyz),vt(lxyz)
+     $             , wr(lxyz),ws(lxyz),wt(lxyz)
+
+      real sij(lx1,ly1,lz1,nxzf,lelv)  ! strain rate tensor
+      integer e,k,ntot
+      integer idimt,iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
+      real Tmg,vsc,dsty                ! vsc == dynamic viscosity
+      real n1 ,n2 ,n3
+      real s11,s12,s13
+      real s21,s22,s23
+      real s31,s32,s33
+      real a,xdrg,ydrg,zdrg,mdrg
+      logical iifxyo,iifvo,iifpo,iifto ! for outposting
+
+      if(nid.eq.0) write(6,*) 'in comp_wallShear(...)'
+c
+      ntot = lx1*ly1*lz1*nelv
+c
+      call rzero(Tx,ntot)
+      call rzero(Ty,ntot)
+      call rzero(Tz,ntot)
+      call rzero(Tm,ntot)
+c
+      call rzero(sij,ntot*nxzf)
+
+      a     = 0.                ! drag on face
+      xdrg  = 0.                ! drag on face X-comp
+      ydrg  = 0.                !              Y 
+      zdrg  = 0.                !              Z
+      mdrg  = 0.                !              Mag
+c
+      idimt = 1
+      vsc   = vdiff(lx1,ly1,lz1,nelt,idimt)
+      dsty  = param(1)
+
+      ! initialize viscocity
+      if (istep.eq.0) call cfill(vdiff,param(2),ntot)
+
+      ! strain rate tensor
+      call comp_sij(sij,nxzf,ux,uy,uz,ur,us,ut,vr,vs,vt,wr,ws,wt)
+
+      ! get face info (initialize skpdat array)
+      call dsset(nx1,ny1,nz1)
+
+      do e=1,nelv
+        if (cbc(f,e,ifld).eq.bctyp) then
+          iface  = eface1(f)   ! surface to volume shifts
+          js1    = skpdat(1,iface)
+          jf1    = skpdat(2,iface)
+          jskip1 = skpdat(3,iface)
+          js2    = skpdat(4,iface)
+          jf2    = skpdat(5,iface)
+          jskip2 = skpdat(6,iface)
+
+          k = 0
+          do j2=js2,jf2,jskip2
+          do j1=js1,jf1,jskip1
+            k = k + 1
+c
+            n1 = unx(k,1,f,e)      ! face normal X-comp
+            n2 = uny(k,1,f,e)      !             Y
+            n3 = unz(k,1,f,e)      !             Z
+c
+            s11 = sij(j1,j2,1,1,e) ! Strain rate tensor
+            s21 = sij(j1,j2,1,4,e)
+            s31 = sij(j1,j2,1,6,e)
+c
+            s12 = sij(j1,j2,1,4,e)
+            s22 = sij(j1,j2,1,2,e)
+            s32 = sij(j1,j2,1,5,e)
+c
+            s13 = sij(j1,j2,1,6,e)
+            s23 = sij(j1,j2,1,5,e)
+            s33 = sij(j1,j2,1,3,e)
+c
+            Tx(j1,j2,1,e) = -(s11*n1 + s12*n2 + s13*n3)*vsc
+            Ty(j1,j2,1,e) = -(s21*n1 + s22*n2 + s23*n3)*vsc
+            Tz(j1,j2,1,e) = -(s31*n1 + s32*n2 + s33*n3)*vsc
+c
+            Tmg =       Tx(j1,j2,1,e)*Tx(j1,j2,1,e)
+            Tmg = Tmg + Ty(j1,j2,1,e)*Ty(j1,j2,1,e)
+            Tmg = Tmg + Tz(j1,j2,1,e)*Tz(j1,j2,1,e)
+            Tmg = sqrt(Tmg)
+c
+            Tm(j1,j2,1,e) = Tmg                       ! shear stress mag
+c
+            a    = a    + area(k,1,f,e)               ! area
+            xdrg = xdrg + Tx(j1,j2,1,e)*area(k,1,f,e) ! viscous drag
+            ydrg = ydrg + Ty(j1,j2,1,e)*area(k,1,f,e)
+            zdrg = zdrg + Tz(j1,j2,1,e)*area(k,1,f,e)
+c
+c           xdrg = xdrg - n1*pr(j1,j2,1,e)*area(k,1,f,e) ! pressure contribution
+c           ydrg = ydrg - n2*pr(j1,j2,1,e)*area(k,1,f,e) ! to drag
+c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
+
+          enddo
+          enddo
+
+        endif
+      enddo
+ 
+      call gop(a   ,Tmg,'+  ',1) ! summing over all processes
+      call gop(xdrg,Tmg,'+  ',1)
+      call gop(ydrg,Tmg,'+  ',1)
+      call gop(zdrg,Tmg,'+  ',1)
+ 
+      mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
+      mdrg = sqrt(mdrg)
+ 
+      if(nid.eq.0) then
+         write(6,*) 'area     is', a
+         write(6,*) 'xdrag    is', xdrg
+         write(6,*) 'ydrag    is', ydrg
+         write(6,*) 'zdrag    is', zdrg
+         write(6,*) 'drag mag is', mdrg
+      endif
+ 
+      ! Outpost
+
+      iifxyo = ifxyo
+      iifvo  = ifvo
+      iifpo  = ifpo
+      iifto  = ifto
+ 
+      ifxyo = .true.
+      ifvo  = .true.
+      ifpo  = .false.
+      ifto  = .true.
+ 
+      call outpost(Tx,Ty,Tz,pr,Tm,'wsh')
+ 
+      ifxyo = iifxyo
+      ifvo  = iifvo
+      ifpo  = iifpo
+      ifto  = iifto
+ 
+      return
+      end
+c------------------------------------------------------------------------
+
