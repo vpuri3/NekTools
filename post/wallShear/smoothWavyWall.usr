@@ -207,11 +207,11 @@ ccccccccc
       enddo
 
       tmp = glmax(Tx,ntot)
-      write(6,*) "max error in x-shear is ", tmp
+      if(nid.eq.0) write(6,*) "max error in x-shear is ", tmp
       tmp = glmax(Ty,ntot)
-      write(6,*) "max error in y-shear is ", tmp
+      if(nid.eq.0) write(6,*) "max error in y-shear is ", tmp
       tmp = glmax(Tz,ntot)
-      write(6,*) "max error in z-shear is ", tmp
+      if(nid.eq.0) write(6,*) "max error in z-shear is ", tmp
 ccccccccc
 ccccccccc
 
