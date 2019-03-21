@@ -135,19 +135,19 @@ for ((i=1; i<=$njobs; i++)); do
     echo "restarting from $res"                                   |& tee -a $log
     head -c 130 $res                                              |& tee -a $log
 
-    [ $? != 0 ] msg="problem with $res" && abort
+    [ $? != 0 ] && msg="problem with $res" && abort
     echo -e "\n"                                                  |& tee -a $log
     if [ "$budgets" = true ]; then
         echo "reading budgets from i##$case$bsfx"                 |& tee -a $log
         head -c 130 i13$case$bsfx                                 |& tee -a $log
-        [ $? != 0 ] msg="problem with i13$case$bsfx" && abort
+        [ $? != 0 ] && msg="problem with i13$case$bsfx" && abort
         echo -e "\n"                                              |& tee -a $log
      fi
 
 #===============================================================================
 # compiling
 #===============================================================================
-    if [ $i = 1]; then
+    if [ $i = 1 ]; then
     	echo "compiling..."                                       |& tee -a $log
     	echo "using makenek " $(which makenek)                    |& tee -a $log
     	makenek $case                                              >>  /dev/null
@@ -159,7 +159,7 @@ for ((i=1; i<=$njobs; i++)); do
 #   queuing and running
 #===============================================================================
     ./$sub $case $nnodes                                          |& tee -a $log
-    [ $? != 0 ] &&msg="could not queue job" && abort
+    [ $? != 0 ] && msg="could not queue job" && abort
     echo "successfully queued job"                                |& tee -a $log
     sleep 10
     qstat --header JobId:User:RunTime:WallTime:State:Location     |& tee -a $log
