@@ -181,10 +181,15 @@ for ((i=1; i<=$njobs; i++)); do
     sleep 10
     qstat --header JobId:User:RunTime:WallTime:State:Location |& tee -a $log
 
+#   waiting in queue
     sleep 60
+    j=0
     while [ ! -f $dir1/logfile ]; do
 	echo "waiting in queue"                               |& tee -a $log
 	qstat --header JobId:RunTime:State:Location -u $me    |& tee -a $log
+
+	j=$((j+1))
+	[ "$j" -gt 20 ] && send_log; exit 1;
 	sleep 300
     done
    
@@ -201,7 +206,7 @@ for ((i=1; i<=$njobs; i++)); do
 
     echo "all is good. goodnight."                            |& tee -a $log
     send_log
-    sleep 7000
+    sleep $simTime
     echo $(date -R)                                           |& tee -a $log
     [ ! $i = $njobs ] && echo "long time no see?"             |& tee -a $log
 done
