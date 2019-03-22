@@ -27,6 +27,7 @@ c-----------------------------------------------------------------------
       integer readStats
       real pa(lx1,ly2,lz2), pb(lx1,ly1,lz2),paveVol,vol
 
+
       if (ax1.ne.lx1 .or. ay1.ne.ly1 .or. az1.ne.lz1) then
          if(nid.eq.0) WRITE(6,*)
      $     'ABORT: wrong size of ax1,ay1,az1 in avg_all(), check SIZEu!'
@@ -80,6 +81,7 @@ c-----------------------------------------------------------------------
 
         ! If P needs ref in a proc, it needs ref in all!
         call gllog(ifPneedsRef,.false.)      
+
         if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef     
 
       ! Initialization
@@ -155,7 +157,7 @@ c-----------------------------------------------------------------------
         call avg1    (vavg,vy,alpha,beta,ntot ,'vm  ',ifverbose)
         call avg1    (wavg,vz,alpha,beta,ntot ,'wm  ',ifverbose)
         call avg1    (pm1avg,pm1,alpha,beta,ntot ,'prm ',ifverbose)
-cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
+c       call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
 
         do i = 1,ldimt
           call avg1 (tavg(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
@@ -169,7 +171,7 @@ cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
         call avg2    (vrms,vy,alpha,beta,ntot ,'vms ',ifverbose)
         call avg2    (wrms,vz,alpha,beta,ntot ,'wms ',ifverbose)
         call avg2    (pmrms,pm1,alpha,beta,ntot ,'prms',ifverbose)
-cvp     call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
+c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
 
         do i = 1,ldimt
           call avg2 (trms(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
@@ -609,7 +611,6 @@ c       We change time momentaneously to write down averaging time
         temp_time=time
         time = atime
 
-cvp     Do not outpost mesh.
         iifxyo = ifxyo
         ifxyo  = .false.
 
@@ -629,10 +630,8 @@ cvp     Do not outpost mesh.
         call outpost2(wdpdzavg,dpdxavg,dpdyavg,dpdzavg,
      &                dpdzavg,1,'i13')
 
-cvp
         ifxyo = iifxyo
-
-        time = temp_time
+        time  = temp_time
 
       ntdump=ntdump+1
 

@@ -17,3 +17,6 @@ cvp
       real utavg(lx1,ly1,lz1,lelt)
      $    ,vtavg(lx1,ly1,lz1,lelt)
      $    ,wtavg(lx1,ly1,lz1,lelt)
+     $    ,utcov(lx1,ly1,lz1,lelt)
+     $    ,vtcov(lx1,ly1,lz1,lelt)
+     $    ,wtcov(lx1,ly1,lz1,lelt)

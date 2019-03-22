@@ -4,7 +4,7 @@ C=======================================================================
 
 c----------------------------------------------------------------------
 c---Standard Averaging for Incompressible Flows
-c-----------------------------------------------------------------------   
+c-----------------------------------------------------------------------
 
       subroutine standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
 
@@ -81,6 +81,8 @@ c-----------------------------------------------------------------------
       
         ! If P needs ref in a proc, it needs ref in all!
         call gllog(ifPneedsRef,.false.)
+
+        if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef     
 
       if (readStats.eq.0) then
 
