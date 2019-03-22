@@ -1,0 +1,37 @@
+c	post processing
+ccc   PREFIX:
+ccc          f   --> data present only on face (zero elsewhere)
+ccc          vol --> face data scattered into domain
+ccc                  in direction idir1
+
+      parameter(lxyz  = lx1*ly1*lz1)
+      parameter(nxzf  = 2*ldim)
+      parameter(lxyzv = lelv*lxyz)
+
+      common /uplus/ up (lx1,ly1,lz1,lelv) ! U-Plus
+     $             , yp (lx1,ly1,lz1,lelv) ! Y-Plus
+     $             , fNx(lx1,ly1,lz1,lelv) ! face normal  X
+     $             , fNy(lx1,ly1,lz1,lelv) !              Y
+     $             , fNz(lx1,ly1,lz1,lelv) !              Z 
+     $             , fTx(lx1,ly1,lz1,lelv) ! shear stress X-comp
+     $             , fTy(lx1,ly1,lz1,lelv) !              Y   
+     $             , fTz(lx1,ly1,lz1,lelv) !              Z
+     $             , fTm(lx1,ly1,lz1,lelv) !              Mag    
+     $             , fUf(lx1,ly1,lz1,lelv) ! face friction vel
+c
+     $             , volNx(lx1,ly1,lz1,lelv)
+     $             , volNy(lx1,ly1,lz1,lelv)
+     $             , volNz(lx1,ly1,lz1,lelv)
+     $             , volTm(lx1,ly1,lz1,lelv)
+     $             , volUf(lx1,ly1,lz1,lelv)
+c
+     $             , utn(lx1,ly1,lz1,lelv) ! tangential velocity mag
+     $             , d2f(lx1,ly1,lz1,lelv) ! distance to face
+c
+
+      common /plnr/ uxa(lx1,ly1,lz1,lelv) ! planar averages in direction
+     $             ,uya(lx1,ly1,lz1,lelv) ! idir2
+     $             ,uza(lx1,ly1,lz1,lelv)
+     $             ,Tma(lx1,ly1,lz1,lelv) ! shear stress mag =avg(Tmg)
+     $             ,Ufa(lx1,ly1,lz1,lelv) ! friction velocity=
+c                                         ! avg(sqrt(Tmg)/rho)
