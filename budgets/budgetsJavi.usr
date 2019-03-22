@@ -3466,6 +3466,7 @@ c     modify initc
       write(fpath,format_string)auxName,readStats
 
       INQUIRE(FILE=fpath,EXIST=there)
+
 c     read data into solution arrays
       if (THERE) then
         WRITE(initc(1),format_string)auxName,readStats
