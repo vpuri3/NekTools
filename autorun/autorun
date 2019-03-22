@@ -42,7 +42,7 @@ log=$dir/run.log
 function send_log { mail -s "$case autorun" $email < $log; }
 
 function abort {
-    echo "ABORT:" "$msg" |& tee -a $log
+    echo "ABORT:" "$msg"                                          |& tee -a $log
     send_log; exit 1
 }
 
@@ -50,9 +50,9 @@ if [ ! -f $log ]; then
     touch $log
 fi
 						              
-echo "######################################################"     |& tee -a $log
-echo "######################################################"     |& tee -a $log
-echo "######################################################"     |& tee -a $log
+echo "##########################################################" |& tee -a $log
+echo "##########################################################" |& tee -a $log
+echo "##########################################################" |& tee -a $log
 echo $(date -R)                                                   |& tee -a $log
 echo "Starting new session in directory $dir."                    |& tee -a $log
 echo "Running case $case from $base$num $njobs times."            |& tee -a $log
@@ -71,19 +71,19 @@ echo "simTime is $simTime"                                        |& tee -a $log
 findrsfx=false
 if [ "$rsfx" = "0.f00000" ]; then
     findrsfx=true
-    echo "rsfx=$rsfx. Restart from last output file."             |& tee -a $log
+    echo "rsfx=$rsfx ==> restart from latest output file."        |& tee -a $log
 fi
 
 budgets=true
 if [ "$bsfx" = "0.f00000" ]; then
     budgets=false
-    echo "bsfx=$bsfx. No budgets."                                |& tee -a $log
+    echo "bsfx=$bsfx ==> no budgets"                              |& tee -a $log
 fi
 
 for ((i=1; i<=$njobs; i++)); do
-    echo "#------------------------------------------------#"     |& tee -a $log
-    echo "#------------------ RUN $i ----------------------#"     |& tee -a $log
-    echo "#------------------------------------------------#"     |& tee -a $log
+    echo "#----------------------------------------------------#" |& tee -a $log
+    echo "#------------------ RUN $i --------------------------#" |& tee -a $log
+    echo "#----------------------------------------------------#" |& tee -a $log
     echo $(date -R)                                               |& tee -a $log
 
 #===============================================================================
@@ -130,14 +130,15 @@ for ((i=1; i<=$njobs; i++)); do
     fi
 
     rm $case"0.f"*
+
 #===============================================================================
 #   checks
 #===============================================================================
     echo "restarting from $res"                                   |& tee -a $log
     head -c 130 $res                                              |& tee -a $log
-
     [ $? != 0 ] && msg="problem with $res" && abort
     echo -e "\n"                                                  |& tee -a $log
+
     if [ "$budgets" = true ]; then
         echo "reading budgets from i##$case$bsfx"                 |& tee -a $log
         head -c 130 i13$case$bsfx                                 |& tee -a $log
@@ -163,7 +164,7 @@ for ((i=1; i<=$njobs; i++)); do
     [ $? != 0 ] && msg="could not queue job" && abort
     echo "successfully queued job"                                |& tee -a $log
     sleep 10
-    qstat --header JobId:User:RunTime:WallTime:State:Location     |& tee -a $log
+    qstat --header JobId:RunTime:WallTime:State:Location -u $me   |& tee -a $log
 
     sleep 60
     j=0
