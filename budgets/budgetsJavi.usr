@@ -79,7 +79,8 @@ c-----------------------------------------------------------------------
         enddo
 
         ! If P needs ref in a proc, it needs ref in all!
-        call gllog(ifPneedsRef,.true.)      
+        call gllog(ifPneedsRef,.false.)      
+        if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef     
 
       ! Initialization
 
@@ -121,7 +122,6 @@ c-----------------------------------------------------------------------
 
 
       ! Set average pressure to 0 volume average
-      if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef     
       if (ifPneedsRef) then
 
         !Substract current volume average
