@@ -59,13 +59,14 @@ echo "Running case $case from $base$num $njobs times."            |& tee -a $log
 echo "Storing log in $log."                                       |& tee -a $log
 #
 echo "from run.conf:"                                             |& tee -a $log
-echo "email  is $email"                                           |& tee -a $log
-echo "res    is $res"                                             |& tee -a $log
-echo "rsfx   is $rsfx"                                            |& tee -a $log
-echo "bsfx   is $bsfx"                                            |& tee -a $log
-echo "sub    is $sub"                                             |& tee -a $log
-echo "nnodes is $nnodes"                                          |& tee -a $log
-echo "fresh  is $fresh"                                           |& tee -a $log
+echo "email   is $email"                                          |& tee -a $log
+echo "res     is $res"                                            |& tee -a $log
+echo "rsfx    is $rsfx"                                           |& tee -a $log
+echo "bsfx    is $bsfx"                                           |& tee -a $log
+echo "sub     is $sub"                                            |& tee -a $log
+echo "nnodes  is $nnodes"                                         |& tee -a $log
+echo "fresh   is $fresh"                                          |& tee -a $log
+echo "simTime is $simTime"                                        |& tee -a $log
 #
 findrsfx=false
 if [ "$rsfx" = "0.f00000" ]; then
@@ -169,8 +170,8 @@ for ((i=1; i<=$njobs; i++)); do
     while [ ! -f $dir1/logfile ]; do
 	echo "waiting in queue"                                   |& tee -a $log
 	qstat --header JobId:RunTime:State:Location -u $me        |& tee -a $log
-	j=$((j+1))
 	[ "$j" -gt 20 ] && msg="spent 60 mins in queue" && abort
+	j=$((j+1))
 	sleep 300
     done
    
@@ -184,7 +185,7 @@ for ((i=1; i<=$njobs; i++)); do
 
     echo "all is good. goodnight."                                |& tee -a $log
     send_log
-    sleep $(simTime-300)
+    sleep $((simTime-300))
     echo $(date -R)                                               |& tee -a $log
     [ ! $i = $njobs ] && echo "long time no see?"                 |& tee -a $log
 done
