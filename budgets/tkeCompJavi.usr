@@ -116,7 +116,6 @@ c-----------------------------------------------------------------------
       endif
       endif
 
-
       ! Set average pressure to 0 volume average
      
       if (ifPneedsRef) then
@@ -156,9 +155,9 @@ c-----------------------------------------------------------------------
         call avg1    (vavg,vy,alpha,beta,ntot ,'vm  ',ifverbose)
         call avg1    (wavg,vz,alpha,beta,ntot ,'wm  ',ifverbose)
         call avg1    (pm1avg,pm1,alpha,beta,ntot ,'prm ',ifverbose)
-        call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
+c       call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
 
-        do i = 2,ldimt
+        do i = 1,ldimt
           call avg1 (tavg(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
      &                 ntott,'psav',ifverbose)
         enddo
@@ -170,8 +169,9 @@ c-----------------------------------------------------------------------
         call avg2    (vrms,vy,alpha,beta,ntot ,'vms ',ifverbose)
         call avg2    (wrms,vz,alpha,beta,ntot ,'wms ',ifverbose)
         call avg2    (pmrms,pm1,alpha,beta,ntot ,'prms',ifverbose)
-        call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
-        do i = 2,ldimt
+c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
+
+        do i = 1,ldimt
           call avg2 (trms(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
      &                 ntott,'psms',ifverbose)
         enddo
@@ -198,6 +198,7 @@ c-----------------------------------------------------------------------
       !=========
         !Outputs
       !=========
+
       if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
      &   lastep.eq.1) then
@@ -396,6 +397,7 @@ c
       real tSTATFREQ,tSTATSTART
       integer lxyze
       integer readStats
+      logical iifxyo
 
       lxyze = lx1*ly1*lz1*lelt
 
@@ -472,7 +474,6 @@ c
 
       ifverbose=.false.
       if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
-
 
  238  format(a37,a20,1es11.4,a6,1es11.4)
 
@@ -603,10 +604,13 @@ c
       !=========
         !Outputs
       !=========
+
       if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
      &   lastep.eq.1) then
 
+        iifxyo = ifxyo
+        ifxyo  = .false.
 c       We change time momentaneously to write down averaging time
         temp_time=time
         time = atime
@@ -628,7 +632,8 @@ c       We change time momentaneously to write down averaging time
         call outpost2(dpdzavg,dpdzavg,
      &                dpdzavg,dpdzavg,dpdzavg,1,'i13')
 
-        time = temp_time
+        ifxyo = iifxyo
+        time  = temp_time
 
       ntdump=ntdump+1
 
@@ -1840,41 +1845,41 @@ c      call col2  (pudxavg,vmult,nglob1)
         time=atime
 
      
-   !Average Convection
-      call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
-      call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
+c  !Average Convection
+c     call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
+c     call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
 
-   !Average Dissipation   
-      call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
-      call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
-     
-   !Average Pressure transport
-      call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
-      call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
+c  !Average Dissipation   
+c     call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
+c     call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
+c    
+c  !Average Pressure transport
+c     call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
+c     call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
 
-   !Average Production   
-      call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
-      call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
-     
-   !Average Turbulent Diffusion    
-      call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
-      call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
+c  !Average Production   
+c     call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
+c     call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
+c    
+c  !Average Turbulent Diffusion    
+c     call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
+c     call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
 
-   !Average Pressure Diffusion    
-      call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
-      call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
-     
-   !Average Pressure Strain   
-      call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
-      call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
+c  !Average Pressure Diffusion    
+c     call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
+c     call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
+c    
+c  !Average Pressure Strain   
+c     call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
+c     call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
 
-   !Average Viscous Strain  
-      call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
-      call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
-     
-   !Average Buoyancy 
-      call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
-      call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
+c  !Average Viscous Strain  
+c     call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
+c     call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
+c    
+c  !Average Buoyancy 
+c     call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
+c     call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
 
       time=temp_time
 
@@ -1889,56 +1894,56 @@ c      call col2  (pudxavg,vmult,nglob1)
        call sample(conv_uu, conv_vv,  conv_ww,  pm1avg,  tavg,'cn1',
      &            'conv_uu','conv_vv','conv_ww','pm1avg','tavg')
 
-       call sample(conv_uv,  conv_uw,  conv_vw,  pm1avg,  tavg,'cn2',
-     &            'conv_uv','conv_uw','conv_vw','pm1avg','tavg')
+c      call sample(conv_uv,  conv_uw,  conv_vw,  pm1avg,  tavg,'cn2',
+c    &            'conv_uv','conv_uw','conv_vw','pm1avg','tavg')
 
        call sample(eps_uu,  eps_vv,  eps_ww,  pm1avg,  tavg,'ep1',
      &            'eps_uu','eps_vv','eps_ww','pm1avg','tavg')
 
-       call sample(eps_uv, eps_uw,  eps_vw,  pm1avg,  tavg,'ep2',
-     &            'eps_uv','eps_uw','eps_vw','pm1avg','tavg')
+c      call sample(eps_uv, eps_uw,  eps_vw,  pm1avg,  tavg,'ep2',
+c    &            'eps_uv','eps_uw','eps_vw','pm1avg','tavg')
 
        call sample(prd_uu,  prd_vv,  prd_ww,  pm1avg,  tavg,'pr1',
      &            'prd_uu','prd_vv','prd_ww','pm1avg','tavg')
 
-       call sample(prd_uv,  prd_uw,  prd_vw,  pm1avg,  tavg,'pr2',
-     &            'prd_uv','prd_uw','prd_vw','pm1avg','tavg')
+c      call sample(prd_uv,  prd_uw,  prd_vw,  pm1avg,  tavg,'pr2',
+c    &            'prd_uv','prd_uw','prd_vw','pm1avg','tavg')
 
        call sample(ptr_uu,  ptr_vv,  ptr_ww,  pm1avg,  tavg,'pt1',
      &            'ptr_uu','ptr_vv','ptr_ww','pm1avg','tavg')
 
-       call sample(ptr_uv,  ptr_uw,  ptr_vw,  pm1avg,  tavg,'pt2',
-     &            'ptr_uv','ptr_uw','ptr_vw','pm1avg','tavg')
+c      call sample(ptr_uv,  ptr_uw,  ptr_vw,  pm1avg,  tavg,'pt2',
+c    &            'ptr_uv','ptr_uw','ptr_vw','pm1avg','tavg')
 
        call sample(tdf_uu,  tdf_vv,  tdf_ww,  pm1avg, tavg,'td1',
      &            'tdf_uu','tdf_vv','tdf_ww','pm1avg','tavg')
 
-       call sample(tdf_uv,  tdf_uw,  tdf_vw,  pm1avg,  tavg,'td2',
-     &            'tdf_uv','tdf_uw','tdf_vw','pm1avg','tavg')
+c      call sample(tdf_uv,  tdf_uw,  tdf_vw,  pm1avg,  tavg,'td2',
+c    &            'tdf_uv','tdf_uw','tdf_vw','pm1avg','tavg')
 
        call sample(pdf_uu,  pdf_vv,  pdf_ww,  pm1avg,  tavg,'pd1',
      &            'pdf_uu','pdf_vv','pdf_ww','pm1avg','tavg')
 
-       call sample(pdf_uv,  pdf_uw,  pdf_vw,  pm1avg,  tavg,'pd2',
-     &            'pdf_uv','pdf_uw','pdf_vw','pm1avg','tavg')
+c      call sample(pdf_uv,  pdf_uw,  pdf_vw,  pm1avg,  tavg,'pd2',
+c    &            'pdf_uv','pdf_uw','pdf_vw','pm1avg','tavg')
 
        call sample(pst_uu,  pst_vv,  pst_ww,  pm1avg,  tavg,'ps1',
      &            'pst_uu','pst_vv','pst_ww','pm1avg','tavg')
 
-       call sample(pst_uv,  pst_uw,  pst_vw,  pm1avg,  tavg,'ps2',
-     &            'pst_uv','pst_uw','pst_vw','pm1avg','tavg')   
+c      call sample(pst_uv,  pst_uw,  pst_vw,  pm1avg,  tavg,'ps2',
+c    &            'pst_uv','pst_uw','pst_vw','pm1avg','tavg')   
 
        call sample(vdf_uu,  vdf_vv,  vdf_ww,  pm1avg,  tavg,'vd1',
      &            'vdf_uu','vdf_vv','vdf_ww','pm1avg','tavg')
 
-       call sample(vdf_uv,  vdf_uw,  vdf_vw,  pm1avg,  tavg,'vd2',
-     &            'vdf_uv','vdf_uw','vdf_vw','pm1avg','tavg')     
+c      call sample(vdf_uv,  vdf_uw,  vdf_vw,  pm1avg,  tavg,'vd2',
+c    &            'vdf_uv','vdf_uw','vdf_vw','pm1avg','tavg')     
 
        call sample(buo_uu,  buo_vv,  buo_ww,  pm1avg,  tavg,'bu1',
      &            'buo_uu','buo_vv','buo_ww','pm1avg','tavg')
 
-       call sample(buo_uv,  buo_uw,  buo_vw,  pm1avg,  tavg,'bu2',     
-     &            'buo_uv','buo_uw','buo_vw','pm1avg','tavg')     
+c      call sample(buo_uv,  buo_uw,  buo_vw,  pm1avg,  tavg,'bu2',     
+c    &            'buo_uv','buo_uw','buo_vw','pm1avg','tavg')     
 
       time=temp_time
 
