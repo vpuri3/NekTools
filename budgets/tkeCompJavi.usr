@@ -3429,9 +3429,7 @@ c-----------------------------------------------------------------------
       logical lastRead
       real avtime 
       integer readStats,ldimtRead
-      real avgq1(1),avgq2(1),
-     &       avgq3(1),avgq4(1),
-     &       avgq5(1)
+      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(1)
       integer nFieldsToRead
       common /size/ lname
       
@@ -3447,17 +3445,22 @@ c-----------------------------------------------------------------------
          
       ntot = lx1*ly1*lz1*lelt
     
-      ! Just to save some time in case3 it's not needed 
+      if(ldimtRead.gt.ldimt) then
+        write(6,*) 'ABORT: Reading too many fields (ldimtRead>ldimt)!'
+        call exitt
+      endif
 
+c     zero out solution arrays
       if (nFieldsToRead.gt.4) call rzero(avgq5,ntot*ldimtRead)
       if (nFieldsToRead.gt.3) call rzero(avgq4,ntot)
       if (nFieldsToRead.gt.2) call rzero(avgq3,ntot)
       if (nFieldsToRead.gt.1) call rzero(avgq2,ntot)
-
-      call rzero(avgq1,ntot)
+                              call rzero(avgq1,ntot)
             
+c     store initc
       call chcopy(initcOld(1),initc(1),132)
       
+c     modify initc
       call blank(fileName,132)
       call blank(format_string,132)
       call blank(lstr,132)
@@ -3477,21 +3480,17 @@ c-----------------------------------------------------------------------
 
       INQUIRE(FILE=fpath,EXIST=there)
       
+c     read data into solution arrays
       if (THERE) then
         WRITE(initc(1),format_string)auxName,readStats
         call restart(1)
         call nekgsync()         
 
-        do i=1,ntot
-          avgq1(i) = vx(i,1,1,1)
-          avgq2(i) = vy(i,1,1,1)
-          avgq3(i) = vz(i,1,1,1)
-          avgq4(i) = pr(i,1,1,1)
-        enddo
-
-        do i=1,ntot*ldimtRead
-          avgq5(i) = t(i,1,1,1,1)
-        enddo
+      if (nFieldsToRead.gt.4) call copy(avgq5,t ,ntot*ldimtRead)
+      if (nFieldsToRead.gt.3) call copy(avgq4,pr,ntot)
+      if (nFieldsToRead.gt.2) call copy(avgq3,vz,ntot)
+      if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot)
+                              call copy(avgq1,vx,ntot)
 
         if (nid.eq.0) write(6,*)'Reading statistics for atime: ',time
         avtime = time
@@ -3501,9 +3500,11 @@ c-----------------------------------------------------------------------
         call exitt
       endif
 
+c     restore initc
       call blank(initc(1),132)
       call chcopy(initc(1),initcOld(1),132)
 
+c     restore state variables
       if (lastRead) then
         if (nid.eq.0) write(6,*)'Reading back initial fields:'
         call restart(1)
