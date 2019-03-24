@@ -169,9 +169,9 @@ for ((i=1; i<=$njobs; i++)); do
     sleep 60
     j=0
     while [ ! -f $dir1/logfile ]; do
-	echo "waiting in queue"                                   |& tee -a $log
+	echo "waiting in queue for $((j*5)) minutes"              |& tee -a $log
 	qstat --header JobId:RunTime:State:Location -u $me        |& tee -a $log
-	[ "$j" -gt 20 ] && msg="spent 60 mins in queue" && abort
+	[ "$j" -gt 40 ] && msg="spent 2 hrs in queue. bye" && abort
 	j=$((j+1))
 	sleep 300
     done
