@@ -1,4 +1,22 @@
 C-----------------------------------------------------------------------
+c  in usrchk()
+c
+c     integer f,ifld,idir
+c     character*3 bctyp
+c 
+c     real Tx(lx1,ly1,lz1,lelv) ! shear stress X-comp
+c     real Ty(lx1,ly1,lz1,lelv) !              Y   
+c     real Tz(lx1,ly1,lz1,lelv) !              Z
+c
+c     ifxyo = .true.
+c     ifto  = .true.
+c
+c     f     = 1
+c     bctyp = 'W  '
+c     ifld  = 1
+c     call comp_wallShear(Tx,Ty,Tz,vx,vy,vz,f,bctyp,ifld)
+c
+C-----------------------------------------------------------------------
       subroutine comp_wallShear(Tx,Ty,Tz,ux,uy,uz,f,bctyp,ifld)
       implicit none
       include 'SIZE'
