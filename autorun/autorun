@@ -39,10 +39,12 @@ me=$(whoami)
 dir=$PWD
 log=$dir/run.log
 
-function send_log { mail -s "$case autorun" $email < $log; }
+function send_log {
+	mail -s "$case autorun" $email < $log;
+}
 
 function abort {
-    echo "ABORT:" "$msg"                                          |& tee -a $log
+    echo "ABORT:" "$msg" |& tee -a $log
     send_log; exit 1
 }
 
@@ -97,7 +99,6 @@ for ((i=1; i<=$njobs; i++)); do
 	num=$((num+1))
 	dir1=$dir/$base$num
 
-	# copying directories.
 	echo "copying $dir0 to $dir1"                             |& tee -a $log
 	cp -r $dir0 $dir1                                         |& tee -a $log
         [ $? != 0 ] && msg="cant cp $dir1 -> $dir0" && abort
@@ -170,12 +171,11 @@ for ((i=1; i<=$njobs; i++)); do
     j=0
     while [ ! -f $dir1/logfile ]; do
 	echo "waiting in queue for $((j*5)) minutes"              |& tee -a $log
-	qstat --header JobId:RunTime:State:Location -u $me        |& tee -a $log
-	[ "$j" -gt 40 ] && msg="spent 2 hrs in queue. bye" && abort
+	[ "$j" -gt 60 ] && msg="spent 5 hrs in queue. bye" && abort
 	j=$((j+1))
 	sleep 300
     done
-   
+
     echo "job is running"                                         |& tee -a $log
  
     sleep 300
