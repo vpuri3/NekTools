@@ -68,9 +68,9 @@ c     call comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_sctr_hndl,gs_avg_hndl
 c    $      ,nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifplnr_avg,ifsample)
 c
 C-----------------------------------------------------------------------
-      include 'plavg.usr'
-      include 'lnavg.usr'
-      include 'geomavg.usr'
+c     include 'plavg.usr'
+c     include 'lnavg.usr'
+c     include 'geomavg.usr'
       include 'scttr.usr'
       include 'wallShear.usr'
 C-----------------------------------------------------------------------
