@@ -55,9 +55,12 @@ c
       call rzero(vdk,ntot)
       call rzero(tke,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
-      call rzero(rsuu,ntot)
-      call rzero(rsvv,ntot)
-      call rzero(rsww,ntot)
+c
+      call rzero(pp1,ntot)
+      call rzero(pp2,ntot)
+      call rzero(pp3,ntot)
+c
+      call probePoint(uavg,vavg,wavg,urms,vrms,wrms)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -69,18 +72,6 @@ c
          epk(i,1,1,1)= eps_uu(i,1,1,1)+ eps_vv(i,1,1,1)+ eps_ww(i,1,1,1)
          vdk(i,1,1,1)= vdf_uu(i,1,1,1)+ vdf_vv(i,1,1,1)+ vdf_ww(i,1,1,1)
 c
-         tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
-     $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
-
-         rsuu(i,1,1,1)=-conv_uu(i,1,1,1)+prd_uu(i,1,1,1)+ptr_uu(i,1,1,1)
-     $                 + tdf_uu(i,1,1,1)+eps_uu(i,1,1,1)+vdf_uu(i,1,1,1)
-
-         rsvv(i,1,1,1)=-conv_vv(i,1,1,1)+prd_vv(i,1,1,1)+ptr_vv(i,1,1,1)
-     $                 + tdf_vv(i,1,1,1)+eps_vv(i,1,1,1)+vdf_vv(i,1,1,1)
-
-         rsww(i,1,1,1)=-conv_ww(i,1,1,1)+prd_ww(i,1,1,1)+ptr_ww(i,1,1,1)
-     $                 + tdf_ww(i,1,1,1)+eps_ww(i,1,1,1)+vdf_ww(i,1,1,1)
-c
          cnk(i,1,1,1) = cnk(i,1,1,1) * 0.5
          prk(i,1,1,1) = prk(i,1,1,1) * 0.5
          ptk(i,1,1,1) = ptk(i,1,1,1) * 0.5
@@ -90,19 +81,18 @@ c
          epk(i,1,1,1) = epk(i,1,1,1) * 0.5
          vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
 c
-c        div(i,1,1,1) = -1/dens0*
-c    $              (pudxavg(i,1,1,1) - pm1avg(i,1,1,1)*udxavg(i,1,1,1)
-c    $              +pvdyavg(i,1,1,1) - pm1avg(i,1,1,1)*vdyavg(i,1,1,1)
-c    $              +pwdzavg(i,1,1,1) - pm1avg(i,1,1,1)*wdzavg(i,1,1,1))
+         tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
+     $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
 c
-c        div(i,1,1,1) = pm1avg(i,1,1,1) *
-c    $                 (udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1))
+         div(i,1,1,1)=udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
 c
-c
-         div(i,1,1,1) = udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
-        ! why is it nonzero?
-         div(i,1,1,1) = pudxavg(i,1,1,1) + pvdyavg(i,1,1,1)
-     $                + pwdzavg(i,1,1,1)
+        ! pudxavg + pvdyavg + pwdzavg == 0
+         pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
+         pp2(i,1,1,1)= pm1avg(i,1,1,1)*div(i,1,1,1)
+         pp3(i,1,1,1)= -1/dens0*
+     $              (pudxavg(i,1,1,1) - pm1avg(i,1,1,1)*udxavg(i,1,1,1)
+     $              +pvdyavg(i,1,1,1) - pm1avg(i,1,1,1)*vdyavg(i,1,1,1)
+     $              +pwdzavg(i,1,1,1) - pm1avg(i,1,1,1)*wdzavg(i,1,1,1))
 c
       enddo
 c
@@ -185,34 +175,45 @@ c
 c
       if(ifsample) then 
          call sample(cnk,prk,ptk,pdk,div,'tk1',
-     $            'conv','prod','pres_tr','pres_df','garbage')
+     $              'conv','prod','pres_tr','pres_df','garbage')
          call sample(psk,tdk,epk,vdk,prk,'tk2',
-     $            'pres_st','turb_df','diss','visc_df','garbage')
+     $              'pres_st','turb_df','diss','visc_df','garbage')
          call sample(tke,div,cnk,prk,pdk,'tk3',
-     $            'tke','div','garbage','garbage','garbage')
+     $              'tke','div','garbage','garbage','garbage')
+c
+         call sample(div,pp1,pp2,pp3,pdk,'ppp',
+     $              'div','pp1','pp2','pp3','garbage')
       endif
 
+c     if(ifverbose) then
+c        tmp = glmax(rsuu,ntot)
+c        imbalance(1,istep-100) = tmp
+c        if(nid.eq.0) write(6,*) "max imbalance in uu is  ", tmp
+c        tmp = glmax(rsvv,ntot)
+c        imbalance(2,istep-100) = tmp
+c        if(nid.eq.0) write(6,*) "max imbalance in vv is  ", tmp
+c        tmp = glmax(rsww,ntot)
+c        imbalance(3,istep-100) = tmp
+c        if(nid.eq.0) write(6,*) "max imbalance in ww is  ", tmp
+c        tmp = glmax(tke,ntot)
+c        imbalance(4,istep-100) = tmp
+c        if(nid.eq.0) write(6,*) "max imbalance in tke is ", tmp
 
-      if(ifverbose) then
-         tmp = glmax(rsuu,ntot)
-         imbalance(1,istep-100) = tmp
-         if(nid.eq.0) write(6,*) "max imbalance in uu is  ", tmp
-         tmp = glmax(rsvv,ntot)
-         imbalance(2,istep-100) = tmp
-         if(nid.eq.0) write(6,*) "max imbalance in vv is  ", tmp
-         tmp = glmax(rsww,ntot)
-         imbalance(3,istep-100) = tmp
-         if(nid.eq.0) write(6,*) "max imbalance in ww is  ", tmp
-         tmp = glmax(tke,ntot)
-         imbalance(4,istep-100) = tmp
-         if(nid.eq.0) write(6,*) "max imbalance in tke is ", tmp
+c        if((nid.eq.0).and.(istep.eq.600)) then
+c           open(11,file="imbal")
+c           write(11,"(4(D23.16))") imbalance 
+c           close(11)
+c        endif
+c     endif
 
-         if((nid.eq.0).and.(istep.eq.600)) then
-            open(11,file="imbal")
-            write(11,"(4(D23.16))") imbalance 
-            close(11)
-         endif
-      endif
+      do i=1,ntot
+        tke(i,1,1,1) = abs(tke(i,1,1,1))
+      enddo
+      tmp = glmax(tke,ntot)
+      if(nid.eq.0) write(6,*) "res_max:", tmp
+      tmp = glsum(bm1,ntot)
+      tmp = glsc2(tke,bm1,ntot)/tmp
+      if(nid.eq.0) write(6,*) "res_ave:", tmp
 
       return
       end

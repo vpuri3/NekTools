@@ -1,8 +1,7 @@
 C     Turbulent Kinetic Energy for Incompressible Flow
 
       COMMON /TKEINCOMP/
-     $  tke(lx1,ly1,lz1,lelv) ! sum
-     $ ,cnk(lx1,ly1,lz1,lelv) ! convection
+     $  cnk(lx1,ly1,lz1,lelv) ! convection
      $ ,prk(lx1,ly1,lz1,lelv) ! proudction
      $ ,ptk(lx1,ly1,lz1,lelv) ! pressure transport
      $ ,pdk(lx1,ly1,lz1,lelv) ! pressure diffusion
@@ -11,7 +10,9 @@ C     Turbulent Kinetic Energy for Incompressible Flow
      $ ,epk(lx1,ly1,lz1,lelv) ! viscous dissipation
      $ ,vdk(lx1,ly1,lz1,lelv) ! viscous diffusion
 c
-     $ ,div(lx1,ly1,lz1,lelv)  ! <u i,i> == 0
-     $ ,rsuu(lx1,ly1,lz1,lelv) ! imbalance in uu
-     $ ,rsvv(lx1,ly1,lz1,lelv) ! imbalance in vv
-     $ ,rsww(lx1,ly1,lz1,lelv) ! imbalance in ww
+     $ ,tke(lx1,ly1,lz1,lelv) ! sum
+     $ ,div(lx1,ly1,lz1,lelv) ! <u i,i> == 0
+c
+     $ ,pp1(lx1,ly1,lz1,lelv) !
+     $ ,pp2(lx1,ly1,lz1,lelv) !
+     $ ,pp3(lx1,ly1,lz1,lelv) !
