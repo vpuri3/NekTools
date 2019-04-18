@@ -183,7 +183,7 @@ c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
         call avg3    (vwms,vy,vz,alpha,beta,ntot,'vwm ',ifverbose)
         call avg3    (wums,vz,vx,alpha,beta,ntot,'wum ',ifverbose)
 
-        call probePoint !(uavg,vavg,wavg,urms,vrms,wrms)
+        call probePoint
 
       endif
 
@@ -1102,8 +1102,6 @@ c
       character namef*3
       integer readStats
       real avtime 
-
-      call load_standard_incomp(readStats,avtime)
 
       ntot  = nx1*ny1*nz1*nelv
       ntott = nx1*ny1*nz1*nelt
@@ -3664,16 +3662,16 @@ c     real wrms(lx1,ly1,lz1,lelt)
       real umag(lx1,ly1,lz1,lelt)
       real umax,uave,kmax,kave,vol
       integer i,ntot
-      ntot=lx1*ly1*lz1*lelt
+      ntot=lx1*ly1*lz1*nelv
 
       do i=1,ntot
         umag(i,1,1,1)=sqrt(uavg(i,1,1,1)**2+
      &                     vavg(i,1,1,1)**2+
      &                     wavg(i,1,1,1)**2)
         k(i,1,1,1)=0.5*
-     &                (abs(urms(i,1,1,1)-uavg(i,1,1,1)*uavg(i,1,1,1))+
-     &                 abs(vrms(i,1,1,1)-vavg(i,1,1,1)*vavg(i,1,1,1))+
-     &                 abs(wrms(i,1,1,1)-wavg(i,1,1,1)*wavg(i,1,1,1)))
+     &                (urms(i,1,1,1)-uavg(i,1,1,1)*uavg(i,1,1,1)+
+     &                 vrms(i,1,1,1)-vavg(i,1,1,1)*vavg(i,1,1,1)+
+     &                 wrms(i,1,1,1)-wavg(i,1,1,1)*wavg(i,1,1,1))
       enddo
 
       vol=glsum(bm1,ntot)
@@ -3695,6 +3693,7 @@ c     real wrms(lx1,ly1,lz1,lelt)
       return
       end
 
+c-----------------------------------------------------------------------
 c
 c   AVERAGING FUNCTIONS
 c
