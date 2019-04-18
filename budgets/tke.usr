@@ -60,7 +60,7 @@ c
       call rzero(pp2,ntot)
       call rzero(pp3,ntot)
 c
-      call probePoint(uavg,vavg,wavg,urms,vrms,wrms)
+      call probePoint
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -109,9 +109,6 @@ c
        call plane_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(rsuu,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(rsvv,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(rsww,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
       if(atyp.eq.0) then
        if(nid.eq.0) write(6,*) "Line averaging in direction ", idir1
@@ -126,9 +123,6 @@ c
        call line_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(rsuu,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(rsvv,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(rsww,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
       if(abs(atyp).gt.1) then
        at = abs(atyp)
@@ -145,9 +139,6 @@ c
        call geom_avg_wrapper(vdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(tke,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(div,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(rsuu,gs_hndl2,nelx,nely,nelz,ifld,idir1,at)
-       call geom_avg_wrapper(rsvv,gs_hndl2,nelx,nely,nelz,ifld,idir1,at)
-       call geom_avg_wrapper(rsww,gs_hndl2,nelx,nely,nelz,ifld,idir1,at)
       endif
       if(atyp.eq.1) then
        if(nid.eq.0) write(6,*) "no averaging"
