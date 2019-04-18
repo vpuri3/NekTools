@@ -155,7 +155,7 @@ c-----------------------------------------------------------------------
         call avg1    (vavg,vy,alpha,beta,ntot ,'vm  ',ifverbose)
         call avg1    (wavg,vz,alpha,beta,ntot ,'wm  ',ifverbose)
         call avg1    (pm1avg,pm1,alpha,beta,ntot ,'prm ',ifverbose)
-cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
+c       call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
 
         do i = 1,ldimt
           call avg1 (tavg(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
@@ -169,7 +169,7 @@ cvp     call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
         call avg2    (vrms,vy,alpha,beta,ntot ,'vms ',ifverbose)
         call avg2    (wrms,vz,alpha,beta,ntot ,'wms ',ifverbose)
         call avg2    (pmrms,pm1,alpha,beta,ntot ,'prms',ifverbose)
-cvp     call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
+c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
 
         do i = 1,ldimt
           call avg2 (trms(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
@@ -385,7 +385,6 @@ c
       integer lxyze
       integer readStats
 
-cvp
       logical iifxyo
 
       lxyze = lx1*ly1*lz1*lelt
@@ -609,7 +608,7 @@ c       We change time momentaneously to write down averaging time
         temp_time=time
         time = atime
 
-cvp     Do not outpost mesh.
+c       Do not outpost mesh.
         iifxyo = ifxyo
         ifxyo  = .false.
 
@@ -629,7 +628,7 @@ cvp     Do not outpost mesh.
         call outpost2(wdpdzavg,dpdxavg,dpdyavg,dpdzavg,
      &                dpdzavg,1,'i13')
 
-cvp
+c  
         ifxyo = iifxyo
 
         time = temp_time
@@ -1104,6 +1103,8 @@ c
       integer readStats
       real avtime 
 
+      call load_standard_incomp(readStats,avtime)
+
       ntot  = nx1*ny1*nz1*nelv
       ntott = nx1*ny1*nz1*nelt
       nto2  = nx2*ny2*nz2*nelv
@@ -1425,14 +1426,14 @@ c-----------------------------------------------------------------------
         temp_time=time 
         time=atime
 
-   !Average Velocity
-      call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
+c  !Average Velocity
+c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
 
-   !Average Variance 
-      call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
-     
-   !Average Covariance  
-      call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
+c  !Average Variance 
+c     call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
+
+c  !Average Covariance  
+c     call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
  
       time=temp_time
 
