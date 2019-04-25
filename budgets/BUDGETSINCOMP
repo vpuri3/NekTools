@@ -88,9 +88,8 @@ C     Budgets for REYNOLDS stresses
      $ pst_vw(lx1,ly1,lz1,lelt)  
 
        COMMON /buoyancy/
-c    $ utavg(lx1,ly1,lz1,lelt),vtavg(lx1,ly1,lz1,lelt),
-c    $ wtavg(lx1,ly1,lz1,lelt),
-     $ buo_uu(lx1,ly1,lz1,lelt),
+     $ utavg(lx1,ly1,lz1,lelt),vtavg(lx1,ly1,lz1,lelt),
+     $ wtavg(lx1,ly1,lz1,lelt),buo_uu(lx1,ly1,lz1,lelt),
      $ buo_vv(lx1,ly1,lz1,lelt),buo_ww(lx1,ly1,lz1,lelt),
      $ buo_uv(lx1,ly1,lz1,lelt),buo_uw(lx1,ly1,lz1,lelt),
      $ buo_vw(lx1,ly1,lz1,lelt)

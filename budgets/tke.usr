@@ -1,21 +1,4 @@
 c-----------------------------------------------------------------------
-c
-c     integer gs_avg_hndl
-c     save    gs_avg_hndl
-c     data    gs_avg_hndl / 0 /
-c
-c     nelx      = 64
-c     nely      = 16
-c     nelz      = 32
-c     ifld      = 1
-c     idir      = 3
-c     ifplnr_avg = .false.
-c     ifsample   = .false.
-c
-c     subroutine comp_tke(gs_hndl1,nelx,nely,nelz,ifld,idir,ifplnr_avg
-c    $                                              ifline_avg,ifsample)
-c
-c-----------------------------------------------------------------------
 c     include 'budgetsJavi.usr'
 c     include 'plavg.usr'
 c     include 'lnavg.usr'
@@ -23,6 +6,7 @@ c     include 'geomavg.usr'
 c-----------------------------------------------------------------------
       subroutine comp_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld,idir1
      $          ,idir2,atyp,ifsample,ifverbose)
+c     subroutine comp_tke(ifsample,ifverbose)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -35,15 +19,16 @@ c-----------------------------------------------------------------------
       integer gs_hndl1,gs_hndl2,ifld,idir1,idir2
       logical ifsample,ifverbose
       integer atyp
+c     logical ifsample,ifverbose
 c
-      integer ntot, at
-      real tmp
+      integer ntot
+      real tmp,vol,tkmax,tkave,immax,imave
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
-      real imbalance(4,500)
-c
-      ntot = lx1*ly1*lz1*nelv
+c     real imbalance(4,500)
 c
       if(nid.eq.0) write(6,*) 'in comp_tke(...)'
+c
+      ntot=lx1*ly1*lz1*nelt
 c
       call rzero(cnk,ntot)
       call rzero(prk,ntot)
@@ -53,7 +38,8 @@ c
       call rzero(tdk,ntot)
       call rzero(epk,ntot)
       call rzero(vdk,ntot)
-      call rzero(tke,ntot)
+      call rzero(kkk,ntot)
+      call rzero(imb,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
 c
       call rzero(pp1,ntot)
@@ -81,24 +67,24 @@ c
          epk(i,1,1,1) = epk(i,1,1,1) * 0.5
          vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
 c
-         tke(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
+         kkk(i,1,1,1) = 0.5*
+     $                (urms(i,1,1,1)-uavg(i,1,1,1)*uavg(i,1,1,1)+
+     $                 vrms(i,1,1,1)-vavg(i,1,1,1)*vavg(i,1,1,1)+
+     $                 wrms(i,1,1,1)-wavg(i,1,1,1)*wavg(i,1,1,1))
+c
+         imb(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
 c
-         div(i,1,1,1)=udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
+         div(i,1,1,1) = udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
 c
-        ! pudxavg + pvdyavg + pwdzavg == 0
          pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
-         pp2(i,1,1,1)= pm1avg(i,1,1,1)*div(i,1,1,1)
-         pp3(i,1,1,1)= -1/dens0*
-     $              (pudxavg(i,1,1,1) - pm1avg(i,1,1,1)*udxavg(i,1,1,1)
-     $              +pvdyavg(i,1,1,1) - pm1avg(i,1,1,1)*vdyavg(i,1,1,1)
-     $              +pwdzavg(i,1,1,1) - pm1avg(i,1,1,1)*wdzavg(i,1,1,1))
-c
+         pp2(i,1,1,1)=pm1avg(i,1,1,1)*div(i,1,1,1)
+         pp3(i,1,1,1)=-1/dens0*(pp1(i,1,1,1) - pp2(i,1,1,1))
       enddo
 c
       if(atyp.lt.0) then
        if(nid.eq.0) write(6,*) "Planar averaging in direction ", idir1
-c
+ 
        call plane_avg_wrapper(cnk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(prk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(ptk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
@@ -107,12 +93,13 @@ c
        call plane_avg_wrapper(tdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(epk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(kkk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_wrapper(imb,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call plane_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
       if(atyp.eq.0) then
        if(nid.eq.0) write(6,*) "Line averaging in direction ", idir1
-c
+ 
        call line_avg_wrapper(cnk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(prk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(ptk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
@@ -121,14 +108,15 @@ c
        call line_avg_wrapper(tdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(epk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(tke,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(kkk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_wrapper(imb,gs_hndl1,nelx,nely,nelz,ifld,idir1)
        call line_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       endif
       if(abs(atyp).gt.1) then
        at = abs(atyp)
        if(nid.eq.0) write(6,*) "Geom averaging in direction ", idir2
        if(nid.eq.0) write(6,*) "nrepeat is ", at
-c
+ 
        call geom_avg_wrapper(cnk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(prk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(ptk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
@@ -137,12 +125,41 @@ c
        call geom_avg_wrapper(tdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(epk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(vdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(tke,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(kkk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_wrapper(imb,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
        call geom_avg_wrapper(div,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
       endif
       if(atyp.eq.1) then
        if(nid.eq.0) write(6,*) "no averaging"
       endif         
+c
+      vol = glsum(bm1,ntot)
+      tkmax = glmax(kkk,ntot)
+      tkave = glsc2(bm1,kkk,ntot)/vol
+      immax = glmax(imb,ntot)
+      imave = glsc2(bm1,imb,ntot)/vol
+
+      if(nid.eq.0) then
+        write(6,258)'tkmax:',tkmax
+        write(6,258)'tkave:',tkave
+        write(6,258)'immax:',immax
+        write(6,258)'imave:',imave
+      endif
+
+ 258  format(a6,1es15.8)
+
+      if(ifsample) then 
+         call sample(cnk,prk,ptk,pdk,div,'tk1',
+     $              'conv','prod','pres_tr','pres_df','garbage')
+         call sample(psk,tdk,epk,vdk,prk,'tk2',
+     $              'pres_st','turb_df','diss','visc_df','garbage')
+         call sample(kkk,imb,div,prk,pdk,'tk3',
+     $              'kkk','imb','div','garbage','garbage')
+         call sample(div,pp1,pp2,pp3,pdk,'ppp',
+     $              'div','pp1','pp2','pp3','garbage')
+         call sample(uavg,vavg,wavg,urms,pdk,'kkk',
+     $              'uavg','vavg','wavg','urms','garbage')
+      endif
 
 !     Outpost
 
@@ -157,24 +174,13 @@ c
       ifto  = .true.
 c
 c     call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
-c     call outpost2(tdk,epk,vdk,tke,div,1,'tk2')
+c     call outpost2(tdk,epk,vdk,imb,div,1,'tk2')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
       ifpo  = iifpo
       ifto  = iifto
 c
-      if(ifsample) then 
-         call sample(cnk,prk,ptk,pdk,div,'tk1',
-     $              'conv','prod','pres_tr','pres_df','garbage')
-         call sample(psk,tdk,epk,vdk,prk,'tk2',
-     $              'pres_st','turb_df','diss','visc_df','garbage')
-         call sample(tke,div,cnk,prk,pdk,'tk3',
-     $              'tke','div','garbage','garbage','garbage')
-c
-         call sample(div,pp1,pp2,pp3,pdk,'ppp',
-     $              'div','pp1','pp2','pp3','garbage')
-      endif
 
 c     if(ifverbose) then
 c        tmp = glmax(rsuu,ntot)
@@ -196,15 +202,6 @@ c           write(11,"(4(D23.16))") imbalance
 c           close(11)
 c        endif
 c     endif
-
-      do i=1,ntot
-        tke(i,1,1,1) = abs(tke(i,1,1,1))
-      enddo
-      tmp = glmax(tke,ntot)
-      if(nid.eq.0) write(6,*) "res_max:", tmp
-      tmp = glsum(bm1,ntot)
-      tmp = glsc2(tke,bm1,ntot)/tmp
-      if(nid.eq.0) write(6,*) "res_ave:", tmp
 
       return
       end
