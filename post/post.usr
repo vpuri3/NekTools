@@ -1,0 +1,72 @@
+C-----------------------------------------------------------------------
+      include 'budgetsJavi.usr'
+      include 'uplus.usr'
+      include 'tke.usr'
+      include 'avg.usr'
+c-----------------------------------------------------------------------
+      subroutine post-process()
+      include 'SIZE'
+      include 'TOTAL'
+
+      integer f,nelx,nely,nelz,ifld
+      integer idir_sctr,idir_plnr,idir_line,idir_geom,avgtyp
+      character*3 bctyp
+      logical ifsample,ifverbose
+ 
+      integer gs_sctr_hndl
+      save    gs_sctr_hndl
+      data    gs_sctr_hndl / 0 /
+ 
+      integer gs_plnr_hndl
+      save    gs_plnr_hndl
+      data    gs_plnr_hndl / 0 /
+ 
+      integer gs_line_hndl
+      save    gs_line_hndl
+      data    gs_line_hndl / 0 /
+ 
+      integer gs_geom_hndl
+      save    gs_geom_hndl
+      data    gs_geom_hndl / 0 /
+
+      if(istep.eq.0) then
+        ! call gfldr('restart0.f00001')
+        ifto  = .true.
+        ifxyo = .true.
+      endif
+
+      f          = 1
+      bctyp      = 'W  '
+      nelx       = 64
+      nely       = 24
+      nelz       = 32
+      ifld       = 1
+      idir_sctr  = 2
+      idir_line  = 2
+      idir_plnr  = 3
+      idir_geom  = 1
+      avgtyp     = 0 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
+      ifsample   = .true.
+      ifverbose  = .false.
+
+      DT = 0.0
+      call budgets_incomp_avg(tSTATFREQ,tSTATSTART,int(readSTAT))
+c     call load_budgets_incomp(int(readSTAT))
+ 
+c     ! geometrically average time-averaged quantities.
+      call geom_avg_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz,ifld
+     $    ,idir_line,idir_geom,avgtyp)
+
+      call budgets_incomp_calc(0,.true.)
+ 
+      call comp_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz,ifld
+     $                  ,idir_line,idir_geom,1,ifsample,ifverbose)
+ 
+      ! do not feed geometric avgd velocity fields into comp_uplus()
+      call comp_uplus(vx,vy,vz,f,bctyp,gs_sctr_hndl,gs_line_hndl
+     $     ,gs_geom_hndl,nelx,nely,nelz,ifld
+     $     ,idir_sctr,idir_line,idir_geom,avgtyp,ifsample)
+
+      return
+      end
+c-----------------------------------------------------------------------

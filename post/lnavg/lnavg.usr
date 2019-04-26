@@ -68,9 +68,9 @@ c     integer*8 glo_num,ex_g
 
       if (gs_hndl.eq.0) then
 
-      if (idir.eq.1) call set_gs_xline_hndl(gs_hndl,nelx,nely,nelz,ifld)
-      if (idir.eq.2) call set_gs_yline_hndl(gs_hndl,nelx,nely,nelz,ifld)
-      if (idir.eq.3) call set_gs_zline_hndl(gs_hndl,nelx,nely,nelz,ifld)
+      if(idir.eq.1) call set_gs_x_hndl_line(gs_hndl,nelx,nely,nelz,ifld)
+      if(idir.eq.2) call set_gs_y_hndl_line(gs_hndl,nelx,nely,nelz,ifld)
+      if(idir.eq.3) call set_gs_z_hndl_line(gs_hndl,nelx,nely,nelz,ifld)
 
       endif
 
@@ -91,7 +91,7 @@ c     enddo
       return
       end
 c-----------------------------------------------------------------------
-      subroutine set_gs_xline_hndl(gs_avg_hndl,nelx,nely,nelz,ifld)
+      subroutine set_gs_x_hndl_line(gs_avg_hndl,nelx,nely,nelz,ifld)
       include 'SIZE'
       include 'TOTAL'
       integer gs_avg_hndl,e,ex,ey,ez,eg,nelx,nely,nelz
@@ -119,7 +119,7 @@ c         glo_num(i,j,k,e) = ex
       return
       end
 c-----------------------------------------------------------------------
-      subroutine set_gs_yline_hndl(gs_avg_hndl,nelx,nely,nelz,ifld)
+      subroutine set_gs_y_hndl_line(gs_avg_hndl,nelx,nely,nelz,ifld)
 c     Set the y-average handle
       include 'SIZE'
       include 'TOTAL'
@@ -148,7 +148,7 @@ c         glo_num(i,j,k,e) = ey
       return
       end
 c-----------------------------------------------------------------------
-      subroutine set_gs_zline_hndl(gs_avg_hndl,nelx,nely,nelz,ifld)
+      subroutine set_gs_z_hndl_line(gs_avg_hndl,nelx,nely,nelz,ifld)
 c     Set the z-average handle
       include 'SIZE'
       include 'TOTAL'
