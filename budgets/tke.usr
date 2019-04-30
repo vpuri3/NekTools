@@ -1,12 +1,7 @@
 c-----------------------------------------------------------------------
 c     include 'budgetsJavi.usr'
-c     include 'plavg.usr'
-c     include 'lnavg.usr'
-c     include 'geomavg.usr'
 c-----------------------------------------------------------------------
-      subroutine comp_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld,idir1
-     $          ,idir2,atyp,ifsample,ifverbose)
-c     subroutine comp_tke(ifsample,ifverbose)
+      subroutine comp_tke(ifsample)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -15,16 +10,11 @@ c     subroutine comp_tke(ifsample,ifverbose)
       INCLUDE 'BUDGETSINCOMP'
       INCLUDE 'TKEINCOMP'
 
-      integer nelx,nely,nelz
-      integer gs_hndl1,gs_hndl2,ifld,idir1,idir2
       logical ifsample,ifverbose
-      integer atyp
-c     logical ifsample,ifverbose
 c
       integer ntot
       real tmp,vol,tkmax,tkave,immax,imave
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
-c     real imbalance(4,500)
 c
       if(nid.eq.0) write(6,*) 'in comp_tke(...)'
 c
@@ -82,58 +72,7 @@ c
          pp3(i,1,1,1)=-1/dens0*(pp1(i,1,1,1) - pp2(i,1,1,1))
       enddo
 c
-      if(atyp.lt.0) then
-       if(nid.eq.0) write(6,*) "Planar averaging in direction ", idir1
- 
-       call plane_avg_wrapper(cnk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(prk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(ptk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(pdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(psk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(tdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(epk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(kkk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(imb,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call plane_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-      endif
-      if(atyp.eq.0) then
-       if(nid.eq.0) write(6,*) "Line averaging in direction ", idir1
- 
-       call line_avg_wrapper(cnk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(prk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(ptk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(pdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(psk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(tdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(epk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(vdk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(kkk,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(imb,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-       call line_avg_wrapper(div,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-      endif
-      if(abs(atyp).gt.1) then
-       at = abs(atyp)
-       if(nid.eq.0) write(6,*) "Geom averaging in direction ", idir2
-       if(nid.eq.0) write(6,*) "nrepeat is ", at
- 
-       call geom_avg_wrapper(cnk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(prk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(ptk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(pdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(psk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(tdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(epk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(vdk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(kkk,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(imb,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-       call geom_avg_wrapper(div,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
-      endif
-      if(atyp.eq.1) then
-       if(nid.eq.0) write(6,*) "no averaging"
-      endif         
-c
-      vol = glsum(bm1,ntot)
+      vol   = glsum(bm1,ntot)
       tkmax = glmax(kkk,ntot)
       tkave = glsc2(bm1,kkk,ntot)/vol
       immax = glmax(imb,ntot)
@@ -180,28 +119,6 @@ c
       ifvo  = iifvo
       ifpo  = iifpo
       ifto  = iifto
-c
-
-c     if(ifverbose) then
-c        tmp = glmax(rsuu,ntot)
-c        imbalance(1,istep-100) = tmp
-c        if(nid.eq.0) write(6,*) "max imbalance in uu is  ", tmp
-c        tmp = glmax(rsvv,ntot)
-c        imbalance(2,istep-100) = tmp
-c        if(nid.eq.0) write(6,*) "max imbalance in vv is  ", tmp
-c        tmp = glmax(rsww,ntot)
-c        imbalance(3,istep-100) = tmp
-c        if(nid.eq.0) write(6,*) "max imbalance in ww is  ", tmp
-c        tmp = glmax(tke,ntot)
-c        imbalance(4,istep-100) = tmp
-c        if(nid.eq.0) write(6,*) "max imbalance in tke is ", tmp
-
-c        if((nid.eq.0).and.(istep.eq.600)) then
-c           open(11,file="imbal")
-c           write(11,"(4(D23.16))") imbalance 
-c           close(11)
-c        endif
-c     endif
 
       return
       end

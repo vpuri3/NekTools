@@ -1,10 +1,10 @@
 C-----------------------------------------------------------------------
       include 'budgetsJavi.usr'
-      include 'uplus.usr'
       include 'tke.usr'
       include 'avg.usr'
+      include 'wall.usr'
 c-----------------------------------------------------------------------
-      subroutine post-process()
+      subroutine postProcess()
       include 'SIZE'
       include 'TOTAL'
 
@@ -29,6 +29,9 @@ c-----------------------------------------------------------------------
       save    gs_geom_hndl
       data    gs_geom_hndl / 0 /
 
+      real up(lx1,ly1,lz1,lelv)
+      real yp(lx1,ly1,lz1,lelv)
+
       if(istep.eq.0) then
         ! call gfldr('restart0.f00001')
         ifto  = .true.
@@ -47,25 +50,23 @@ c-----------------------------------------------------------------------
       idir_geom  = 1
       avgtyp     = 0 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
       ifsample   = .true.
-      ifverbose  = .false.
 
       DT = 0.0
       call budgets_incomp_avg(tSTATFREQ,tSTATSTART,int(readSTAT))
 c     call load_budgets_incomp(int(readSTAT))
  
-c     ! geometrically average time-averaged quantities.
-      call geom_avg_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz,ifld
-     $    ,idir_line,idir_geom,avgtyp)
-
       call budgets_incomp_calc(0,.true.)
  
-      call comp_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz,ifld
-     $                  ,idir_line,idir_geom,1,ifsample,ifverbose)
+      call comp_tke(ifsample)
  
       ! do not feed geometric avgd velocity fields into comp_uplus()
-      call comp_uplus(vx,vy,vz,f,bctyp,gs_sctr_hndl,gs_line_hndl
-     $     ,gs_geom_hndl,nelx,nely,nelz,ifld
-     $     ,idir_sctr,idir_line,idir_geom,avgtyp,ifsample)
+      comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_sctr_hndl,nelx,nely,nelz
+     $                                                  ,ifld,idir_sctr)
+
+      call avg_tensor_wrapper(yp,gs_line_hndl,gs_geom_hndl
+     $                            ,nelx,nely,nelz,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(up,gs_line_hndl,gs_geom_hndl
+     $                            ,nelx,nely,nelz,ifld,idir1,idir2,atyp)
 
       return
       end
