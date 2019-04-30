@@ -171,7 +171,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
       ifpo  = .false.
       ifto  = .true.
  
-      call outpost(Tx,Ty,Tz,pr,Tm,'wsh')
+c     call outpost(Tx,Ty,Tz,pr,Tm,'wsh')
  
       ifxyo = iifxyo
       ifvo  = iifvo
