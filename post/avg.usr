@@ -1,4 +1,128 @@
 c-----------------------------------------------------------------------
+      subroutine write2file(sclr1,sclr2,sclr3,sclr4,name1,name2,name3
+     $                     ,name4,filename,step0,dstep,numsteps)
+      include 'SIZE'
+      include 'TOTAL'
+
+      real sclr1,sclr2,sclr3,sclr4
+      integer step0,dstep,numsteps
+      character(3) name1,name2,name3,name4
+      character(3) filename
+c
+      integer step1
+      logical ifnwrite
+      integer i
+      save    i
+      data    i  /0/
+      character(7) filenametot
+      logical there
+      real val(6,lhis)
+      save val
+
+      if(istep.lt.step0) goto 998
+
+      step1 = step0 + dstep * (numsteps - 1)
+      if(istep.gt.step1) goto 998
+
+      ifnwrite =  mod(istep-step0,dstep).ne.0
+      if(ifnwrite) goto 998
+
+      if(numsteps.gt.lhis) then
+        if(nid.eq.0) write(6,*) 'ABORT: in write2file, numsteps > lhis'
+        call exit
+      endif
+
+      if(i.eq.0) then
+        call rzero(val,6*numsteps)
+      endif
+
+
+      filename = trim(filename)
+      call blank(filenametot,7)
+      filenametot = filename//".dat"
+      if(nid.eq.0) write(6,*) 'writing scalar to file ',filenametot
+
+      i = i + 1
+      val(1,i) = istep
+      val(2,i) = time
+      val(3,i) = sclr1
+      val(4,i) = sclr2
+      val(5,i) = sclr3
+      val(6,i) = sclr4
+
+      call nekgsync()         
+
+      if((nid.eq.0).and.(istep.eq.step1)) then
+
+        inquire(file=filenametot,exist=there)
+        if(there) then
+          write(6,*) 'Rewriting file: ',filenametot
+          open(unit=987,FILE=filenametot,status='old')
+          close (987,status='delete')
+        else
+          write(6,*) 'Writing file: ',filenametot
+        endif
+
+        open(unit=987,FILE=trim(filenametot),status='new')
+        write(987,'(1p,6A15)')'Step','Time',name1,name2,name3,name4
+
+        do i=1,numsteps
+          write(987,'(1p,6E15.7)')val(1,i),val(2,i),val(3,i),val(4,i)
+     $                           ,val(5,i),val(6,i)
+        enddo
+
+        close(unit=987)
+
+      endif
+
+      call nekgsync()         
+
+ 998  continue
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine comp_div(div,u,v,w)
+      include 'SIZE'
+      include 'TOTAL'
+
+      real div(lx1,ly1,lz1,lelt)
+c
+      real dudx(lx1,ly1,lz1,lelt)
+     $    ,dudy(lx1,ly1,lz1,lelt)
+     $    ,dudz(lx1,ly1,lz1,lelt)
+     $    ,dvdx(lx1,ly1,lz1,lelt)
+     $    ,dvdy(lx1,ly1,lz1,lelt)
+     $    ,dvdz(lx1,ly1,lz1,lelt)
+     $    ,dwdx(lx1,ly1,lz1,lelt)
+     $    ,dwdy(lx1,ly1,lz1,lelt)
+     $    ,dwdz(lx1,ly1,lz1,lelt)
+
+      real divm(lx1,ly1,lz1,lelt)
+
+      real tmp
+      integer ntot
+
+      ntot=lx1*ly1*lz1*nelv
+      call gradm1(dudx,dudy,dudz,u)
+      call gradm1(dvdx,dvdy,dvdz,v)
+      call gradm1(dwdx,dwdy,dwdz,w)
+
+      call rzero(div,ntot)
+      call rzero(divm,ntot)
+      do i=1,ntot
+        div(i,1,1,1)  = dudx(i,1,1,1) + dvdy(i,1,1,1) + dwdz(i,1,1,1)
+        divm(i,1,1,1) = abs(div(i,1,1,1))
+      enddo
+
+      tmp = glmax(divm,ntot)
+      if(nid.eq.0) write(6,) "Max mag of divergence",tmp
+
+      return
+      end
+c-----------------------------------------------------------------------
+c AVERAGING ROUTINES
+c-----------------------------------------------------------------------
 c
 c  in usrchk()
 c

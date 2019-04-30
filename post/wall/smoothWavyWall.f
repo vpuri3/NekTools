@@ -17,7 +17,7 @@ C-----------------------------------------------------------------------
 #define YLEN 1.
 #define ZLEN 1.
 C-----------------------------------------------------------------------
-      include 'uplus.usr'
+      include 'wall.usr'
 C-----------------------------------------------------------------------
       subroutine uservp(ix,iy,iz,eg) ! set variable properties
       include 'SIZE'
@@ -301,3 +301,18 @@ c-----------------------------------------------------------------------
       return
       end
 C=======================================================================
+
+c automatically added by makenek
+      subroutine usrsetvert(glo_num,nel,nx,ny,nz) ! to modify glo_num
+      integer*8 glo_num(1)
+
+      return
+      end
+
+c automatically added by makenek
+      subroutine userqtl
+
+      call userqtl_scig
+
+      return
+      end
