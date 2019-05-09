@@ -1,7 +1,8 @@
 c-----------------------------------------------------------------------
 c     include 'budgetsJavi.usr'
 c-----------------------------------------------------------------------
-      subroutine comp_tke(ifsample)
+      subroutine comp_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld
+     $            ,idir1,idir2,atyp,ifsample)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -10,13 +11,16 @@ c-----------------------------------------------------------------------
       INCLUDE 'BUDGETSINCOMP'
       INCLUDE 'TKEINCOMP'
 
-      logical ifsample,ifverbose
-c
+      integer nelx,nely,nelz,idir1,idir2,gs_hndl1,gs_hndl2,atyp,ifld
+      logical ifsample
+
       integer ntot
       real tmp,vol,tkmax,tkave,immax,imave
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 c
       if(nid.eq.0) write(6,*) 'in comp_tke(...)'
+c
+      call probePoint
 c
       ntot=lx1*ly1*lz1*nelt
 c
@@ -35,8 +39,6 @@ c
       call rzero(pp1,ntot)
       call rzero(pp2,ntot)
       call rzero(pp3,ntot)
-c
-      call probePoint
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -72,6 +74,40 @@ c
          pp3(i,1,1,1)=-1/dens0*(pp1(i,1,1,1) - pp2(i,1,1,1))
       enddo
 c
+      call avg_tensor_wrapper(cnk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(prk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(ptk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pd,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(psk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(tdk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(epk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(kkk,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(imb,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                       ,ifld,idir1,idir2,atyp)
+c
+      if(ifsample) then
+      call sample(cnk,prk,ptk,pdk,div,'tk1',
+     $           'conv','prod','pres_tr','pres_df','garbage')
+      call sample(psk,tdk,epk,vdk,prk,'tk2',
+     $           'pres_st','turb_df','diss','visc_df','garbage')
+      call sample(kkk,imb,div,prk,pdk,'tk3',
+     $           'kkk','imb','div','garbage','garbage')
+      call sample(div,pp1,pp2,pp3,pdk,'ppp',
+     $           'div','pp1','pp2','pp3','garbage')
+      call sample(uavg,vavg,wavg,urms,pdk,'kkk',
+     $           'uavg','vavg','wavg','urms','garbage')
+      endif
+c
       vol   = glsum(bm1,ntot)
       tkmax = glmax(kkk,ntot)
       tkave = glsc2(bm1,kkk,ntot)/vol
@@ -86,19 +122,6 @@ c
       endif
 
  258  format(a6,1es15.8)
-
-      if(ifsample) then 
-         call sample(cnk,prk,ptk,pdk,div,'tk1',
-     $              'conv','prod','pres_tr','pres_df','garbage')
-         call sample(psk,tdk,epk,vdk,prk,'tk2',
-     $              'pres_st','turb_df','diss','visc_df','garbage')
-         call sample(kkk,imb,div,prk,pdk,'tk3',
-     $              'kkk','imb','div','garbage','garbage')
-         call sample(div,pp1,pp2,pp3,pdk,'ppp',
-     $              'div','pp1','pp2','pp3','garbage')
-         call sample(uavg,vavg,wavg,urms,pdk,'kkk',
-     $              'uavg','vavg','wavg','urms','garbage')
-      endif
 
 !     Outpost
 

@@ -1,17 +1,20 @@
 C-----------------------------------------------------------------------
-      include 'budgetsJavi.usr'
-      include 'tke.usr'
-      include 'avg.usr'
-      include 'wall.usr'
+c     include 'budgetsJavi.usr'
+c     include 'tke.usr'
+c     include 'avg.usr'
+c     include 'wall.usr'
 c-----------------------------------------------------------------------
-      subroutine postProcess()
+      subroutine postProcess(tSTATSTART,tSTATFREQ,readSTAT)
       include 'SIZE'
       include 'TOTAL'
 
+      real tSTATSTART,tSTATFREQ
+      integer readSTAT
+
       integer f,nelx,nely,nelz,ifld
       integer idir_sctr,idir_plnr,idir_line,idir_geom,avgtyp
+      logical ifsample
       character*3 bctyp
-      logical ifsample,ifverbose
  
       integer gs_sctr_hndl
       save    gs_sctr_hndl
@@ -52,21 +55,23 @@ c-----------------------------------------------------------------------
       ifsample   = .true.
 
       DT = 0.0
-      call budgets_incomp_avg(tSTATFREQ,tSTATSTART,int(readSTAT))
+ 
+      call budgets_incomp_calc(int(readSTAT),.false.)
+c     call budgets_incomp_avg(tSTATFREQ,tSTATSTART,int(readSTAT))
 c     call load_budgets_incomp(int(readSTAT))
+c     call budgets_incomp_calc(0,.true.)
  
-      call budgets_incomp_calc(0,.true.)
+      call comp_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz,ifld
+     $            ,idir_line,idir_geom,atyp,ifsample)
  
-      call comp_tke(ifsample)
- 
-      ! do not feed geometric avgd velocity fields into comp_uplus()
-      comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_sctr_hndl,nelx,nely,nelz
+      ! do not feed geometric avgeraged velocity fields into comp_uplus()
+      call comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_sctr_hndl,nelx,nely,nelz
      $                                                  ,ifld,idir_sctr)
 
       call avg_tensor_wrapper(yp,gs_line_hndl,gs_geom_hndl
-     $                            ,nelx,nely,nelz,ifld,idir1,idir2,atyp)
+     $                    ,nelx,nely,nelz,ifld,idir_line,idir_geom,atyp)
       call avg_tensor_wrapper(up,gs_line_hndl,gs_geom_hndl
-     $                            ,nelx,nely,nelz,ifld,idir1,idir2,atyp)
+     $                    ,nelx,nely,nelz,ifld,idir_line,idir_geom,atyp)
 
       return
       end
