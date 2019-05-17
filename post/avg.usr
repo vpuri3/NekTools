@@ -68,6 +68,9 @@ c-----------------------------------------------------------------------
       integer atyp
 
       integer at
+      integer ntot
+
+      ntot = nx1*ny1*nz1*nelt
 
       if(nid.eq.0) write(6,*) "in avg_tensor(...)"
 
@@ -92,6 +95,7 @@ c-----------------------------------------------------------------------
 
       endif
       if(atyp.eq.1) then
+       call copy(ua,u,ntot)
        if(nid.eq.0) write(6,*) "no averaging"
       endif         
 

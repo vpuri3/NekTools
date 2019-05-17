@@ -56,22 +56,24 @@ c-----------------------------------------------------------------------
 
       DT = 0.0
  
-      call budgets_incomp_calc(int(readSTAT),.false.)
-c     call budgets_incomp_avg(tSTATFREQ,tSTATSTART,int(readSTAT))
-c     call load_budgets_incomp(int(readSTAT))
-c     call budgets_incomp_calc(0,.true.)
+      call load_standard_incomp(int(readSTAT))
+      call load_budgets_incomp(int(readSTAT))
+
+      call geom_avg_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz
+     $                                   ,ifld,idir_line,idir_geom,atyp)
+
+      call budgets_incomp_calc(0,.true.)
  
-      call comp_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz,ifld
-     $            ,idir_line,idir_geom,atyp,ifsample)
+      call comp_tke(ifsample)
  
       ! do not feed geometric avgeraged velocity fields into comp_uplus()
       call comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_sctr_hndl,nelx,nely,nelz
      $                                                  ,ifld,idir_sctr)
 
       call avg_tensor_wrapper(yp,gs_line_hndl,gs_geom_hndl
-     $                    ,nelx,nely,nelz,ifld,idir_line,idir_geom,atyp)
+     $                  ,nelx,nely,nelz,ifld,idir_line,idir_geom,avgtyp)
       call avg_tensor_wrapper(up,gs_line_hndl,gs_geom_hndl
-     $                    ,nelx,nely,nelz,ifld,idir_line,idir_geom,atyp)
+     $                  ,nelx,nely,nelz,ifld,idir_line,idir_geom,avgtyp)
 
       return
       end

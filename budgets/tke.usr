@@ -1,8 +1,7 @@
 c-----------------------------------------------------------------------
 c     include 'budgetsJavi.usr'
 c-----------------------------------------------------------------------
-      subroutine comp_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld
-     $            ,idir1,idir2,atyp,ifsample)
+      subroutine comp_tke(ifsample)
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -74,27 +73,6 @@ c
          pp3(i,1,1,1)=-1/dens0*(pp1(i,1,1,1) - pp2(i,1,1,1))
       enddo
 c
-      call avg_tensor_wrapper(cnk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(prk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(ptk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(pd,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(psk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(tdk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(epk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(vdk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(kkk,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-      call avg_tensor_wrapper(imb,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                       ,ifld,idir1,idir2,atyp)
-c
       if(ifsample) then
       call sample(cnk,prk,ptk,pdk,div,'tk1',
      $           'conv','prod','pres_tr','pres_df','garbage')
@@ -142,6 +120,213 @@ c
       ifvo  = iifvo
       ifpo  = iifpo
       ifto  = iifto
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine geom_avg_tke(gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld
+     $     ,idir1,idir2,atyp)
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+
+      integer gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld,idir1,idir2
+      integer atyp
+
+      if(nid.eq.0) write(6,*) 'in geom_avg_tke(...)'
+
+      ! AVG
+      call avg_tensor_wrapper(uavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+
+      do i=1,ldimt
+       call avg_tensor_wrapper(tavg(1,1,1,1,i),gs_hndl1,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      enddo
+     ! RMS
+      call avg_tensor_wrapper(urms,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vrms,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wrms,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(prms,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+
+      do i=1,ldimt
+       call avg_tensor_wrapper(trms(1,1,1,1,i),gs_hndl1,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+
+      call avg_tensor_wrapper(vwms,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wums,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvms,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+
+       ! AVGINCOMP
+      call avg_tensor_wrapper(pm1avg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pmrms ,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvari,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vvari,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wvari,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvcov,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vwcov,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wucov,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pvari,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+
+      ! BUDGETSINCOMP    
+      call avg_tensor_wrapper(udxavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udyavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udzavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdxavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdyavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdzavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdxavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdyavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdzavg,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udxrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udyrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udzrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdxrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdyrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdzrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdxrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdyrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdzrms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+c                       
+      call avg_tensor_wrapper(uvdxms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvdyms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvdzms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uwdxms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uwdyms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uwdzms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vwdxms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vwdyms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vwdzms,gs_hndl1gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+c                      
+      call avg_tensor_wrapper(upavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vpavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wpavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(utavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vtavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wtavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+c                     
+      call avg_tensor_wrapper(uuuavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uuvavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uuwavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvvavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uvwavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(uwwavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vvvavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vvwavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vwwavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wwwavg,gs_hndl1gs_hndl2,,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+c
+      call avg_tensor_wrapper(pudxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pudyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pudzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pvdxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pvdyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pvdzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pwdxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pwdyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(pwdzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+c
+      call avg_tensor_wrapper(dpdxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(dpdyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(dpdzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udpdxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udpdyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(udpdzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdpdxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdpdyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(vdpdzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdpdxavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdpdyavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
+      call avg_tensor_wrapper(wdpdzavg,gs_hndl1,gs_hndl2,nelx,nely,nelz
+     $                                           ,ifld,idir1,idir2,atyp)
 
       return
       end
