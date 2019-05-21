@@ -1,3 +1,95 @@
+C-----------------------------------------------------------------------
+c in usrchk
+c
+c     integer nelx,nely,nelz,avgtyp
+c
+c     nelx       = 64
+c     nely       = 16
+c     nelz       = 32
+c     avgtyp     = -4 ! cve: plnr, 0: line, mag>1: nrep for geomavg
+c     call postProcess(nelx,nely,nelz,avgtyp,int(readSTAT))
+c
+C-----------------------------------------------------------------------
+c     include 'budgetsJavi.usr'
+c     include 'tke.usr'
+c     include 'avg.usr'
+c     include 'wall.usr'
+c-----------------------------------------------------------------------
+      subroutine postProcess(nelx,nely,nelz,avgtyp,readstats)
+      include 'SIZE'
+      include 'TOTAL'
+
+      integer nelx,nely,nelz,avgtyp,readstats
+ 
+      integer f,ifld
+      integer idir_sctr,idir_plnr,idir_line,idir_geom
+      logical ifsample
+      character*3 bctyp
+ 
+      integer gs_sctr_hndl
+      save    gs_sctr_hndl
+      data    gs_sctr_hndl / 0 /
+ 
+      integer gs_plnr_hndl
+      save    gs_plnr_hndl
+      data    gs_plnr_hndl / 0 /
+ 
+      integer gs_line_hndl
+      save    gs_line_hndl
+      data    gs_line_hndl / 0 /
+ 
+      integer gs_geom_hndl
+      save    gs_geom_hndl
+      data    gs_geom_hndl / 0 /
+
+      real up(lx1,ly1,lz1,lelv)
+      real yp(lx1,ly1,lz1,lelv)
+
+      if(nid.eq.0) write(6,*) 'in postProcess(...)'
+
+      if(istep.eq.0) then
+        ! call gfldr('restart0.f00001')
+        ifto  = .true.
+        ifxyo = .true.
+      endif
+
+      f          = 1
+      bctyp      = 'W  '
+      ifld       = 1
+      idir_sctr  = 2
+      idir_line  = 2
+      idir_plnr  = 3
+      idir_geom  = 1
+c     nelx       = 64
+c     nely       = 16
+c     nelz       = 32
+c     avgtyp     = -4 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
+      ifsample   = .true.
+
+      DT = 0.0
+
+      call load_standard_incomp(readstats)
+      call load_budgets_incomp(readstats)
+
+      call geom_avg_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz
+     $                                   ,ifld,idir_line,idir_geom,atyp)
+
+      call budgets_incomp_avg(time,0.0,0)
+      call budgets_incomp_calc(0,.true.)
+ 
+      call comp_tke(ifsample)
+ 
+      ! do not feed geometric avgeraged velocity fields into comp_uplus()
+      call comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_sctr_hndl,nelx,nely,nelz
+     $                                                  ,ifld,idir_sctr)
+
+      call avg_tensor_wrapper(yp,gs_line_hndl,gs_geom_hndl
+     $                  ,nelx,nely,nelz,ifld,idir_line,idir_geom,avgtyp)
+      call avg_tensor_wrapper(up,gs_line_hndl,gs_geom_hndl
+     $                  ,nelx,nely,nelz,ifld,idir_line,idir_geom,avgtyp)
+
+      return
+      end
 c-----------------------------------------------------------------------
       subroutine write2file(sclr1,sclr2,sclr3,sclr4,name1,name2,name3
      $                     ,name4,filename,step0,dstep,numsteps)
