@@ -1,92 +1,120 @@
 C-----------------------------------------------------------------------
-c in usrchk
-c
-c     integer nelx,nely,nelz,avgtyp
-c
-c     nelx       = 64
-c     nely       = 16
-c     nelz       = 32
-c     avgtyp     = -4 ! cve: plnr, 0: line, mag>1: nrep for geomavg
-c     call postProcess(nelx,nely,nelz,avgtyp,int(readSTAT))
-c
-C-----------------------------------------------------------------------
 c     include 'budgetsJavi.usr'
 c     include 'tke.usr'
 c     include 'avg.usr'
 c     include 'wall.usr'
 c-----------------------------------------------------------------------
-      subroutine postProcess(nelx,nely,nelz,avgtyp,readstats)
+c postProcess
+c
+c     integer nelx,nely,nelz
+c     integer avgtyp,readstats,idir_plnr,idir_line,idir_geom
+c     integer idir_sctr,iface
+c     character*3 bctyp
+
+c     integer gs_plnr_hndl
+c     save    gs_plnr_hndl
+c     data    gs_plnr_hndl / 0 /
+c
+c     integer gs_line_hndl
+c     save    gs_line_hndl
+c     data    gs_line_hndl / 0 /
+c
+c     integer gs_geom_hndl
+c     save    gs_geom_hndl
+c     data    gs_geom_hndl / 0 /
+
+c     integer gs_sctr_hndl
+c     save    gs_sctr_hndl
+c     data    gs_sctr_hndl / 0 /
+c
+c     nelx      = 64
+c     nely      = 16
+c     nelz      = 32
+c
+c     avgtyp    = -4 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
+c     readstats = int(readSTAT)
+c
+c     idir_sctr = 2
+c     idir_line = 2
+c     idir_plnr = 3
+c     idir_geom = 1
+c
+c     iface     = 1
+c     bctyp     = 'W  '
+
+c     call postProcess(nelx,nely,nelz,avgtyp,readstats
+c    $                ,gs_line_hndl,idir_line
+c    $                ,gs_plnr_hndl,idir_plnr
+c    $                ,gs_geom_hndl,idir_geom
+c    $                ,gs_sctr_hndl,idir_sctr,iface,bctyp)
+c
+C-----------------------------------------------------------------------
+      subroutine postProcess(nelx,nely,nelz,avgtyp,readstats
+     $                      ,gs_line_hndl,idir_line
+     $                      ,gs_plnr_hndl,idir_plnr
+     $                      ,gs_geom_hndl,idir_geom
+     $                      ,gs_sctr_hndl,idir_sctr,iface,bctyp)
       include 'SIZE'
       include 'TOTAL'
 
-      integer nelx,nely,nelz,avgtyp,readstats
- 
-      integer f,ifld
-      integer idir_sctr,idir_plnr,idir_line,idir_geom
-      logical ifsample
+      integer nelx,nely,nelz
+      integer avgtyp,readstats,idir_plnr,idir_line,idir_geom
+      integer idir_sctr,iface
       character*3 bctyp
- 
-      integer gs_sctr_hndl
-      save    gs_sctr_hndl
-      data    gs_sctr_hndl / 0 /
- 
-      integer gs_plnr_hndl
-      save    gs_plnr_hndl
-      data    gs_plnr_hndl / 0 /
- 
-      integer gs_line_hndl
-      save    gs_line_hndl
-      data    gs_line_hndl / 0 /
- 
-      integer gs_geom_hndl
-      save    gs_geom_hndl
-      data    gs_geom_hndl / 0 /
-
+c
+      logical ifsample
       real up(lx1,ly1,lz1,lelv)
       real yp(lx1,ly1,lz1,lelv)
 
-      if(nid.eq.0) write(6,*) 'in postProcess(...)'
+      if(nid.eq.0) write(6,*)'in postProcess(...)'
+      if(nid.eq.0) write(6,*)'avgtyp',avgtyp
 
-      if(istep.eq.0) then
-        ! call gfldr('restart0.f00001')
-        ifto  = .true.
-        ifxyo = .true.
-      endif
+      ifto  = .true.
+      ifxyo = .true.
 
-      f          = 1
-      bctyp      = 'W  '
-      ifld       = 1
-      idir_sctr  = 2
-      idir_line  = 2
-      idir_plnr  = 3
-      idir_geom  = 1
-c     nelx       = 64
-c     nely       = 16
-c     nelz       = 32
-c     avgtyp     = -4 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
-      ifsample   = .true.
+      ifld     = 1
+      ifsample = .true.
 
-      DT = 0.0
-
-      call load_standard_incomp(readstats)
+      call load_standard_incomp(readstats,avtime)
       call load_budgets_incomp(readstats)
 
-      call geom_avg_tke(gs_line_hndl,gs_geom_hndl,nelx,nely,nelz
-     $                                   ,ifld,idir_line,idir_geom,atyp)
+      call geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
+     $                 ,gs_line_hndl,idir_line
+     $                 ,gs_plnr_hndl,idir_plnr
+     $                 ,gs_geom_hndl,idir_geom)
 
-      call budgets_incomp_avg(time,0.0,0)
+! dumping standard averages
+      time = avtime
+
+      call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'avg')
+      call outpost2(urms,vrms,wrms,pmrms,trms,ldimt,'rms')
+      call outpost2(uvms,wums,vwms,pm1avg,tavg,1,'rm2')
+
+      call sample(uavg,vavg,wavg,pm1avg,tavg,'avg'
+     $           ,'uavg','vavg','wavg','pavg','tavg')
+      call sample(urms,vrms,wrms,pm1rms,trms,'rms'
+     $           ,'urms','vrms','wrms','prms','trms')
+      call sample(uvms,wums,vwms,pm1rms,tavg,'rm2'
+     $           ,'uvms','wums','vwms','pavg','tavg')
+
+! computing budgets
       call budgets_incomp_calc(0,.true.)
- 
       call comp_tke(ifsample)
  
-      ! do not feed geometric avgeraged velocity fields into comp_uplus()
-      call comp_uplus(up,yp,vx,vy,vz,f,bctyp,gs_sctr_hndl,nelx,nely,nelz
-     $                                                  ,ifld,idir_sctr)
+! computing wall shaer
+! do not feed geometric avgeraged fields into comp_uplus()
+      call comp_uplus(up,yp,vx,vy,vz,iface,bctyp
+     $               ,gs_sctr_hndl,nelx,nely,nelz,ifld,idir_sctr)
 
-      call avg_tensor_wrapper(yp,gs_line_hndl,gs_geom_hndl
-     $                  ,nelx,nely,nelz,ifld,idir_line,idir_geom,avgtyp)
-      call avg_tensor_wrapper(up,gs_line_hndl,gs_geom_hndl
-     $                  ,nelx,nely,nelz,ifld,idir_line,idir_geom,avgtyp)
+      call avg_tensor_wrapper(up,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(yp,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
 
       return
       end
@@ -754,8 +782,6 @@ c-----------------------------------------------------------------------
       integer*8 glo_num(lx1,ly1,lz1,lelv)
 c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
-      if(nid.eq.0) write(6,*) 'x_sctr'
-
       n     = nx1*ny1*nz1*nel
       nelyz = nely*nelz
       nt    = ny1*nely*nz1*nelz
@@ -791,8 +817,6 @@ c-----------------------------------------------------------------------
       integer*8 glo_num(lx1,ly1,lz1,lelv)
 c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
 
-      if(nid.eq.0) write(6,*) 'y_sctr'
-
       n  = nx1*ny1*nz1*nel
 
       do e=1,nel
@@ -825,8 +849,6 @@ c-----------------------------------------------------------------------
       integer nelx,nely,nelz,nel,n
       integer*8 glo_num(lx1,ly1,lz1,lelv)
 c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
-
-      if(nid.eq.0) write(6,*) 'z_sctr'
 
       n     = nx1*ny1*nz1*nel
       nelxy = nelx*nely
@@ -1048,68 +1070,77 @@ c     call avg_tensor(vxa,vx,gs_line_hndl,gs_geom_hndl,nelx,nely,nelz
 c    $            ,ifld,idir_line,idir_geom,atyp)
 c
 c-----------------------------------------------------------------------
-      subroutine avg_tensor(ua,u,gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld
-     $                  ,idir1,idir2,atyp)
+      subroutine avg_tensor(ua,u,avgtyp,nelx,nely,nelz,ifld
+     $                     ,gs_line_hndl,idir_line
+     $                     ,gs_plnr_hndl,idir_plnr
+     $                     ,gs_geom_hndl,idir_geom)
       include 'SIZE'
       include 'TOTAL'
 
-      integer nelx,nely,nelz,ifld
-      integer gs_hndl1,gs_hndl2,idir1,idir2
-      integer atyp
+      integer idir_line,idir_plnr,idir_geom
+      integer avgtyp
 
-      integer at
-      integer ntot
+      integer at,ntot
 
       ntot = nx1*ny1*nz1*nelt
 
-      if(nid.eq.0) write(6,*) "in avg_tensor(...)"
+      if(nid.eq.0) write(6,*)'in avg_tensor(...)'
+      if(nid.eq.0) write(6,*)'avgtyp',avgtyp
 
-      if(atyp.lt.0) then
-       if(nid.eq.0) write(6,*) "Planar averaging in direction ",idir1
+      if(avgtyp.lt.0) then
+       if(nid.eq.0) write(6,*)'Plnr averaging in direction',idir_plnr
 
-       call plane_avg_tensor(ua,u,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call plane_avg_tensor(ua,u,gs_plnr_hndl,nelx,nely,nelz
+     $                      ,ifld,idir_plnr)
 
       endif
-      if(atyp.eq.0) then
-       if(nid.eq.0) write(6,*) "Line averaging in direction ",idir1
+      if(avgtyp.eq.0) then
+       if(nid.eq.0) write(6,*)'Line averaging in direction',idir_line
  
-       call line_avg_tensor(ua,u,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+       call line_avg_tensor(ua,u,gs_line_hndl,nelx,nely,nelz
+     $                      ,ifld,idir_line)
 
       endif
-      if(abs(atyp).gt.1) then
-       at = abs(atyp)
-       if(nid.eq.0) write(6,*) "Geom averaging in direction ",idir2
-       if(nid.eq.0) write(6,*) "nrepeat is ",at
+      at = abs(avgtyp)
+      if(at.gt.1) then
+       if(nid.eq.0) write(6,*)'Geom averaging in direction',idir_geom
+       if(nid.eq.0) write(6,*)'nrepeat is',at
  
-       call geom_avg_tensor(ua,u,gs_hndl2,nelx,nely,nelz,ifld,idir2,at)
+       call geom_avg_tensor(ua,u,gs_geom_hndl,nelx,nely,nelz
+     $                     ,ifld,idir_geom,at)
 
       endif
-      if(atyp.eq.1) then
+      if(avgtyp.eq.1) then
+       if(nid.eq.0) write(6,*)'no averaging'
        call copy(ua,u,ntot)
-       if(nid.eq.0) write(6,*) "no averaging"
       endif         
 
       return
       end
 c-----------------------------------------------------------------------
-      subroutine avg_tensor_wrapper(u,gs_hndl1,gs_hndl2,nelx,nely,nelz
-     $                          ,ifld,idir1,idir2,atyp)
+      subroutine avg_tensor_wrapper(u,avgtyp,nelx,nely,nelz,ifld
+     $                             ,gs_line_hndl,idir_line
+     $                             ,gs_plnr_hndl,idir_plnr
+     $                             ,gs_geom_hndl,idir_geom)
       include 'SIZE'
       include 'TOTAL'
 
       real u(lx1,ly1,lz1,lelt)
+      integer avgtyp
 c
       real w1(lx1,ly1,lz1,lelt)
-      integer nt
+      integer ntot
 
-      nt = lx1*ly1*lz1*nelt
+      ntot=lx1*ly1*lz1*nelt
 
-      call avg_tensor(w1,u,gs_hndl1,gs_hndl2,nelx,nely,nelz,ifld
-     $            ,idir1,idir2,atyp)
+      call avg_tensor(w1,u,avgtyp,nelx,nely,nelz,ifld
+     $               ,gs_line_hndl,idir_line
+     $               ,gs_plnr_hndl,idir_plnr
+     $               ,gs_geom_hndl,idir_geom)
 
-      call rzero(u,nt)
+      call rzero(u,ntot)
 
-      do i=1,nt
+      do i=1,ntot
          u(i,1,1,1) = w1(i,1,1,1)
       enddo
 
@@ -1270,6 +1301,7 @@ c-----------------------------------------------------------------------
       real u (lx1,ly1,lz1,lelt)
       real ua(lx1,ly1,lz1,lelt)
       integer gs_hndl,e,ex,ey,ez,eg
+
 c
 c     This routine does planar averaging for 'u' and outputs 'ua'
 c     for box type meshes with structure - nelx x nely x nelz.
@@ -1422,8 +1454,7 @@ c-----------------------------------------------------------------------
       real u (lx1,ly1,lz1,lelt)
       real ua(lx1,ly1,lz1,lelt)
       integer gs_hndl,e,ex,ey,ez,eg
-      integer nrepeat
-      real onebyn
+      integer idir,nrepeat
 
       if(nrepeat.eq.0) call exitt
 
@@ -1447,14 +1478,6 @@ c-----------------------------------------------------------------------
       enddo
 
       call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weighted values
-
-c     onebyn = 1/real(nrepeat)
-c     call copy(ua,u,n)
-c     call fgslib_gs_op(gs_hndl,ua,1,1,0)
-c     if(nid.eq.0) write(6,*) "1/nrepeat is", onebyn 
-c     do i=1,n
-c        ua(i,1,1,1) = ua(i,1,1,1)*onebyn
-c     enddo
 
       return
       end
@@ -1495,6 +1518,7 @@ c     Set the x-average handle
       enddo
 
       n = nel*nx1*ny1*nz1
+
       call fgslib_gs_setup(gs_hndl,glo_num,n,nekcomm,mp)
 
       return

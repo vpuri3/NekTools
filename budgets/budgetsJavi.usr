@@ -1032,6 +1032,9 @@ c-----------------------------------------------------------------------
       call load_avg3(uvms,wums,vwms,
      &               'rm2',readStats,avtime,.false.)
 
+cvp
+      atime = avtime
+
       return
       end   
 
@@ -3486,7 +3489,7 @@ c     read data into solution arrays
         avtime = time
       else
         if (nid.eq.0) write(6,*)'ABORT: Error when reading ',
-     &  trim(fpath),', not such file or directory'
+     &  trim(fpath),', no such file or directory'
         call exitt
       endif
 
