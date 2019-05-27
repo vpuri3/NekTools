@@ -56,22 +56,24 @@ C-----------------------------------------------------------------------
      $                      ,gs_sctr_hndl,idir_sctr,iface,bctyp)
       include 'SIZE'
       include 'TOTAL'
+      include 'AVG'
+      include 'AVGINCOMP'
+      include 'REFERENCE'
+      include 'TKEINCOMP'
 
-      integer nelx,nely,nelz
-      integer avgtyp,readstats,idir_plnr,idir_line,idir_geom
-      integer idir_sctr,iface
-      character*3 bctyp
+      integer avgtyp
 c
-      logical ifsample
+      real avtime
+      integer ifld,ntot
+      logical ifsample,iifxyo,iifvo,iifpo,iifto
+
       real up(lx1,ly1,lz1,lelv)
       real yp(lx1,ly1,lz1,lelv)
+      real tmp
 
-      if(nid.eq.0) write(6,*)'in postProcess(...)'
-      if(nid.eq.0) write(6,*)'avgtyp',avgtyp
+      if(nid.eq.0) write(6,*)'in postProcess(...)','avgtyp',avgtyp
 
-      ifto  = .true.
-      ifxyo = .true.
-
+      ntot     = lx1*ly1*lz1*nelv
       ifld     = 1
       ifsample = .true.
 
@@ -83,28 +85,39 @@ c
      $                 ,gs_plnr_hndl,idir_plnr
      $                 ,gs_geom_hndl,idir_geom)
 
-! dumping standard averages
-      time = avtime
-
-      call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'avg')
-      call outpost2(urms,vrms,wrms,pmrms,trms,ldimt,'rms')
-      call outpost2(uvms,wums,vwms,pm1avg,tavg,1,'rm2')
-
-      call sample(uavg,vavg,wavg,pm1avg,tavg,'avg'
-     $           ,'uavg','vavg','wavg','pavg','tavg')
-      call sample(urms,vrms,wrms,pm1rms,trms,'rms'
-     $           ,'urms','vrms','wrms','prms','trms')
-      call sample(uvms,wums,vwms,pm1rms,tavg,'rm2'
-     $           ,'uvms','wums','vwms','pavg','tavg')
-
-! computing budgets
       call budgets_incomp_calc(0,.true.)
-      call comp_tke(ifsample)
- 
-! computing wall shaer
-! do not feed geometric avgeraged fields into comp_uplus()
-      call comp_uplus(up,yp,vx,vy,vz,iface,bctyp
+      call comp_tke
+
+      if(nid.eq.0) then
+        write(6,258)'atime:',atime
+        write(6,258)'tkmax:',tkmax
+        write(6,258)'tkave:',tkave
+        write(6,258)'immax:',immax
+        write(6,258)'imave:',imave
+      endif
+
+ 258  format(a6,1es15.8)
+
+      call probePoint
+
+c     call geom_avg_tke2(avgtyp,nelx,nely,nelz,ifld
+c    $                  ,gs_line_hndl,idir_line
+c    $                  ,gs_plnr_hndl,idir_plnr
+c    $                  ,gs_geom_hndl,idir_geom)
+
+c     if(nid.eq.0) then
+c       write(6,258)'atime:',atime
+c       write(6,258)'tkmax:',tkmax
+c       write(6,258)'tkave:',tkave
+c       write(6,258)'immax:',immax
+c       write(6,258)'imave:',imave
+c     endif
+
+! comp wall shaer
+      call comp_uplus(up,yp,uavg,vavg,wavg,iface,bctyp
      $               ,gs_sctr_hndl,nelx,nely,nelz,ifld,idir_sctr)
+c     call avg_3d(tmp,up)
+c     if(nid.eq.0)write(6,258)'uplus:',tmp
 
       call avg_tensor_wrapper(up,avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
@@ -115,6 +128,52 @@ c
      $                       ,gs_line_hndl,idir_line
      $                       ,gs_plnr_hndl,idir_plnr
      $                       ,gs_geom_hndl,idir_geom)
+
+! dumping
+      time = avtime
+
+      if(ifsample) then
+      call sample(uavg,vavg,wavg,pm1avg,tavg,'avg'
+     $           ,'uavg','vavg','wavg','pavg','tavg')
+      call sample(urms,vrms,wrms,pm1rms,trms,'rms'
+     $           ,'urms','vrms','wrms','prms','trms')
+      call sample(uvms,wums,vwms,pm1rms,tavg,'rm2'
+     $           ,'uvms','wums','vwms','pavg','tavg')
+      call sample(cnk,prk,ptk,pdk,div,'tk1',
+     $           'conv','prod','pres_tr','pres_df','garbage')
+      call sample(psk,tdk,epk,vdk,prk,'tk2',
+     $           'pres_st','turb_df','diss','visc_df','garbage')
+      call sample(kkk,imb,div,prk,pdk,'tk3',
+     $           'kkk','imb','div','garbage','garbage')
+      call sample(div,pp1,pp2,pp3,pdk,'ppp',
+     $           'div','pp1','pp2','pp3','garbage')
+      call sample(up,yp,ym1,ym1,ym1,'upl',
+     $           'uplus','yplus','trash','trash','trash')
+      endif
+
+!     Outpost
+
+      iifxyo = ifxyo
+      iifvo  = ifvo
+      iifpo  = ifpo
+      iifto  = ifto
+
+      ifxyo = .true.
+      ifvo  = .true.
+      ifpo  = .true.
+      ifto  = .true.
+c
+c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'avg')
+c     call outpost2(urms,vrms,wrms,pmrms,trms,ldimt,'rms')
+c     call outpost2(uvms,wums,vwms,pm1avg,tavg,1,'rm2')
+c     call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
+c     call outpost2(tdk,epk,vdk,imb,div,1,'tk2')
+c
+      ifxyo = iifxyo
+      ifvo  = iifvo
+      ifpo  = iifpo
+      ifto  = iifto
+ 
 
       return
       end
@@ -261,6 +320,7 @@ c     f     = 1
 c     bctyp = 'W  '
 c     ifld  = 1
 c     call comp_wallShear(Tx,Ty,Tz,vx,vy,vz,f,bctyp,ifld)
+
 c
 C-----------------------------------------------------------------------
       subroutine comp_wallShear(Tx,Ty,Tz,ux,uy,uz,f,bctyp,ifld)
@@ -398,13 +458,15 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
       mdrg = sqrt(mdrg)
  
       if(nid.eq.0) then
-         write(6,*) 'area     is', a
-         write(6,*) 'xdrag    is', xdrg
-         write(6,*) 'ydrag    is', ydrg
-         write(6,*) 'zdrag    is', zdrg
-         write(6,*) 'drag mag is', mdrg
+        write(6,258)'area:' ,a
+        write(6,258)'xdrag:',xdrg
+        write(6,258)'ydrag:',ydrg
+        write(6,258)'zdrag:',zdrg
+        write(6,258)'Mdrag:',mdrg
       endif
  
+ 258  format(a6,1es15.8)
+
       ! Outpost
 
       iifxyo = ifxyo
@@ -613,12 +675,14 @@ c
 
       integer e,k,ntot
       real n1 ,n2 ,n3
-      real u,v,w,un,ufr,Tmg
+      real u,v,w,un,ufr,Tmg,vsc,dsty
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
 c
       ntot = lx1*ly1*lz1*nelv
+      vsc   = vdiff(lx1,ly1,lz1,nelt,1)
+      dsty  = param(1)
 c
       call rzero(up,ntot)
       call rzero(yp,ntot)
@@ -638,6 +702,11 @@ c
       call rzero(sij,ntot*nxzf)
 
       call comp_wallShear(fTx,fTy,fTz,ux,uy,uz,f,bctyp,ifld)
+      do i=1,ntot
+        fTm(i,1,1,1) = fTx(i,1,1,1)*fTx(i,1,1,1)
+     $                +fTy(i,1,1,1)*fTy(i,1,1,1)
+     $                +fTz(i,1,1,1)*fTz(i,1,1,1)
+      enddo
       call get_faceNormal(fNx,fNy,fNz,f,bctyp,ifld)
 c
       ! scatter face data into domain
@@ -684,7 +753,7 @@ c
       ifpo  = .true.
       ifto  = .true.
 c
-      call outpost(up,yp,utn,volTm,d2f,'upl')
+c     call outpost(up,yp,utn,volTm,d2f,'upl')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
@@ -1017,20 +1086,12 @@ c-----------------------------------------------------------------------
       subroutine avg_3d(ua,u)
       include 'SIZE'
       include 'TOTAL'
-      real ua
-
       real vol
       integer nt
 
       nt  = lx1*ly1*lz1*nelv
       vol = glsum(bm1,nt)
       ua  = glsc2(bm1,u,nt)/vol
-
-      if(nid.eq.0) then
-        write(6,258)'ua:',ua
-      endif
-
- 258  format(a6,1es15.8)
 
       return
       end
@@ -1082,20 +1143,26 @@ c-----------------------------------------------------------------------
 
       integer at,ntot
 
+      integer icalld
+      save    icalld 
+      data    icalld / 0 /
+
       ntot = nx1*ny1*nz1*nelt
 
-      if(nid.eq.0) write(6,*)'in avg_tensor(...)'
-      if(nid.eq.0) write(6,*)'avgtyp',avgtyp
+      if((nid.eq.0).and.(icalld.eq.0))
+     $                    write(6,*)'in avg_tensor(...)','avgtyp',avgtyp
 
       if(avgtyp.lt.0) then
-       if(nid.eq.0) write(6,*)'Plnr averaging in direction',idir_plnr
+       if((nid.eq.0).and.(icalld.eq.0))
+     $                 write(6,*)'Plnr averaging in direction',idir_plnr
 
        call plane_avg_tensor(ua,u,gs_plnr_hndl,nelx,nely,nelz
      $                      ,ifld,idir_plnr)
 
       endif
       if(avgtyp.eq.0) then
-       if(nid.eq.0) write(6,*)'Line averaging in direction',idir_line
+       if((nid.eq.0).and.(icalld.eq.0))
+     $                 write(6,*)'Line averaging in direction',idir_line
  
        call line_avg_tensor(ua,u,gs_line_hndl,nelx,nely,nelz
      $                      ,ifld,idir_line)
@@ -1103,8 +1170,8 @@ c-----------------------------------------------------------------------
       endif
       at = abs(avgtyp)
       if(at.gt.1) then
-       if(nid.eq.0) write(6,*)'Geom averaging in direction',idir_geom
-       if(nid.eq.0) write(6,*)'nrepeat is',at
+       if((nid.eq.0).and.(icalld.eq.0))
+     $       write(6,*)'Geom averaging in direction',idir_geom,'nrep',at
  
        call geom_avg_tensor(ua,u,gs_geom_hndl,nelx,nely,nelz
      $                     ,ifld,idir_geom,at)
@@ -1114,6 +1181,8 @@ c-----------------------------------------------------------------------
        if(nid.eq.0) write(6,*)'no averaging'
        call copy(ua,u,ntot)
       endif         
+
+      icalld = icalld + 1
 
       return
       end

@@ -1,7 +1,7 @@
 c-----------------------------------------------------------------------
 c     include 'budgetsJavi.usr'
 c-----------------------------------------------------------------------
-      subroutine comp_tke(ifsample)
+      subroutine comp_tke
       INCLUDE 'SIZE'  
       INCLUDE 'TOTAL' 
       INCLUDE 'AVG'
@@ -10,18 +10,12 @@ c-----------------------------------------------------------------------
       INCLUDE 'BUDGETSINCOMP'
       INCLUDE 'TKEINCOMP'
 
-      logical ifsample
-
       integer ntot
-      real tmp,vol,tkmax,tkave,immax,imave
-      logical iifxyo,iifvo,iifpo,iifto
 c
-      if(nid.eq.0) write(6,*) 'in comp_tke(...)'
+      if(nid.eq.0) write(6,*)'in comp_tke(...)'
 c
-      call probePoint
-c
-      ntot=lx1*ly1*lz1*nelt
-c
+      ntot=lx1*ly1*lz1*nelv
+c 
       call rzero(cnk,ntot)
       call rzero(prk,ntot)
       call rzero(ptk,ntot)
@@ -33,7 +27,7 @@ c
       call rzero(kkk,ntot)
       call rzero(imb,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
-c
+c 
       call rzero(pp1,ntot)
       call rzero(pp2,ntot)
       call rzero(pp3,ntot)
@@ -65,63 +59,89 @@ c
          imb(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
 c
-         div(i,1,1,1) = udxavg(i,1,1,1)+vdyavg(i,1,1,1)+wdzavg(i,1,1,1)
-c
+         div(i,1,1,1)= udxavg(i,1,1,1)+ vdyavg(i,1,1,1)+ wdzavg(i,1,1,1)
          pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
-         pp2(i,1,1,1)=pm1avg(i,1,1,1)*div(i,1,1,1)
+         pp2(i,1,1,1)=pm1avg (i,1,1,1)*div(i,1,1,1)
          pp3(i,1,1,1)=-1/dens0*(pp1(i,1,1,1) - pp2(i,1,1,1))
       enddo
-c
-      if(ifsample) then
-      call sample(cnk,prk,ptk,pdk,div,'tk1',
-     $           'conv','prod','pres_tr','pres_df','garbage')
-      call sample(psk,tdk,epk,vdk,prk,'tk2',
-     $           'pres_st','turb_df','diss','visc_df','garbage')
-      call sample(kkk,imb,div,prk,pdk,'tk3',
-     $           'kkk','imb','div','garbage','garbage')
-      call sample(div,pp1,pp2,pp3,pdk,'ppp',
-     $           'div','pp1','pp2','pp3','garbage')
-      call sample(uavg,vavg,wavg,urms,pdk,'kkk',
-     $           'uavg','vavg','wavg','urms','garbage')
-      endif
-c
-      vol   = glsum(bm1,ntot)
+
+      call avg_3d(tkave,kkk)
+      call avg_3d(imave,imb)
       tkmax = glmax(kkk,ntot)
-      tkave = glsc2(bm1,kkk,ntot)/vol
       immax = glmax(imb,ntot)
-      imave = glsc2(bm1,imb,ntot)/vol
-
-      if(nid.eq.0) then
-        write(6,258)'tkmax:',tkmax
-        write(6,258)'tkave:',tkave
-        write(6,258)'immax:',immax
-        write(6,258)'imave:',imave
-      endif
-
- 258  format(a6,1es15.8)
-
-!     Outpost
-
-      iifxyo = ifxyo
-      iifvo  = ifvo
-      iifpo  = ifpo
-      iifto  = ifto
-
-      ifxyo = .true.
-      ifvo  = .true.
-      ifpo  = .true.
-      ifto  = .true.
-c
-c     call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
-c     call outpost2(tdk,epk,vdk,imb,div,1,'tk2')
-c
-      ifxyo = iifxyo
-      ifvo  = iifvo
-      ifpo  = iifpo
-      ifto  = iifto
 
       return
       end
+c-----------------------------------------------------------------------
+      subroutine geom_avg_tke2(avgtyp,nelx,nely,nelz,ifld
+     $                        ,gs_line_hndl,idir_line
+     $                        ,gs_plnr_hndl,idir_plnr
+     $                        ,gs_geom_hndl,idir_geom)
+      include 'SIZE'
+      include 'TOTAL'
+      include 'TKEINCOMP'
+
+      integer avgtyp
+c
+      integer ntot
+
+      if(nid.eq.0)write(6,*)'in geom_avg_tke2(...)','avgtyp',avgtyp
+
+      ntot = lx1*ly1*lz1*nelv
+
+      call avg_tensor_wrapper(cnk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(prk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(ptk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pdk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(psk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(tdk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(epk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(kkk,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(imb,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(div,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_3d(tkave,kkk)
+      call avg_3d(imave,imb)
+      tkmax = glmax(kkk,ntot)
+      immax = glmax(imb,ntot)
+
+      return
+      end
+
 c-----------------------------------------------------------------------
       subroutine geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
@@ -136,8 +156,7 @@ c-----------------------------------------------------------------------
 
       integer avgtyp
 
-      if(nid.eq.0) write(6,*) 'in geom_avg_tke(...)'
-      if(nid.eq.0) write(6,*)'avgtyp',avgtyp
+      if(nid.eq.0)write(6,*)'in geom_avg_tke(...)','avgtyp',avgtyp
 
       ! AVG
       call avg_tensor_wrapper(uavg,avgtyp,nelx,nely,nelz,ifld
@@ -217,6 +236,11 @@ c      ! AVGINCOMP
      $                       ,gs_geom_hndl,idir_geom)
 
       call avg_tensor_wrapper(pvari,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(tvari,avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
      $                       ,gs_plnr_hndl,idir_plnr
      $                       ,gs_geom_hndl,idir_geom)
