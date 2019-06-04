@@ -185,18 +185,20 @@ c-----------------------------------------------------------------------
 
       real sclr1,sclr2,sclr3,sclr4
       integer step0,dstep,numsteps
-      character(3) name1,name2,name3,name4
-      character(3) filename
+      character(3) name1,name2,name3,name4,filename
 c
       integer step1
       logical ifnwrite
-      integer i
+
+      integer i,j
       save    i
       data    i  /0/
-      character(7) filenametot
-      logical there
+
       real val(6,lhis)
       save val
+
+      character(7) filenametot
+      logical there
 
       if(istep.lt.step0) goto 998
 
@@ -221,6 +223,7 @@ c
       filenametot = filename//".dat"
       if(nid.eq.0) write(6,*) 'writing scalar to file ',filenametot
 
+      if(i.eq.numsteps) i = 0
       i = i + 1
       val(1,i) = istep
       val(2,i) = time
@@ -245,9 +248,9 @@ c
         open(unit=987,FILE=trim(filenametot),status='new')
         write(987,'(1p,6A15)')'Step','Time',name1,name2,name3,name4
 
-        do i=1,numsteps
-          write(987,'(1p,6E15.7)')val(1,i),val(2,i),val(3,i),val(4,i)
-     $                           ,val(5,i),val(6,i)
+        do j=1,numsteps
+          write(987,'(1p,6E15.7)') val(1,j),val(2,j),val(3,j),val(4,j)
+     $                            ,val(5,j),val(6,j)
         enddo
 
         close(unit=987)
