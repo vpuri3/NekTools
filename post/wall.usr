@@ -94,6 +94,8 @@ c
         write(6,258)'tkave:',tkave
         write(6,258)'immax:',immax
         write(6,258)'imave:',imave
+        write(6,258)'im_L2:',im_L2
+        write(6,258)'divL2:',divL2
       endif
 
  258  format(a6,1es15.8)
@@ -264,16 +266,17 @@ c
       return
       end
 c-----------------------------------------------------------------------
-      subroutine comp_div(div,ux,uy,uz)
+      subroutine comp_div(dd,ux,uy,uz)
       include 'SIZE'
       include 'TOTAL'
 
-      real div(lx1,ly1,lz1,lelv)
-      real ux (lx1,ly1,lz1,lelv)
-      real uy (lx1,ly1,lz1,lelv)
-      real uz (lx1,ly1,lz1,lelv)
+      real dd
+      real ux(lx1,ly1,lz1,lelv)
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
 c
-      real dudx(lx1,ly1,lz1,lelv)
+      real div(lx1,ly1,lz1,lelv)
+     $    ,dudx(lx1,ly1,lz1,lelv)
      $    ,dudy(lx1,ly1,lz1,lelv)
      $    ,dudz(lx1,ly1,lz1,lelv)
      $    ,dvdx(lx1,ly1,lz1,lelv)
@@ -283,26 +286,22 @@ c
      $    ,dwdy(lx1,ly1,lz1,lelv)
      $    ,dwdz(lx1,ly1,lz1,lelv)
 
-      real divm(lx1,ly1,lz1,lelv)
-
-      real tmp
       integer ntot
 
       ntot=lx1*ly1*lz1*nelv
       call rzero(div,ntot)
-      call rzero(divm,ntot)
 
       call gradm1(dudx,dudy,dudz,ux)
       call gradm1(dvdx,dvdy,dvdz,uy)
       call gradm1(dwdx,dwdy,dwdz,uz)
 
       do i=1,ntot
-        div(i,1,1,1)  = dudx(i,1,1,1) + dvdy(i,1,1,1) + dwdz(i,1,1,1)
-        divm(i,1,1,1) = abs(div(i,1,1,1))
+        div(i,1,1,1) = dudx(i,1,1,1) + dvdy(i,1,1,1) + dwdz(i,1,1,1)
+        div(i,1,1,1) = div(i,1,1,1)*div(i,1,1,1)
       enddo
 
-      tmp = glmax(divm,ntot)
-      if(nid.eq.0) write(6,*) "Max mag of divergence",tmp
+      call avg_3d(dd,div)
+      dd = sqrt(dd)
 
       return
       end
@@ -1070,7 +1069,7 @@ c-----------------------------------------------------------------------
       ntot = nx1*ny1*nz1*nelt
 
       if((nid.eq.0).and.(icalld.eq.0))
-     $                    write(6,*)'in avg_tensor(...)','avgtyp',avgtyp
+     $                   write(6,*)'in avg_tensor(...)','avgtyp:',avgtyp
 
       if(avgtyp.lt.0) then
        if((nid.eq.0).and.(icalld.eq.0))

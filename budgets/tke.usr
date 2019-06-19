@@ -26,8 +26,10 @@ c
       call rzero(vdk,ntot)
       call rzero(kkk,ntot)
       call rzero(imb,ntot)
+c
+      call rzero(iL2,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
-c 
+      call rzero(dL2,ntot)
       call rzero(pp1,ntot)
       call rzero(pp2,ntot)
       call rzero(pp3,ntot)
@@ -59,16 +61,24 @@ c
          imb(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
 c
+         iL2(i,1,1,1)=    imb(i,1,1,1)*    imb(i,1,1,1)
          div(i,1,1,1)= udxavg(i,1,1,1)+ vdyavg(i,1,1,1)+ wdzavg(i,1,1,1)
+         dL2(i,1,1,1)=    div(i,1,1,1)*    div(i,1,1,1)
          pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
-         pp2(i,1,1,1)=pm1avg (i,1,1,1)*div(i,1,1,1)
-         pp3(i,1,1,1)=-1/dens0*(pp1(i,1,1,1) - pp2(i,1,1,1))
+         pp2(i,1,1,1)= pm1avg(i,1,1,1)*    div(i,1,1,1)
+         pp3(i,1,1,1)=  -(pp1(i,1,1,1)-    pp2(i,1,1,1))*1/dens0
       enddo
 
+      tkmax=glmax(kkk,ntot)
       call avg_3d(tkave,kkk)
+
+      immax=glmax(imb,ntot)
       call avg_3d(imave,imb)
-      tkmax = glmax(kkk,ntot)
-      immax = glmax(imb,ntot)
+      call avg_3d(im_L2,iL2)
+      im_L2 = sqrt(im_L2)
+
+      call avg_3d(divL2,dL2)
+      divL2 = sqrt(divL2)
 
       return
       end
@@ -156,7 +166,7 @@ c-----------------------------------------------------------------------
 
       integer avgtyp
 
-      if(nid.eq.0)write(6,*)'in geom_avg_tke(...)','avgtyp',avgtyp
+      if(nid.eq.0)write(6,*)'in geom_avg_tke(...)','avgtyp:',avgtyp
 
       ! AVG
       call avg_tensor_wrapper(uavg,avgtyp,nelx,nely,nelz,ifld

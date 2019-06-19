@@ -113,7 +113,7 @@ for ((i=1; i<=$njobs; i++)); do
     rm *.cobaltlog *.error *.output *log* *out*
 
     if [ "$fresh" = false ]; then
-	fff=$dir0"/"$case"0.f*"
+	fff=$dir0"/"$case"0.f00001"
         if [ ! -f "$fff" ]; then
             msg="$dir0 does not have output files"; abort
         fi
