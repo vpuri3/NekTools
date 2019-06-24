@@ -1,30 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
 ###########
-# script pased on by Pablo Brubeck
+# usage: ./makebox <case>
 #
-# usage: ./makebox <nelx> <nely> <nelz>
+# script pased on by Pablo Brubeck
 ###########
+
+case=$1
 
 core=$HOME"/Nek5000/bin/"
+sfx='box'
+box=$case'.'$sfx
 
-case="q"
+## modify box
+#sed -i "/nelx,nely,nelz for Box/c\-"$2" -"$3" -"$4"   nelx,nely,nelz for Box" $case".box"
 
-rgx="nelx,nely,nelz for Box"
-
-
-# modify box
-sed -i "/nelx,nely,nelz for Box/c\-"$1" -"$2" -"$3"   nelx,nely,nelz for Box" $case".box"
-
-# genbox
-str=$case'.box'
 $core'genbox' << DOF
-$str
+$box
 DOF
 
-cp box.rea $case'.rea'
+$core'reatore2' << DOF
+$sfx
+$case
+DOF
 
-# genmap
+rm box.rea box.re2
+
 $core'genmap' << DOF
 $case
 0.1
