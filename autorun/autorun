@@ -97,7 +97,7 @@ for ((i=1; i<=$njobs; i++)); do
 
 		echo "copying $dir0 to $dir1"                             |& tee -a $log
 		cp -r $dir0 $dir1                                         |& tee -a $log
-    	    [ $? != 0 ] && msg="cant cp $dir1 -> $dir0" && abort
+    	[ $? != 0 ] && msg="cant cp $dir1 -> $dir0" && abort
     fi
 
 #===============================================================================
@@ -129,7 +129,7 @@ for ((i=1; i<=$njobs; i++)); do
     rm $case"0.f"*
 
 #===============================================================================
-#   checks
+# checks
 #===============================================================================
     echo "restarting from $res"                                   |& tee -a $log
     head -c 130 $res                                              |& tee -a $log
@@ -155,7 +155,7 @@ for ((i=1; i<=$njobs; i++)); do
     fi
 
 #===============================================================================
-#   queuing and running
+# queuing and running
 #===============================================================================
     ./$sub $case $nnodes                                          |& tee -a $log
     [ $? != 0 ] && msg="could not queue job" && abort
@@ -174,6 +174,9 @@ for ((i=1; i<=$njobs; i++)); do
 
     echo "job is running"                                         |& tee -a $log
  
+#===============================================================================
+# checks
+#===============================================================================
     sleep 300
     dead=$(tail logfile)
     if echo $dead | grep -Fq "dying"; then
