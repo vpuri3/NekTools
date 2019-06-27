@@ -40,12 +40,13 @@ dir=$PWD
 log=$dir/run.log
 
 function send_log {
-	mail -s "$case autorun" $email < $log;
+	mail -s "$PWD $case autorun" $email < $log
 }
 
 function abort {
     echo "ABORT:" "$msg" |& tee -a $log
-    send_log; exit 1
+    send_log
+	exit 1
 }
 
 if [ ! -f $log ]; then
@@ -61,25 +62,20 @@ echo "Running case $case from $base$num $njobs times."            |& tee -a $log
 echo "Storing log in $log."                                       |& tee -a $log
 #
 echo "from run.conf:"                                             |& tee -a $log
-echo "email   is $email"                                          |& tee -a $log
-echo "res     is $res"                                            |& tee -a $log
-echo "rsfx    is $rsfx"                                           |& tee -a $log
-echo "bsfx    is $bsfx"                                           |& tee -a $log
-echo "sub     is $sub"                                            |& tee -a $log
-echo "nnodes  is $nnodes"                                         |& tee -a $log
-echo "fresh   is $fresh"                                          |& tee -a $log
-echo "simTime is $simTime"                                        |& tee -a $log
+cat run.conf                                                      |& tee -a $log
 #
-findrsfx=false
 if [ "$rsfx" = "0.f00000" ]; then
     findrsfx=true
     echo "rsfx=$rsfx ==> restart from latest output file."        |& tee -a $log
+else
+	findrsfx=false
 fi
 
-budgets=true
 if [ "$bsfx" = "0.f00000" ]; then
     budgets=false
     echo "bsfx=$bsfx ==> no budgets"                              |& tee -a $log
+else
+	budgets=true
 fi
 
 for ((i=1; i<=$njobs; i++)); do
@@ -94,28 +90,27 @@ for ((i=1; i<=$njobs; i++)); do
     dir0=$dir/$base$num
     if [ $i = 1 ]; then
 	dir1=$dir0
-	echo "starting from $dir1"                                |& tee -a $log
+		echo "starting from $dir1"                                |& tee -a $log
     else
-	num=$((num+1))
-	dir1=$dir/$base$num
+		num=$((num+1))
+		dir1=$dir/$base$num
 
-	echo "copying $dir0 to $dir1"                             |& tee -a $log
-	cp -r $dir0 $dir1                                         |& tee -a $log
-        [ $? != 0 ] && msg="cant cp $dir1 -> $dir0" && abort
+		echo "copying $dir0 to $dir1"                             |& tee -a $log
+		cp -r $dir0 $dir1                                         |& tee -a $log
+    	[ $? != 0 ] && msg="cant cp $dir1 -> $dir0" && abort
     fi
-
-    cd  $dir1
 
 #===============================================================================
 #   updating restart
 #===============================================================================
+    cd  $dir1
     echo "removing old logs and updating restart"                 |& tee -a $log
     rm *.cobaltlog *.error *.output *log* *out*
 
     if [ "$fresh" = false ]; then
-	fff=$dir0"/"$case"0.f*"
+	fff=$dir0"/"$case"0.f00001"
         if [ ! -f "$fff" ]; then
-            msg="$dir0 does not have output files"; abort
+            msg="$dir0 does not have output files" && abort
         fi
         # get restart suffix
         if [ "$findrsfx" = true ]; then
@@ -134,7 +129,7 @@ for ((i=1; i<=$njobs; i++)); do
     rm $case"0.f"*
 
 #===============================================================================
-#   checks
+# checks
 #===============================================================================
     echo "restarting from $res"                                   |& tee -a $log
     head -c 130 $res                                              |& tee -a $log
@@ -160,7 +155,7 @@ for ((i=1; i<=$njobs; i++)); do
     fi
 
 #===============================================================================
-#   queuing and running
+# queuing and running
 #===============================================================================
     ./$sub $case $nnodes                                          |& tee -a $log
     [ $? != 0 ] && msg="could not queue job" && abort
@@ -171,7 +166,7 @@ for ((i=1; i<=$njobs; i++)); do
     sleep 60
     j=0
     while [ ! -f $dir1/logfile ]; do
-	echo "waiting in queue for $((j*5)) minutes"              |& tee -a $log
+	echo "waiting in queue for $((j*5)) minutes"                  |& tee -a $log
 	[ "$j" -gt 60 ] && msg="spent 5 hrs in queue. bye" && abort
 	j=$((j+1))
 	sleep 300
@@ -179,10 +174,13 @@ for ((i=1; i<=$njobs; i++)); do
 
     echo "job is running"                                         |& tee -a $log
  
+#===============================================================================
+# checks
+#===============================================================================
     sleep 300
     dead=$(tail logfile)
     if echo $dead | grep -Fq "dying"; then
-	msg="job died before its time"; abort
+		msg="job died before its time" && abort
     fi
 
     echo "all is good. goodnight."                                |& tee -a $log
