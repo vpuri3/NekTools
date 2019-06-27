@@ -16,7 +16,7 @@ C-----------------------------------------------------------------------
 # define tSTATFREQ  param(4)
 # define readSTAT   param(5)
 C-----------------------------------------------------------------------
-      include 'budgetsJavi.usr'
+      include 'budgets.usr'
 C-----------------------------------------------------------------------
       subroutine uservp(ix,iy,iz,eg) ! set variable properties
       include 'SIZE'
