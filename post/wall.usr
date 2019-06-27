@@ -71,14 +71,21 @@ c
       real yp(lx1,ly1,lz1,lelv)
       real tmp
 
+      integer icalld
+      save    icalld 
+      data    icalld / 0 /
+
       if(nid.eq.0) write(6,*)'in postProcess(...)','avgtyp',avgtyp
 
       ntot     = lx1*ly1*lz1*nelv
       ifld     = 1
       ifsample = .true.
 
-      call load_standard_incomp(readstats,avtime)
-      call load_budgets_incomp(readstats)
+      if(icalld.eq.0) then
+          icalld = icalld + 1
+          call load_standard_incomp(readstats,avtime)
+          call load_budgets_incomp(readstats)
+      endif
 
       call geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
      $                 ,gs_line_hndl,idir_line
@@ -147,8 +154,8 @@ c     if(nid.eq.0)write(6,258)'uplus:',tmp
      $           'pres_st','turb_df','diss','visc_df','garbage')
       call sample(kkk,imb,div,prk,pdk,'tk3',
      $           'kkk','imb','div','garbage','garbage')
-      call sample(div,pp1,pp2,pp3,pdk,'ppp',
-     $           'div','pp1','pp2','pp3','garbage')
+      call sample(pp1,pp2,pp3,vdyavg,prk,'ppp',
+     $           'pp1','pp2','pp3','vdyavg','garbage')
       call sample(up,yp,ym1,ym1,ym1,'upl',
      $           'uplus','yplus','trash','trash','trash')
       endif
@@ -1097,7 +1104,8 @@ c-----------------------------------------------------------------------
 
       endif
       if(avgtyp.eq.1) then
-       if(nid.eq.0) write(6,*)'no averaging'
+       if((nid.eq.0).and.(icalld.eq.0)) write(6,*)'no averaging'
+
        call copy(ua,u,ntot)
       endif         
 

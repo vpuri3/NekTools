@@ -64,9 +64,11 @@ c
          iL2(i,1,1,1)=    imb(i,1,1,1)*    imb(i,1,1,1)
          div(i,1,1,1)= udxavg(i,1,1,1)+ vdyavg(i,1,1,1)+ wdzavg(i,1,1,1)
          dL2(i,1,1,1)=    div(i,1,1,1)*    div(i,1,1,1)
-         pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
-         pp2(i,1,1,1)= pm1avg(i,1,1,1)*    div(i,1,1,1)
-         pp3(i,1,1,1)=  -(pp1(i,1,1,1)-    pp2(i,1,1,1))*1/dens0
+c problem --> < p ui,i > != 0
+c        pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
+         pp1(i,1,1,1) = pudxavg(i,1,1,1)
+         pp2(i,1,1,1) = pvdyavg(i,1,1,1)
+         pp3(i,1,1,1) = pwdzavg(i,1,1,1)
       enddo
 
       tkmax=glmax(kkk,ntot)
