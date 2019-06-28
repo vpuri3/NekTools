@@ -3473,12 +3473,14 @@ c     modify initc
          
       write(fpath,format_string)auxName,readStats
 
-      INQUIRE(FILE=fpath,EXIST=there)
 c     read data into solution arrays
+      INQUIRE(FILE=fpath,EXIST=there)
       if (THERE) then
         WRITE(initc(1),format_string)auxName,readStats
         call restart(1)
         call nekgsync()         
+
+      call printminmax
 
         if (nFieldsToRead.gt.4) then
            do i=1,ldimtRead
@@ -3520,7 +3522,7 @@ c-----------------------------------------------------------------------
       include 'SIZE'
       include 'TOTAL'
 
-      real vxmax,vymax,vzmax,prmax,ttmax,psmax(ldimt-1)
+      real vxmax,vymax,vzmax,prmax,ttmax ! ,psmax(ldimt-1)
       integer nxyz1,ntotv,ntot2,ntott
 
       nxyz1 = lx1*ly1*lz1
@@ -3536,19 +3538,19 @@ c-----------------------------------------------------------------------
       ntot = nxyz1*nelfld(2)
       ttmax = glmin(t ,ntott)
 
-      do i=1,ldimt-1
-         ntot = nxyz1*nelfld(i+2)
-         psmax(i) = glmin(T(1,1,1,1,i+1),ntot)
-      enddo
+c     do i=1,ldimt-1
+c        ntot = nxyz1*nelfld(i+2)
+c        psmax(i) = glmin(T(1,1,1,1,i+1),ntot)
+c     enddo
 
       if (nio.eq.0) then
          write(6,20) vxmax,vymax,vzmax,prmax,ttmax
    20    format(' uvwpt min',5g13.5)
       endif
-      if (ldimt-1.gt.0) then
-         if (nio.eq.0) write(6,21) (psmax(i),i=1,LDIMT-1)
-   21    format(' PS min   ',50g13.5)
-      endif
+c     if (ldimt-1.gt.0) then
+c        if (nio.eq.0) write(6,21) (psmax(i),i=1,LDIMT-1)
+c  21    format(' PS min   ',50g13.5)
+c     endif
 
       vxmax = glmax(vx,ntotv)
       vymax = glmax(vy,ntotv)
@@ -3558,22 +3560,22 @@ c-----------------------------------------------------------------------
       ntot = nxyz1*nelfld(2)
       ttmax = glmax(t ,ntott)
 
-      do i=1,ldimt-1
-         ntot = nxyz1*nelfld(i+2)
-         psmax(i) = glmax(T(1,1,1,1,i+1),ntot)
-      enddo
+c     do i=1,ldimt-1
+c        ntot = nxyz1*nelfld(i+2)
+c        psmax(i) = glmax(T(1,1,1,1,i+1),ntot)
+c     enddo
 
       if (nio.eq.0) then
          write(6,17) vxmax,vymax,vzmax,prmax,ttmax
    17    format(' uvwpt max',5g13.5)
       endif
 
-      if (ldimt-1.gt.0) then
-         if (nio.eq.0)  then
-            write(6,18) (psmax(i),i=1,ldimt-1)
-   18       format(' PS max   ',50g13.5)
-         endif
-      endif
+c     if (ldimt-1.gt.0) then
+c        if (nio.eq.0)  then
+c           write(6,18) (psmax(i),i=1,ldimt-1)
+c  18       format(' PS max   ',50g13.5)
+c        endif
+c     endif
 
       return
       end

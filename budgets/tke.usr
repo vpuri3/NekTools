@@ -33,6 +33,7 @@ c
       call rzero(pp1,ntot)
       call rzero(pp2,ntot)
       call rzero(pp3,ntot)
+      call rzero(pp4,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -65,10 +66,10 @@ c
          div(i,1,1,1)= udxavg(i,1,1,1)+ vdyavg(i,1,1,1)+ wdzavg(i,1,1,1)
          dL2(i,1,1,1)=    div(i,1,1,1)*    div(i,1,1,1)
 c problem --> < p ui,i > != 0
-c        pp1(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
          pp1(i,1,1,1) = pudxavg(i,1,1,1)
          pp2(i,1,1,1) = pvdyavg(i,1,1,1)
          pp3(i,1,1,1) = pwdzavg(i,1,1,1)
+         pp4(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
       enddo
 
       tkmax=glmax(kkk,ntot)
