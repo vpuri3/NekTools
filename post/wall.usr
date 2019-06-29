@@ -143,32 +143,15 @@ c     if(nid.eq.0)write(6,258)'uplus:',tmp
       time = avtime
 
       if(ifsample) then
-      call sample(uavg,vavg,wavg,pm1avg,tavg,'avg'
-     $           ,'uavg','vavg','wavg','pavg','tavg')
-      call sample(urms,vrms,wrms,pm1rms,trms,'rms'
-     $           ,'urms','vrms','wrms','prms','trms')
-      call sample(uvms,wums,vwms,pm1rms,tavg,'rm2'
-     $           ,'uvms','wums','vwms','pavg','tavg')
       call sample(cnk,prk,ptk,pdk,div,'tk1',
      $           'conv','prod','pres_tr','pres_df','garbage')
       call sample(psk,tdk,epk,vdk,prk,'tk2',
      $           'pres_st','turb_df','diss','visc_df','garbage')
-      call sample(kkk,imb,div,prk,pdk,'tk3',
-     $           'kkk','imb','div','garbage','garbage')
-      call sample(pp1,pp2,pp3,pp4,prk,'ppp',
-     $           'pp1','pp2','pp3','pp4','garbage')
+      call sample(tkk,imb,div,prk,pdk,'tk3',
+     $           'tkk','imb','div','garbage','garbage')
       call sample(up,yp,ym1,ym1,ym1,'upl',
      $           'uplus','yplus','trash','trash','trash')
       endif
-
-c     call sample(vdyavg ,udxrms,vdzrms  ,uvdyms  ,uavg,'ii1'
-c    $           ,'Ti01' ,'Ti02','Ti03'  ,'Ti04'  ,'tras')
-c     call sample(vwdxms ,wpavg ,uvwavg  ,wwwavg  ,uavg,'ii2'
-c    $           ,'Ti05' ,'Ti06','Ti07'  ,'Ti08'  ,'tras')
-c     call sample(pvdyavg,utavg ,udpdzavg,wdpdyavg,uavg,'ii3'
-c    $           ,'Ti09' ,'Ti10','Ti11'  ,'Ti12'  ,'tras')
-c     call sample(dpdzavg,udxrms,vdzrms  ,uvdyrms ,uavg,'ii4'
-c    $           ,'Ti13' ,'tras','tras'  ,'tras'  ,'tras')
 
 !     Outpost
 
