@@ -24,16 +24,12 @@ c
       call rzero(tdk,ntot)
       call rzero(epk,ntot)
       call rzero(vdk,ntot)
-      call rzero(kkk,ntot)
+      call rzero(tkk,ntot)
       call rzero(imb,ntot)
 c
       call rzero(iL2,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
       call rzero(dL2,ntot)
-      call rzero(pp1,ntot)
-      call rzero(pp2,ntot)
-      call rzero(pp3,ntot)
-      call rzero(pp4,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -54,7 +50,7 @@ c
          epk(i,1,1,1) = epk(i,1,1,1) * 0.5
          vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
 c
-         kkk(i,1,1,1) = 0.5*
+         tkk(i,1,1,1) = 0.5*
      $                (urms(i,1,1,1)-uavg(i,1,1,1)*uavg(i,1,1,1)+
      $                 vrms(i,1,1,1)-vavg(i,1,1,1)*vavg(i,1,1,1)+
      $                 wrms(i,1,1,1)-wavg(i,1,1,1)*wavg(i,1,1,1))
@@ -65,15 +61,10 @@ c
          iL2(i,1,1,1)=    imb(i,1,1,1)*    imb(i,1,1,1)
          div(i,1,1,1)= udxavg(i,1,1,1)+ vdyavg(i,1,1,1)+ wdzavg(i,1,1,1)
          dL2(i,1,1,1)=    div(i,1,1,1)*    div(i,1,1,1)
-c problem --> < p ui,i > != 0
-         pp1(i,1,1,1) = pudxavg(i,1,1,1)
-         pp2(i,1,1,1) = pvdyavg(i,1,1,1)
-         pp3(i,1,1,1) = pwdzavg(i,1,1,1)
-         pp4(i,1,1,1)=pudxavg(i,1,1,1)+pvdyavg(i,1,1,1)+pwdzavg(i,1,1,1)
       enddo
 
-      tkmax=glmax(kkk,ntot)
-      call avg_3d(tkave,kkk)
+      tkmax=glmax(tkk,ntot)
+      call avg_3d(tkave,tkk)
 
       immax=glmax(imb,ntot)
       call avg_3d(imave,imb)
@@ -134,7 +125,7 @@ c
      $                       ,gs_line_hndl,idir_line
      $                       ,gs_plnr_hndl,idir_plnr
      $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(kkk,avgtyp,nelx,nely,nelz,ifld
+      call avg_tensor_wrapper(tkk,avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
      $                       ,gs_plnr_hndl,idir_plnr
      $                       ,gs_geom_hndl,idir_geom)
@@ -147,9 +138,9 @@ c
      $                       ,gs_plnr_hndl,idir_plnr
      $                       ,gs_geom_hndl,idir_geom)
 
-      call avg_3d(tkave,kkk)
+      call avg_3d(tkave,tkk)
       call avg_3d(imave,imb)
-      tkmax = glmax(kkk,ntot)
+      tkmax = glmax(tkk,ntot)
       immax = glmax(imb,ntot)
 
       return
