@@ -70,7 +70,7 @@ c
 
       real up(lx1,ly1,lz1,lelv)
       real yp(lx1,ly1,lz1,lelv)
-      real tmp
+      real Tma(lx1,ly1,lz1,lelv)
 
       integer icalld
       save    icalld 
@@ -87,6 +87,14 @@ c
           call load_standard_incomp(readstats,avtime)
           call load_budgets_incomp(readstats)
       endif
+
+      do i=1,ntot
+        vx(i,1,1,1) = uavg(i,1,1,1)
+        vy(i,1,1,1) = vavg(i,1,1,1)
+        vz(i,1,1,1) = wavg(i,1,1,1)
+      enddo
+
+      call printdiverr
 
       call geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
      $                 ,gs_line_hndl,idir_line
@@ -124,10 +132,8 @@ c       write(6,258)'imave:',imave
 c     endif
 
 ! comp wall shaer
-      call comp_uplus(up,yp,uavg,vavg,wavg,iface,bctyp
+      call comp_uplus(up,yp,Tma,uavg,vavg,wavg,iface,bctyp
      $               ,gs_sctr_hndl,nelx,nely,nelz,ifld,idir_sctr)
-c     call avg_3d(tmp,up)
-c     if(nid.eq.0)write(6,258)'uplus:',tmp
 
       call avg_tensor_wrapper(up,avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
@@ -135,6 +141,11 @@ c     if(nid.eq.0)write(6,258)'uplus:',tmp
      $                       ,gs_geom_hndl,idir_geom)
 
       call avg_tensor_wrapper(yp,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(Tma,avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
      $                       ,gs_plnr_hndl,idir_plnr
      $                       ,gs_geom_hndl,idir_geom)
@@ -149,8 +160,8 @@ c     if(nid.eq.0)write(6,258)'uplus:',tmp
      $           'pres_st','turb_df','diss','visc_df','garbage')
       call sample(tkk,imb,div,prk,pdk,'tk3',
      $           'tkk','imb','div','garbage','garbage')
-      call sample(up,yp,ym1,ym1,ym1,'upl',
-     $           'uplus','yplus','trash','trash','trash')
+      call sample(up,yp,Tma,ym1,ym1,'upl',
+     $           'uplus','yplus','Wshr','trash','trash')
       endif
 
 !     Outpost
@@ -361,7 +372,7 @@ C-----------------------------------------------------------------------
       real s11,s12,s13
       real s21,s22,s23
       real s31,s32,s33
-      real a,xdrg,ydrg,zdrg,mdrg
+      real a,xdrg,ydrg,zdrg,mdrg,Tmavg
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_wallShear(...)'
@@ -375,7 +386,7 @@ c
 c
       call rzero(sij,ntot*nxzf)
 
-      a     = 0.                ! drag on face
+      a     = 0.                ! area of face
       xdrg  = 0.                ! drag on face X-comp
       ydrg  = 0.                !              Y 
       zdrg  = 0.                !              Z
@@ -458,6 +469,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
  
       mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
       mdrg = sqrt(mdrg)
+      Tmavg= mdrg / a
  
       if(nid.eq.0) then
         write(6,258)'area:' ,a
@@ -465,6 +477,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
         write(6,258)'ydrag:',ydrg
         write(6,258)'zdrag:',zdrg
         write(6,258)'Mdrag:',mdrg
+        write(6,258)'Tmavg:',Tmavg
       endif
  
  258  format(a6,1es15.8)
@@ -525,8 +538,6 @@ C-----------------------------------------------------------------------
       integer e,k,ntot
       integer idimt,iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
 
-      if(nid.eq.0) write(6,*) 'in get_faceNormal(...)'
-c
       ntot = lx1*ly1*lz1*nelv
 c
       call rzero(fNx,ntot)
@@ -637,17 +648,18 @@ c     call comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_sctr_hndl,gs_avg_hndl
 c    $      ,nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifplnr_avg,ifsample)
 c
 C-----------------------------------------------------------------------
-      subroutine comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_hndl1
+      subroutine comp_uplus(up,yp,volTm,ux,uy,uz,f,bctyp,gs_hndl1
      $                           ,nelx,nely,nelz,ifld,idir1)
 
       include 'SIZE'
       include 'TOTAL'
 
-      real up(lx1,ly1,lz1,lelv) ! U-Plus
-      real yp(lx1,ly1,lz1,lelv) ! Y-Plus
-      real ux(lx1,ly1,lz1,lelv) ! Velocity Field
-      real uy(lx1,ly1,lz1,lelv)
-      real uz(lx1,ly1,lz1,lelv)
+      real up(lx1,ly1,lz1,lelv)    ! U-Plus
+     $    ,yp(lx1,ly1,lz1,lelv)    ! Y-Plus
+     $    ,volTm(lx1,ly1,lz1,lelv) ! shear magnitude
+     $    ,ux(lx1,ly1,lz1,lelv)    ! Velocity Field
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
       integer f,ifld,gs_hndl1,idir1
       integer nelx,nely,nelz
       character*3 bctyp
@@ -669,7 +681,7 @@ c
      $    ,volNx(lx1,ly1,lz1,lelv)
      $    ,volNy(lx1,ly1,lz1,lelv)
      $    ,volNz(lx1,ly1,lz1,lelv)
-     $    ,volTm(lx1,ly1,lz1,lelv)
+c    $    ,volTm(lx1,ly1,lz1,lelv)
      $    ,volUf(lx1,ly1,lz1,lelv)
 c
      $    ,utn(lx1,ly1,lz1,lelv) ! tangential velocity mag
@@ -703,20 +715,24 @@ c
 c
       call rzero(sij,ntot*nxzf)
 
+      call get_faceNormal(fNx,fNy,fNz,f,bctyp,ifld)
+ 
       call comp_wallShear(fTx,fTy,fTz,ux,uy,uz,f,bctyp,ifld)
+
+      ! shear magnitude, friction velocity
       do i=1,ntot
         fTm(i,1,1,1) = fTx(i,1,1,1)*fTx(i,1,1,1)
      $                +fTy(i,1,1,1)*fTy(i,1,1,1)
      $                +fTz(i,1,1,1)*fTz(i,1,1,1)
+        fTm(i,1,1,1) = sqrt(fTm(i,1,1,1))
+        fUf(i,1,1,1) = sqrt(fTm(i,1,1,1))
       enddo
-      call get_faceNormal(fNx,fNy,fNz,f,bctyp,ifld)
-c
+
       ! scatter face data into domain
       call scttr(volNx,fNx,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(volNy,fNy,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(volNz,fNz,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(volTm,fTm,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-      ! friction velocity
       call scttr(volUf,fUf,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       ! distance in direction parallel to idir
       call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
@@ -730,9 +746,8 @@ c
          n2  = volNy(i,1,1,1)
          n3  = volNz(i,1,1,1)
          Tmg = volTm(i,1,1,1)
-c
-c        ufr = Uf   (i,1,1,1)            ! =plnr_avg(sqrt(Tmg/rho))
-         ufr = sqrt(Tmg/dsty)            ! =sqrt(plnr_avg(Tmg)/rho)
+c        ufr = volUf(i,1,1,1)            ! =avg(sqrt(Tmg/rho))
+         ufr = sqrt(Tmg/dsty)            ! =sqrt(avg(Tmg)/rho)
 c
          un = u*n1 + v*n2 + w*n3         ! mag of normal component
          un = u*u  + v*v  + w*w - un*un
@@ -1459,14 +1474,20 @@ c-----------------------------------------------------------------------
       nel = nelfld(ifld)
       n   = nx1*ny1*nz1*nel
 
-      call copy(ua,bm1,n)                 ! Set the averaging weights
-      call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
+c     call copy(ua,bm1,n)                 ! Set the averaging weights
+c     call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
 
-      do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
-         ua(i,1,1,1) = bm1(i,1,1,1)*u(i,1,1,1)/ua(i,1,1,1)
-      enddo
+c     do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
+c        ua(i,1,1,1) = bm1(i,1,1,1)*u(i,1,1,1)/ua(i,1,1,1)
+c     enddo
+
+      call copy(ua,u,n)
 
       call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weighted values
+
+      do i=1,n
+        ua(i,1,1,1) = ua(i,1,1,1) / nrepeat
+      enddo
 
       return
       end
