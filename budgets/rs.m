@@ -1,4 +1,4 @@
-function rs(N0,N1,casename,miscstr,visc)
+function rs(N1,N1,casename,miscstr,visc)
 % N0 --> first history point
 % N1 --> last  history point
 %
@@ -27,7 +27,7 @@ Tm=U2(:,3);
 Tm = Tm(1)                     % shear magnitude
 ufriction=sqrt(Tm/1.0);        % friction velocity
 delta=0.5;                     % half height
-Re_tau = ufriction*delta/visc
+Re_tau = ufriction*delta/visc;
 
 tk=dlmread('var.dat','',[N0 1 N1 3]); % < u' * u' >
 cn=dlmread('cn1.dat','',[N0 1 N1 3]); % convective term
@@ -85,7 +85,7 @@ hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
-ylabel(['<u_j',c,'u_j',c,'>/Tm']);
+ylabel(['<u_j',c,'u_j',c,'>/u_\tau^2']);
 
 plot(yp,cnK/Tm,'m-','linewidth',2.00,'displayname','convection TKE');
 plot(yp,prK/Tm,'r-','linewidth',2.00,'displayname','production TKE');
@@ -110,7 +110,7 @@ hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
-ylabel(['<u_i',c,'u_j',c,'>/Tm']);
+ylabel(['<u_i',c,'u_j',c,'>/u_\tau^2']);
 
 plot(yp,cn(:,1)/Tm,'m-','linewidth',2.00,'displayname','convection uu');
 plot(yp,pr(:,1)/Tm,'r-','linewidth',2.00,'displayname','production uu');
@@ -135,7 +135,7 @@ hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
-ylabel(['<u_i',c,'u_j',c,'>/Tm']);
+ylabel(['<u_i',c,'u_j',c,'>/u_\tau^2']);
 
 plot(yp,cn(:,2)/Tm,'m-','linewidth',2.00,'displayname','convection vv');
 plot(yp,pr(:,2)/Tm,'r-','linewidth',2.00,'displayname','production vv');
@@ -160,7 +160,7 @@ hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
-ylabel(['<u_i',c,'u_j',c,'>/Tm']);
+ylabel(['<u_i',c,'u_j',c,'>/u_\tau^2']);
 
 plot(yp,cn(:,3)/Tm,'m-','linewidth',2.00,'displayname','convection ww');
 plot(yp,pr(:,3)/Tm,'r-','linewidth',2.00,'displayname','production ww');
@@ -185,7 +185,7 @@ hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
-ylabel(['<u_i',c,'u_j',c,'>/Tm']);
+ylabel(['<u_i',c,'u_j',c,'>/u_\tau^2']);
 
 %plot(yp,cnK/Tm,'m-','linewidth',2.00,'displayname','convection     ');
 %plot(yp,prK/Tm,'r-','linewidth',2.00,'displayname','production     ');
@@ -210,7 +210,7 @@ hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
-ylabel(['<u_i',c,'u_j',c,'>/Tm']);
+ylabel(['<u_i',c,'u_j',c,'>/u_\tau^2']);
 
 plot(yp,tk(:,1)/Tm,'-' ,'linewidth',2.00,'displayname',['<vx',c,'vx',c,'>']);
 plot(yp,tk(:,2)/Tm,'-' ,'linewidth',2.00,'displayname',['<vy',c,'vy',c,'>']);
