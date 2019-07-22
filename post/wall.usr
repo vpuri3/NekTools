@@ -68,9 +68,9 @@ c
       integer ifld,ntot
       logical ifsample,iifxyo,iifvo,iifpo,iifto
 
-      real up(lx1,ly1,lz1,lelv)
-      real yp(lx1,ly1,lz1,lelv)
-      real Tma(lx1,ly1,lz1,lelv)
+      real up (lx1,ly1,lz1,lelv)
+     $    ,yp (lx1,ly1,lz1,lelv)
+     $    ,Tma(lx1,ly1,lz1,lelv)
 
       integer icalld
       save    icalld 
@@ -179,8 +179,8 @@ c
 c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'avg')
 c     call outpost2(urms,vrms,wrms,pmrms,trms,ldimt,'rms')
 c     call outpost2(uvms,wums,vwms,pm1avg,tavg,1,'rm2')
-c     call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
-c     call outpost2(tdk,epk,vdk,imb,div,1,'tk2')
+      call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
+      call outpost2(tdk,epk,vdk,tkk,imb,1,'tk2')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
@@ -348,11 +348,11 @@ C-----------------------------------------------------------------------
       parameter(lxyzv = lelv*lxyz)
 
       real Tx(lx1,ly1,lz1,lelv) ! Shear Stress
-      real Ty(lx1,ly1,lz1,lelv)
-      real Tz(lx1,ly1,lz1,lelv)
-      real ux(lx1,ly1,lz1,lelv) ! Velocity Field
-      real uy(lx1,ly1,lz1,lelv)
-      real uz(lx1,ly1,lz1,lelv)
+     $    ,Ty(lx1,ly1,lz1,lelv)
+     $    ,Tz(lx1,ly1,lz1,lelv)
+     $    ,ux(lx1,ly1,lz1,lelv) ! Velocity Field
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
       integer f,ifld
       character*3 bctyp
 
@@ -369,10 +369,10 @@ C-----------------------------------------------------------------------
       integer idimt,iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
       real Tmg,vsc,dsty                ! vsc == dynamic viscosity
       real n1 ,n2 ,n3
-      real s11,s12,s13
-      real s21,s22,s23
-      real s31,s32,s33
-      real a,xdrg,ydrg,zdrg,mdrg,Tmavg
+     $    ,s11,s12,s13
+     $    ,s21,s22,s23
+     $    ,s31,s32,s33
+     $    ,a,xdrg,ydrg,zdrg,mdrg,Tmavg
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_wallShear(...)'
@@ -530,8 +530,8 @@ C-----------------------------------------------------------------------
       include 'TOTAL'
 
       real fNx(lx1,ly1,lz1,lelv) ! face normals
-      real fNy(lx1,ly1,lz1,lelv)
-      real fNz(lx1,ly1,lz1,lelv)
+     $    ,fNy(lx1,ly1,lz1,lelv)
+     $    ,fNz(lx1,ly1,lz1,lelv)
       integer f,ifld
       character*3 bctyp
 
@@ -1460,6 +1460,9 @@ c-----------------------------------------------------------------------
       integer gs_hndl,e,ex,ey,ez,eg
       integer idir,nrepeat
 
+      common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
+      integer*8 glo_num
+
       if(nrepeat.eq.0) call exitt
 
       if (gs_hndl.eq.0) then
@@ -1474,20 +1477,14 @@ c-----------------------------------------------------------------------
       nel = nelfld(ifld)
       n   = nx1*ny1*nz1*nel
 
-c     call copy(ua,bm1,n)                 ! Set the averaging weights
-c     call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
+      call copy(ua,bm1,n)              ! Set the averaging weights
+      call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weights over columns
 
-c     do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
-c        ua(i,1,1,1) = bm1(i,1,1,1)*u(i,1,1,1)/ua(i,1,1,1)
-c     enddo
-
-      call copy(ua,u,n)
+      do i=1,n                          ! ua = (w_j*u_j)/( sum_i w_i)
+         ua(i,1,1,1) = bm1(i,1,1,1)*u(i,1,1,1)/ua(i,1,1,1)
+      enddo
 
       call fgslib_gs_op(gs_hndl,ua,1,1,0) ! Sum weighted values
-
-      do i=1,n
-        ua(i,1,1,1) = ua(i,1,1,1) / nrepeat
-      enddo
 
       return
       end
@@ -1500,28 +1497,31 @@ c     Set the x-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
-      integer nrepeat
+      integer nrepeat,erepeat,elx,ely,elz
+      integer*8 lx,ly,lz,lb4
       integer*8 glo_num
-      integer*8 e_num,lx,ly,lpl,lb4
-      integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nelx/nrepeat)
-      lx  = nelx*(nx1-1)+1
-      ly  = nely*(ny1-1)+1
-      lz  = nelz*(nz1-1)+1
-      lpl = ly*lz
+
+      elx = erepeat
+      ely = nely
+      elz = nelz
+
+      lx  = elx*(nx1-1)+1 ! number of points in x dir
+      ly  = ely*(ny1-1)+1
+      lz  = elz*(nz1-1)+1
 
       do e=1,nel
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
-       e_num = mod1(ex,erepeat) 
+       ex = mod1(ex,erepeat) 
        do k=1,nz1
        do j=1,ny1
        do i=1,nx1
-          lb4=      lpl*(i+(e_num-1)*(nx1-1)-1) 
-          lb4= lb4 + ly*(k+(ez   -1)*(nz1-1)-1)
-          glo_num(i,j,k,e)=lb4+j+(ey-1)*(ny1-1) 
+           lb4=                    ly*lx*(k+(ez-1)*(nz1-1)-1)
+           lb4=              lb4 +    lx*(j+(ey-1)*(ny1-1)-1)
+           glo_num(i,j,k,e)= lb4 +        i+(ex-1)*(nx1-1)
        enddo
        enddo
        enddo
@@ -1542,29 +1542,31 @@ c     Set the y-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
-      integer nrepeat
+      integer nrepeat,erepeat,elx,ely,elz
+      integer*8 lx,ly,lz,lb4
       integer*8 glo_num
-      integer*8 e_num,lx,ly,lpl,lb4
-      integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nely/nrepeat)
 
-      lx  = nelx*(nx1-1)+1
-      ly  = nely*(ny1-1)+1
-      lz  = nelz*(nz1-1)+1
-      lpl = lx*lz
+      elx = nelx
+      ely = erepeat
+      elz = nelz
+
+      lx  = elx*(nx1-1)+1 ! number of points in x dir
+      ly  = ely*(ny1-1)+1
+      lz  = elz*(nz1-1)+1
 
       do e=1,nel
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
-       e_num = mod1(ey,erepeat) 
+       ey = mod1(ey,erepeat) 
        do k=1,nz1
        do j=1,ny1
        do i=1,nx1
-          lb4=      lpl*(j+(e_num-1)*(ny1-1)-1) 
-          lb4= lb4 + lx*(k+(ez   -1)*(nz1-1)-1)
-          glo_num(i,j,k,e)=lb4+i+(ex-1)*(nx1-1) 
+           lb4=                    ly*lx*(k+(ez-1)*(nz1-1)-1)
+           lb4=              lb4 +    lx*(j+(ey-1)*(ny1-1)-1)
+           glo_num(i,j,k,e)= lb4 +        i+(ex-1)*(nx1-1)
        enddo
        enddo
        enddo
@@ -1584,29 +1586,31 @@ c     Set the z-average handle
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
       common /c_is1/ glo_num(lx1,ly1,lz1,lelv)
 
-      integer nrepeat
+      integer nrepeat,erepeat,elx,ely,elz
+      integer*8 lx,ly,lz,lb4
       integer*8 glo_num
-      integer*8 e_num,lx,ly,lpl,lb4
-      integer erepeat
 
       nel = nelfld(ifld)
       erepeat = int(nelz/nrepeat)
 
-      lx  = nelx*(nx1-1)+1
-      ly  = nely*(ny1-1)+1
-      lz  = nelz*(nz1-1)+1
-      lpl = lx*ly
+      elx = nelx
+      ely = nely
+      elz = erepeat
+
+      lx  = elx*(nx1-1)+1 ! number of points in x dir
+      ly  = ely*(ny1-1)+1
+      lz  = elz*(nz1-1)+1
 
       do e=1,nel
        eg = lglel(e)
        call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)
-       e_num = mod1(ez,erepeat) 
+       ez = mod1(ez,erepeat) 
        do k=1,nz1
        do j=1,ny1
        do i=1,nx1
-          lb4=      lpl*(k+(e_num-1)*(nz1-1)-1) 
-          lb4= lb4 + lx*(j+(ey   -1)*(ny1-1)-1)
-          glo_num(i,j,k,e)=lb4+i+(ex-1)*(nx1-1) 
+           lb4=                    ly*lx*(k+(ez-1)*(nz1-1)-1)
+           lb4=              lb4 +    lx*(j+(ey-1)*(ny1-1)-1)
+           glo_num(i,j,k,e)= lb4 +        i+(ex-1)*(nx1-1)
        enddo
        enddo
        enddo
