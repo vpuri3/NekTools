@@ -27,7 +27,6 @@ c-----------------------------------------------------------------------
       integer readStats
       real pa(lx1,ly2,lz2), pb(lx1,ly1,lz2),paveVol,vol
 
-      
       if (ax1.ne.lx1 .or. ay1.ne.ly1 .or. az1.ne.lz1) then
          if(nid.eq.0) WRITE(6,*)
      $     'ABORT: wrong size of ax1,ay1,az1 in avg_all(), check SIZEu!'
@@ -78,11 +77,11 @@ c-----------------------------------------------------------------------
           endif
         enddo
         enddo
-      
+
         ! If P needs ref in a proc, it needs ref in all!
         call gllog(ifPneedsRef,.false.)
 
-        if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef     
+        if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef
 
       if (readStats.eq.0) then
 
@@ -95,13 +94,16 @@ c-----------------------------------------------------------------------
         do i = 1,ldimt
           call rzero(tavg(1,1,1,1,i),ntott)
         enddo
+
         call rzero(urms,ntot)
         call rzero(vrms,ntot)
         call rzero(wrms,ntot)
         call rzero(pmrms,ntot)
+
         do i = 1,ldimt
           call rzero(trms(1,1,1,1,i),ntott)
         enddo
+
         call rzero(vwms,ntot)
         call rzero(wums,ntot)
         call rzero(uvms,ntot)
@@ -139,7 +141,6 @@ c-----------------------------------------------------------------------
 
       ifverbose=.false.
       if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
-
 
  238  format(a37,a20,1es11.4,a6,1es11.4)
 
@@ -185,6 +186,7 @@ c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
         call avg3    (vwms,vy,vz,alpha,beta,ntot,'vwm ',ifverbose)
         call avg3    (wums,vz,vx,alpha,beta,ntot,'wum ',ifverbose)
 
+        call probePoint(uavg,vavg,wavg,urms,vrms,wrms)
  
       !=========
         !Compute averages E(XT) (just for temperature)
@@ -399,6 +401,7 @@ c
       real tSTATFREQ,tSTATSTART
       integer lxyze
       integer readStats
+
       logical iifxyo
 
       lxyze = lx1*ly1*lz1*lelt
@@ -611,11 +614,13 @@ c
      &   .or.
      &   lastep.eq.1) then
 
-        iifxyo = ifxyo
-        ifxyo  = .false.
 c       We change time momentaneously to write down averaging time
         temp_time=time
         time = atime
+
+c       Do not outpost mesh.
+        iifxyo = ifxyo
+        ifxyo  = .false.
 
         call outpost2(udxavg,udyavg,udzavg,vdxavg,vdyavg,1,'i01')
         call outpost2(vdzavg,wdxavg,wdyavg,wdzavg,udxrms,1,'i02')
@@ -635,7 +640,8 @@ c       We change time momentaneously to write down averaging time
      &                dpdzavg,dpdzavg,dpdzavg,1,'i13')
 
         ifxyo = iifxyo
-        time  = temp_time
+
+        time = temp_time
 
       ntdump=ntdump+1
 
@@ -1039,10 +1045,10 @@ c-----------------------------------------------------------------------
 
       call load_avg5(uavg,vavg,wavg,pm1avg,tavg,
      &              'avg',readStats,avtime,ldimt,.false.)    
-   
+
       call load_avg5(urms,vrms,wrms,pmrms,trms,
      &              'rms',readStats,avtime,ldimt,.false.)
-     
+
       call load_avg3(uvms,wums,vwms,
      &               'rm2',readStats,avtime,.false.)
 
@@ -1448,17 +1454,17 @@ c-----------------------------------------------------------------------
         temp_time=time 
         time=atime
 
-   !Average Velocity
-      call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
+c     !Average Velocity
+c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
 
-   !Average Variance 
-      call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
-     
-   !Average Covariance  
-      call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
+c     !Average Variance 
+c     call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
+c    
+c     !Average Covariance  
+c     call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
 
-   !Average Thermal fluxes
-      call outpost2(utcov,vtcov,wtcov,pm1avg,tavg,ldimt,'cvt')
+c     !Average Thermal fluxes
+c     call outpost2(utcov,vtcov,wtcov,pm1avg,tavg,ldimt,'cvt')
  
       time=temp_time
 
@@ -3360,8 +3366,8 @@ c-----------------------------------------------------------------------
       INCLUDE 'ZPER'
       INCLUDE 'TOTAL'
 
-      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
-     &       avgq3(lx1,ly1,lz1,lelt)
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt)
+     &    ,avgq3(lx1,ly1,lz1,lelt)
       real avgq4(lx1,ly1,lz1,lelt),avgq5(lx1,ly1,lz1,lelt)
       character (3) cname
       integer readStats
@@ -3677,7 +3683,6 @@ c-----------------------------------------------------------------------
       uave=glsc2(umag,bm1,ntot)/vol
       kave=glsc2(k,bm1,ntot)/vol
 
-
       if(nid.eq.0) then
         write(6,258)'Umax:',umax
         write(6,258)'Uave:',uave
@@ -3687,10 +3692,10 @@ c-----------------------------------------------------------------------
 
  258  format(a6,1es15.8)
 
-
       return
       end
 
+c-----------------------------------------------------------------------
 c
 c   AVERAGING FUNCTIONS
 c

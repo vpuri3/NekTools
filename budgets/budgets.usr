@@ -2,7 +2,7 @@ c----------------------------------------------------------------------
 C=======================================================================
 C=====     CALCULATION OF AVERAGES AND RE STRESSES BUDGETS        ======
 C=======================================================================
-c passed down by Javier Martinez Rubio
+
 c----------------------------------------------------------------------
 c---Standard Averaging for Incompressible Flows
 c-----------------------------------------------------------------------
@@ -80,9 +80,9 @@ c-----------------------------------------------------------------------
         enddo
 
         ! If P needs ref in a proc, it needs ref in all!
-        call gllog(ifPneedsRef,.false.)      
+        call gllog(ifPneedsRef,.false.)
 
-      ! Initialization
+        if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef
 
       if (readStats.eq.0) then
 
@@ -92,13 +92,10 @@ c-----------------------------------------------------------------------
         call rzero(vavg,ntot)
         call rzero(wavg,ntot)
         call rzero(pm1avg,ntot)
-
-      ! Initialization
         do i = 1,ldimt
           call rzero(tavg(1,1,1,1,i),ntott)
         enddo
 
-      ! Initialization
         call rzero(urms,ntot)
         call rzero(vrms,ntot)
         call rzero(wrms,ntot)
@@ -119,7 +116,6 @@ c-----------------------------------------------------------------------
 
       endif
       endif
-
 
       ! Set average pressure to 0 volume average
      
@@ -143,9 +139,12 @@ c-----------------------------------------------------------------------
       ifverbose=.false.
       if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
 
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
 
       if (atime.ne.0..and.dtime.ne.0.) then
-        if(nid.eq.0) WRITE(6,*) 'Compute incomp standard statistics...'
+      if(nid.eq.0)WRITE(6,238)'Compute incomp standard statistics...',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
         beta  = dtime/atime
         alpha = 1.-beta
 
@@ -285,8 +284,11 @@ c-----------------------------------------------------------------------
       if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
 
 
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
       if (atime.ne.0..and.dtime.ne.0.) then
-        if(nid.eq.0) WRITE(6,*) 'Compute comp standard statistics...'
+      if(nid.eq.0) WRITE(6,238)'Compute comp standard statistics...  ',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
         beta  = dtime/atime
         alpha = 1.-beta
 
@@ -467,9 +469,12 @@ c
       ifverbose=.false.
       if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
 
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
 
       if (atime.ne.0..and.dtime.ne.0.) then
-        if(nid.eq.0) WRITE(6,*) 'Compute incomp budgets statistics...'
+      if(nid.eq.0) WRITE(6,238)'Compute incomp budgets statistics...',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
         beta  = dtime/atime
         alpha = 1.-beta
 
@@ -601,6 +606,7 @@ c
       !=========
         !Outputs
       !=========
+
       if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
      &   lastep.eq.1) then
@@ -745,8 +751,12 @@ c-----------------------------------------------------------------------
       ifverbose=.false.
       if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
 
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
+
       if (atime.ne.0..and.dtime.ne.0.) then
-        if(nid.eq.0) WRITE(6,*) 'Compute comp budgets statistics...'
+      if(nid.eq.0) WRITE(6,238)'Compute comp budgets statistics...   ',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
         beta  = dtime/atime
         alpha = 1.-beta
       !=========
@@ -1214,7 +1224,6 @@ c
       call load_avg4(wdpdzavg,dpdxavg,dpdyavg,dpdzavg,'i13',
      &               readStats,avtime,.true.)
 
-
       return
       end
 
@@ -1428,13 +1437,13 @@ c-----------------------------------------------------------------------
         temp_time=time 
         time=atime
 
-c  !Average Velocity
+c     !Average Velocity
 c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
 
-c  !Average Variance 
+c     !Average Variance 
 c     call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
 
-c  !Average Covariance  
+c     !Average Covariance  
 c     call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
  
       time=temp_time
