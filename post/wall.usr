@@ -372,7 +372,7 @@ C-----------------------------------------------------------------------
      $    ,s11,s12,s13
      $    ,s21,s22,s23
      $    ,s31,s32,s33
-     $    ,a,xdrg,ydrg,zdrg,mdrg,Tmavg
+     $    ,a,xdrg,ydrg,zdrg,mdrg,Tmavg,ufavg
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_wallShear(...)'
@@ -470,6 +470,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
       mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
       mdrg = sqrt(mdrg)
       Tmavg= mdrg / a
+      ufavg= sqrt(Tmavg/dsty)
  
       if(nid.eq.0) then
         write(6,258)'area:' ,a
@@ -478,6 +479,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
         write(6,258)'zdrag:',zdrg
         write(6,258)'Mdrag:',mdrg
         write(6,258)'Tmavg:',Tmavg
+        write(6,258)'Ufavg:',ufavg
       endif
  
  258  format(a6,1es15.8)
@@ -689,7 +691,7 @@ c
 
       integer e,k,ntot
       real n1 ,n2 ,n3
-      real u,v,w,un,ufr,Tmg,vsc,dsty
+      real u,v,w,un,uf,Tmg,vsc,dsty
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
@@ -725,7 +727,7 @@ c
      $                +fTy(i,1,1,1)*fTy(i,1,1,1)
      $                +fTz(i,1,1,1)*fTz(i,1,1,1)
         fTm(i,1,1,1) = sqrt(fTm(i,1,1,1))
-        fUf(i,1,1,1) = sqrt(fTm(i,1,1,1))
+        fUf(i,1,1,1) = sqrt(fTm(i,1,1,1)/dsty)
       enddo
 
       ! scatter face data into domain
@@ -746,16 +748,16 @@ c
          n2  = volNy(i,1,1,1)
          n3  = volNz(i,1,1,1)
          Tmg = volTm(i,1,1,1)
-c        ufr = volUf(i,1,1,1)            ! =avg(sqrt(Tmg/rho))
-         ufr = sqrt(Tmg/dsty)            ! =sqrt(avg(Tmg)/rho)
+c        uf  = volUf(i,1,1,1)            ! =avg(sqrt(Tmg/rho))
+         uf  = sqrt(Tmg/dsty)            ! =sqrt(avg(Tmg)/rho)
 c
          un = u*n1 + v*n2 + w*n3         ! mag of normal component
          un = u*u  + v*v  + w*w - un*un
          un = sqrt(un)
          utn(i,1,1,1) = un               ! mag of tangential component
 c
-         up(i,1,1,1) = utn(i,1,1,1)/ufr
-         yp(i,1,1,1) = d2f(i,1,1,1)*ufr/vsc
+         up(i,1,1,1) = utn(i,1,1,1)/uf
+         yp(i,1,1,1) = d2f(i,1,1,1)*uf/vsc
       enddo
 
       ! Outpost
