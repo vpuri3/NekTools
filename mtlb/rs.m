@@ -1,9 +1,11 @@
-function rs(N1,N1,casename,miscstr,visc)
-% N0 --> first history point
-% N1 --> last  history point
+function rs(nx,ny,casename,miscstr,visc)
+% nx --> number of points in x
+% ny --> number of y points per x point
 %
-% example: rs(201,400,'smoothWavyWall','peak',1/4780)
+% example: rs(1,2000,'smoothWavyWall','peak',1/4780)
 %
+N0 = 1;
+N1 = nx*ny;
 
 c0=[casename,'.his'];
 
@@ -15,6 +17,9 @@ U1=dlmread(u0,'' ,[N0 1 N1 4]); % vx,vy,vz,pr
 U2=dlmread(u1,'' ,[N0 1 N1 3]); % uplus,yplus
 
 at=dlmread(u1,'' ,[1 0 1 0]);
+x=C (:,1);
+y=C (:,2);
+z=C (:,3);
 u=U1(:,1);
 v=U1(:,2);
 w=U1(:,3);
@@ -65,15 +70,29 @@ if(1)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='log'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
+
+title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
+xlabel('y');
+ylabel('u');
+
+plot(y,u,'-','linewidth',1.00,'displayname','u');
+%------------------------------
+end
+%=============================================================
+if(1)
+%------------------------------
+figure; fig=gcf; ax=gca; ax.FontSize=14;
+ax.XScale='log'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
+hold on;grid on;axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
 xlabel('y-plus');
 ylabel('u-plus');
 
 plot(yp,up,'ro','linewidth',1.00,'displayname','uplus');
-
-legend('location','northwest');
 %------------------------------
 end
 %=============================================================
@@ -81,6 +100,7 @@ if(1)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='linear'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
@@ -97,8 +117,6 @@ plot(yp,epK/Tm,'b-','linewidth',2.00,'displayname','dissipation TKE');
 plot(yp,vdK/Tm,'k-','linewidth',2.00,'displayname','visc diffusion TKE');
 plot(yp,tkK/Tm,'-' ,'linewidth',2.00,'displayname',['TKE=0.5<u_j',c,'u_j',c,'>']);
 plot(yp,imK/Tm,'-' ,'linewidth',2.00,'displayname','imbalance TKE');
-
-legend('location','northeast');
 %------------------------------
 end
 %=============================================================
@@ -106,6 +124,7 @@ if(0)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='linear'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
@@ -122,8 +141,6 @@ plot(yp,ep(:,1)/Tm,'b-','linewidth',2.00,'displayname','dissipation uu');
 plot(yp,vd(:,1)/Tm,'k-','linewidth',2.00,'displayname','visc diffusion uu');
 plot(yp,tk(:,1)/Tm,'-' ,'linewidth',2.00,'displayname',['<vx',c,'vx',c,'>']);
 plot(yp,im(:,1)/Tm,'-' ,'linewidth',2.00,'displayname','imbalance uu');
-
-legend('location','northeast');
 %------------------------------
 end
 %=============================================================
@@ -131,6 +148,7 @@ if(0)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='linear'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
@@ -147,8 +165,6 @@ plot(yp,ep(:,2)/Tm,'b-','linewidth',2.00,'displayname','dissipation vv');
 plot(yp,vd(:,2)/Tm,'k-','linewidth',2.00,'displayname','visc diffusion vv');
 plot(yp,tk(:,2)/Tm,'-' ,'linewidth',2.00,'displayname',['<vy',c,'vy',c,'>']);
 plot(yp,im(:,2)/Tm,'-' ,'linewidth',2.00,'displayname','imbalance vv');
-
-legend('location','northeast');
 %------------------------------
 end
 %=============================================================
@@ -156,6 +172,7 @@ if(0)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='linear'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
@@ -172,15 +189,14 @@ plot(yp,ep(:,3)/Tm,'b-','linewidth',2.00,'displayname','dissipation ww');
 plot(yp,vd(:,3)/Tm,'k-','linewidth',2.00,'displayname','visc diffusion ww');
 plot(yp,tk(:,3)/Tm,'-' ,'linewidth',2.00,'displayname',['<vz',c,'vz',c,'>']);
 plot(yp,im(:,3)/Tm,'-' ,'linewidth',2.00,'displayname','imbalance ww');
-
-legend('location','northeast');
 %------------------------------
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='linear'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
@@ -197,8 +213,6 @@ ylabel(['<u_i',c,'u_j',c,'>/u_\tau^2']);
 %plot(yp,vdK/Tm,'k-','linewidth',2.00,'displayname','visc diffusion ');
 plot(yp,tkK/Tm,'-' ,'linewidth',2.00,'displayname','TKE            ');
 plot(yp,imK/Tm,'-' ,'linewidth',2.00,'displayname','imbalance      ');
-
-legend('location','northeast');
 %------------------------------
 end
 %=============================================================
@@ -206,6 +220,7 @@ if(1)
 %------------------------------
 figure; fig=gcf; ax=gca; ax.FontSize=14;
 ax.XScale='linear'; ax.YScale='linear';
+lgd=legend('location','southeast');lgd.FontSize=10;
 hold on; grid on; axis square;
 
 title([casename,' ',miscstr,', atime:',num2str(at),'s, Re_\tau: ',num2str(Re_tau)],'fontsize',14)
@@ -216,8 +231,6 @@ plot(yp,tk(:,1)/Tm,'-' ,'linewidth',2.00,'displayname',['<vx',c,'vx',c,'>']);
 plot(yp,tk(:,2)/Tm,'-' ,'linewidth',2.00,'displayname',['<vy',c,'vy',c,'>']);
 plot(yp,tk(:,3)/Tm,'-' ,'linewidth',2.00,'displayname',['<vz',c,'vz',c,'>']);
 plot(yp,tkK    /Tm,'-' ,'linewidth',3.00,'displayname',['TKE=0.5<u_j',c,'u_j',c,'>']);
-
-legend('location','northeast');
 %------------------------------
 end
 %=============================================================
