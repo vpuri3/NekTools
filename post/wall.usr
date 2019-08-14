@@ -88,6 +88,10 @@ c
           call load_budgets_incomp(readstats)
       endif
 
+      call sample(vx,vy,vz,pr,t,'ins',
+     $           'vx','vy','vz','pr','garbage')
+
+
       do i=1,ntot
         vx(i,1,1,1) = uavg(i,1,1,1)
         vy(i,1,1,1) = vavg(i,1,1,1)
