@@ -144,51 +144,58 @@ div=reshape(div,[ny,nx]);
 %=============================================================
 % geometry
 %=============================================================
+% offsettign x
+x=x-floor(min(min(x))); % x \in [0,1]
+
 % case specifics
+d=2.54;
+l=20*d;
+f=5;
 if(strcmp(casename,'smoothWavyWall'))
 	lx1=8;
-	nelx=16; % ==nelx/XLEN
+	nelx=64;
 	nely=16;
 
 	d2=0;
 elseif(strcmp(casename,'roughWavyWall'))
 	lx1=8;
-	nelx=32; % ==nelx/XLEN
+	nelx=128;
 	nely=32;
 
 	d2=0.4*d;
 end
+xlen=4;
 
 % mesh
-%xmesh=sem1dmesh(lx1,nelx,0) % \in [0,1]
-%ymesh=sem1dmesh(lx1,nely,1)
-%nxmesh=length(xmesh);
-%nymesh=length(ymesh);
+xmesh=sem1dmesh(lx1,nelx,0)*xlen; % \in [0,1]
+ymesh=sem1dmesh(lx1,nely,1);
+nxmesh=length(xmesh);
+nymesh=length(ymesh);
+xmesh=ones(nymesh,1)*xmesh';
+ymesh=ymesh*ones(1,nxmesh);
 
-%xmesh=ones(nymesh,1)*xmesh';
-%
-
-% offsettign x
-x = x - floor(min(min(x)));
 % bottom wall
-x0=linspace(min(min(x)),max(max(x)),1e3);
-%x0=xmesh;
-d=2.54;
-l=20*d;
-f=5;
-x0=x0*l;
-y0=   d *cos(2*pi*x0/l); % bottom wall
-ys=y0;
-y0=y0+d2*cos(2*pi*x0/l*f);
+xw=xmesh(1,:);
+xw=xw*l;
+yw=   d *cos(2*pi*xw/l);
+ys=yw; % sww just for reference
+yw=yw+d2*cos(2*pi*xw/l*f);
 H =l+d;
 %H=l+d+d2; % should be but isn't
 sx=1/l;
-x0=x0*sx;
+xw=xw*sx;
 sy=H/(H+d+d2);
-%sy=(l+d+d2)/(l+d+d2); % should be but isn't
-y0=(y0+d+d2)*sy*sx;
+H =H*sx;
+yw=(yw+d+d2)*sy*sx;
 ys=(ys+d+d2)*sy*sx; % smooth wall just for reference
+
+% zeta
 ze=(y-y(1,:))./(H-y(1,:)); % == ze/H
+
+% deform mesh
+ymesh=(1-yw/H).*ymesh+yw;
+zemesh=(ymesh-ymesh(1,:))./(H-ymesh(1,:)); % == ze/H
+
 %=============================================================
 % plotting
 cname='rww';
@@ -199,8 +206,8 @@ end
 c = char(39);
 if(nx>1) % plot vector fields
 %=============================================================
-if(0) % mesh
-[xmesh,ymesh] = meshgrid(0:0.05:1);
+if(1) % mesh
+%[xmesh,ymesh] = meshgrid(0:0.05:1);
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -208,14 +215,15 @@ hold on;grid on;
 % title
 title([casename,' Mesh'],'fontsize',14);
 % pos
-daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+daspect([1,1,1]);set(fig,'position',[0,0,1000,250])
 % ax
-xlabel('x/\lambda_1');
+xlabel('x');
 ylabel('y');
 xlim([min(min(xmesh)),max(max(xmesh))]);
 ylim([min(min(ymesh)),max(max(ymesh))]);
 
 mesh(xmesh,ymesh,0*xmesh)
+%mesh(xmesh,zemesh,0*xmesh)
 % color
 colormap([0,0,0])
 %------------------------------
@@ -223,8 +231,8 @@ figname=[cname,'-','mesh'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % quiver plot
-%------------------------------
+if(1) % quiver plot
+%
 Ix=1:10:nx;
 Iy=1:10:ny;
 xx=x(Iy,Ix);
@@ -239,7 +247,7 @@ xx=[xx,xx(:,2)];
 yy=[yy,y(end,1)*ones(sx,1)+5e-3];
 uu=[uu,nan*ones(sx,1)];uu(end,end)=1.0;
 vv=[vv,nan*ones(sx,1)];vv(end,end)=0.0;
-%
+%------------------------------
 figure;
 fig=gcf;ax=gca;
 hold on;grid on; % title
@@ -257,8 +265,8 @@ lgd=legend('location','southeast');lgd.FontSize=14;
 
 quiver(xx,yy,uu,vv,'k','displayname','Velocity')
 text(xx(end,end),yy(end,end),'U','verticalalignment','bottom','fontsize',14);
-plot(x0,y0,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
-%plot(x0,ys,'k--','linewidth',1.00,'displayname','Smooth Wall');
+plot(xw,yw,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
+%plot(xw,yw,'k--','linewidth',1.00,'displayname','Smooth Wall');
 %------------------------------
 figname=[cname,'-','vel'];
 saveas(fig,figname,'jpeg');
