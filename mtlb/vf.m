@@ -1,8 +1,9 @@
 function vf(nx,ny,casename,miscstr,visc)
+
 % nx --> number of x-points
-% N1 --> number of y-points per x-point
+% ny --> number of y-points per x-point
 %
-% example: vf(100,100,'smoothWavyWall','',1/4780) 
+% example: vf(200,200,'smoothWavyWall','',1/4780) 
 %
 
 %=============================================================
@@ -19,7 +20,7 @@ at=find(~cellfun(@isempty,strfind(logfile,'atime:')));
 at=logfile(at(end));
 at=cell2mat(at);
 at=str2num(at(7:end));
-% Tmavg - shear magnitude
+% Tmavg - shear force magnitude
 Tmavg=find(~cellfun(@isempty,strfind(logfile,'Tmavg:')));
 Tmavg=logfile(Tmavg(end));
 Tmavg=cell2mat(Tmavg);
@@ -37,6 +38,10 @@ area=str2num(area(6:end));
 
 visc;dsty=1;
 ufavg=sqrt(Tmavg/dsty);
+
+['Tmavg=',num2str(Tmavg)];
+['area=' ,num2str(area) ];
+['ufavg=',num2str(ufavg)];
 
 u0='ave.dat';
 u1='upl.dat';
@@ -94,47 +99,53 @@ div=dlmread(t3,'',[N0 3 N1 3]);
 %=============================================================
 % reshape
 %=============================================================
-x=reshape(x,[nx,ny]);
-y=reshape(y,[nx,ny]);
-z=reshape(z,[nx,ny]);
-u=reshape(u,[nx,ny]);
-v=reshape(v,[nx,ny]);
-w=reshape(w,[nx,ny]);
-p=reshape(p,[nx,ny]);
+%--------------------
+budgets = [cnK;prK;ptK;tdK;vdK;epK];
+budgetsmin = min(budgets);
+budgetsmax = max(budgets);
+cb=0;
+%--------------------
+x=reshape(x,[ny,nx]);
+y=reshape(y,[ny,nx]);
+z=reshape(z,[ny,nx]);
+u=reshape(u,[ny,nx]);
+v=reshape(v,[ny,nx]);
+w=reshape(w,[ny,nx]);
+p=reshape(p,[ny,nx]);
 
-up=reshape(up,[nx,ny]);
-yp=reshape(yp,[nx,ny]);
-Tm=reshape(Tm,[nx,ny]);
+up=reshape(up,[ny,nx]);
+yp=reshape(yp,[ny,nx]);
+Tm=reshape(Tm,[ny,nx]);
 
-uf=reshape(uf,[nx,ny]);
+uf=reshape(uf,[ny,nx]);
 
-cn=reshape(cn,[nx,ny,3]);
-pr=reshape(pr,[nx,ny,3]);
-pt=reshape(pt,[nx,ny,3]);
-pd=reshape(pd,[nx,ny,3]);
-ps=reshape(ps,[nx,ny,3]);
-td=reshape(td,[nx,ny,3]);
-ep=reshape(ep,[nx,ny,3]);
-vd=reshape(vd,[nx,ny,3]);
-tk=reshape(tk,[nx,ny,3]);
-im=reshape(im,[nx,ny,3]);
+cn=reshape(cn,[ny,nx,3]);
+pr=reshape(pr,[ny,nx,3]);
+pt=reshape(pt,[ny,nx,3]);
+pd=reshape(pd,[ny,nx,3]);
+ps=reshape(ps,[ny,nx,3]);
+td=reshape(td,[ny,nx,3]);
+ep=reshape(ep,[ny,nx,3]);
+vd=reshape(vd,[ny,nx,3]);
+tk=reshape(tk,[ny,nx,3]);
+im=reshape(im,[ny,nx,3]);
 
-cnK=reshape(cnK,[nx,ny]);
-prK=reshape(prK,[nx,ny]);
-ptK=reshape(ptK,[nx,ny]);
-pdK=reshape(pdK,[nx,ny]);
-psK=reshape(psK,[nx,ny]);
-tdK=reshape(tdK,[nx,ny]);
-epK=reshape(epK,[nx,ny]);
-vdK=reshape(vdK,[nx,ny]);
-tkK=reshape(tkK,[nx,ny]);
-imK=reshape(imK,[nx,ny]);
-div=reshape(div,[nx,ny]);
+cnK=reshape(cnK,[ny,nx]);
+prK=reshape(prK,[ny,nx]);
+ptK=reshape(ptK,[ny,nx]);
+pdK=reshape(pdK,[ny,nx]);
+psK=reshape(psK,[ny,nx]);
+tdK=reshape(tdK,[ny,nx]);
+epK=reshape(epK,[ny,nx]);
+vdK=reshape(vdK,[ny,nx]);
+tkK=reshape(tkK,[ny,nx]);
+imK=reshape(imK,[ny,nx]);
+div=reshape(div,[ny,nx]);
 %=============================================================
 % geometry
 %=============================================================
 % offsettign x
-x = x - floor(min(x'))';
+x = x - floor(min(min(x)));
 % bottom wall
 x0 = linspace(min(min(x)),max(max(x)),1e3);
 d =2.54;
@@ -148,42 +159,48 @@ x0=x0*l;
 y0=   d *cos(2*pi*x0/l); % bottom wall
 ys=y0;
 y0=y0+d2*cos(2*pi*x0/l*f);
+H =l+d;
+%H=l+d+d2; % should be but isn't
 sx=1/l;
 x0=x0*sx;
-sy=(l+d)/(l+2*d+d2);
+sy=H/(H+d+d2);
 %sy=(l+d+d2)/(l+d+d2); % should be but isn't
 y0=(y0+d+d2)*sy*sx;
-ys=(ys+d+d2)*sy*sx;
+ys=(ys+d+d2)*sy*sx; % smooth wall just for reference
+ze=(y-y(1,:))./(H-y(1,:)); % == ze/H
 %=============================================================
 % plotting
+cname='rww';
+if(strcmp(casename,'smoothWavyWall'))
+	cname='sww';
+end
 %=============================================================
 c = char(39);
 if(nx>1) % plot vector fields
 %=============================================================
-if(1)
+if(1) % quiver plot
 %------------------------------
-Ix=1:5:nx;
-Iy=1:5:ny;
-xx=x(Ix,Iy);
-yy=y(Ix,Iy);
-uu=u(Ix,Iy);
-vv=v(Ix,Iy);
+Ix=1:10:nx;
+Iy=1:10:ny;
+xx=x(Iy,Ix);
+yy=y(Iy,Ix);
+uu=u(Iy,Ix);
+vv=v(Iy,Ix);
 
 % reference quiver
-sx=length(Ix);
 sy=length(Iy);
+sx=length(Ix);
 xx=[xx,xx(:,2)];
-yy=[yy,y(end,1)*ones(sx,1)+0.01];
+yy=[yy,y(end,1)*ones(sx,1)+5e-3];
 uu=[uu,nan*ones(sx,1)];uu(end,end)=1.0;
 vv=[vv,nan*ones(sx,1)];vv(end,end)=0.0;
-
+%
 figure;
 fig=gcf;ax=gca;
-hold on;grid on;
-% title
+hold on;grid on; % title
 title([casename,' ','atime:',num2str(at),'s'],'fontsize',14)
 % pos
-daspect([2,1,1]);set(fig,'position',[0,0,1000,500])
+daspect([1,1,1]);set(fig,'position',[0,0,1e3,500])
 % ax
 ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
 xlim([min(min(x)),max(max(x))]);
@@ -191,13 +208,83 @@ ylim([min(min(y)),max(max(y))+0.02]);
 xlabel('x/\lambda_1');
 ylabel('y');
 % lgd
-lgd=legend('location','southeast');lgd.FontSize=12;
+lgd=legend('location','southeast');lgd.FontSize=14;
 
 quiver(xx,yy,uu,vv,'k','displayname','Velocity')
-text(xx(end,end),yy(end,end),'U','verticalalignment','bottom','fontsize',12);
+text(xx(end,end),yy(end,end),'U','verticalalignment','bottom','fontsize',14);
 plot(x0,y0,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
 %plot(x0,ys,'k--','linewidth',1.00,'displayname','Smooth Wall');
 %------------------------------
+figname=[cname,'-','vel'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1) % quiver plot zoomed in
+%------------------------------
+I=find(y>0.20);
+xx=x;yy=y;uu=u;vv=v;
+xx(I)=0;yy(I)=0;uu(I)=0;vv(I)=0;
+Ix=1:10:nx;
+Iy=1:10:ny;
+xx=xx(Iy,Ix);
+yy=yy(Iy,Ix);
+uu=uu(Iy,Ix);
+vv=vv(Iy,Ix);
+
+% reference quiver
+%sy=length(Iy);
+%sx=length(Ix);
+%xx=[xx,xx(:,2)];
+%yy=[yy,y(end,1)*ones(sx,1)+5e-3];
+%uu=[uu,nan*ones(sx,1)];uu(end,end)=1.0;
+%vv=[vv,nan*ones(sx,1)];vv(end,end)=0.0;
+%
+figure;
+fig=gcf;ax=gca;
+hold on;grid on; % title
+title([casename,' ','atime:',num2str(at),'s'],'fontsize',14)
+% pos
+daspect([2,1,1]);set(fig,'position',[0,0,1e3,500])
+% ax
+ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
+xlim([min(min(xx)),max(max(xx))]);
+ylim([min(min(yy)),max(max(yy))-0.02]);
+xlabel('x/\lambda_1');
+ylabel('y');
+% lgd
+lgd=legend('location','southeast');lgd.FontSize=14;
+
+quiver(xx,yy,uu,vv,'k','displayname','Velocity')
+text(xx(end,end),yy(end,end),'U','verticalalignment','bottom','fontsize',14);
+plot(x0,y0,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
+%plot(x0,ys,'k--','linewidth',1.00,'displayname','Smooth Wall');
+%------------------------------
+figname=[cname,'-','vel-zoom'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1)
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' Surface Stress Profiles ','atime:',num2str(at),'s'],'fontsize',14)
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
+xlabel('x/\lambda_1');
+ylabel('(p-p_{ref})/\rhoU^2, \tau/\rhoU^2');
+%lgd
+lgd=legend('location','northwest');lgd.FontSize=14;
+
+plot(x(1,:),p(1,:)-min(p(1,:)),'r-','linewidth',2.00,'displayname','Surface Pressure');
+plot(x(1,:),Tm(1,:),'b-','linewidth',2.00,'displayname','Shear Stress');
+plot(x0,y0-2*(d+d2)/l,'k--'  ,'linewidth',1.00,'displayname','Bottom Wall');
+%------------------------------
+figname=[cname,'-','stress'];
+saveas(fig,figname,'jpeg');
 end
 %=============================================================
 if(1)
@@ -208,18 +295,21 @@ hold on;grid on;
 % title
 title([casename,' TKE ','atime:',num2str(at),'s'],'fontsize',14);
 % pos
-daspect([2,1,1]);set(fig,'position',[0,0,1000,500])
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
 xlabel('x/\lambda_1');
 ylabel('y');
 xlim([min(min(x)),max(max(x))]);
 ylim([min(min(y)),max(max(y))]);
 
-pcolor(x,y,tkK/ufavg);
+pcolor(x,y,tkK);
 % color
-shading interp;colormap gray;
-hcb=colorbar;title(hcb,['<v',c,'_iv',c,'_j>'],'fontsize',12);
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
 %------------------------------
+figname=[cname,'-','tke'];
+saveas(fig,figname,'jpeg');
 end
 %=============================================================
 if(1)
@@ -228,48 +318,241 @@ figure;
 fig=gcf;ax=gca;
 hold on;grid on;
 % title
-title([casename,' TKE Production','atime:',num2str(at),'s'],'fontsize',14);
+title([casename,' TKE Convection',' atime:',num2str(at),'s'],'fontsize',14);
 % pos
-daspect([2,1,1]);set(fig,'position',[0,0,1000,500])
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
 xlabel('x/\lambda_1');
 ylabel('y');
 xlim([min(min(x)),max(max(x))]);
 ylim([min(min(y)),max(max(y))]);
 
-pcolor(x,y,prK/ufavg);
+pcolor(x,y,cnK);
 % color
-shading interp;colormap gray;
-hcb=colorbar;title(hcb,['<v',c,'_iv',c,'_j>'],'fontsize',12);
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
 %------------------------------
+figname=[cname,'-','tke-cn'];
+saveas(fig,figname,'jpeg');
 end
+%=============================================================
+if(1)
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Production',' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(x)),max(max(x))]);
+ylim([min(min(y)),max(max(y))]);
+
+pcolor(x,y,prK);
+% color
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
+%------------------------------
+figname=[cname,'-','tke-pr'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1)
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Turbulent Diffusion',' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(x)),max(max(x))]);
+ylim([min(min(y)),max(max(y))]);
+
+pcolor(x,y,tdK);
+% color
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
+%------------------------------
+figname=[cname,'-','tke-td'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1)
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Pressure Transport',' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(x)),max(max(x))]);
+ylim([min(min(y)),max(max(y))]);
+
+pcolor(x,y,ptK);
+% color
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
+%------------------------------
+figname=[cname,'-','tke-pt'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1)
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Viscous Diffusion',' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(x)),max(max(x))]);
+ylim([min(min(y)),max(max(y))]);
+
+pcolor(x,y,vdK);
+% color
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
+%------------------------------
+figname=[cname,'-','tke-vd'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1)
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Viscous Dissipation',' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(x)),max(max(x))]);
+ylim([min(min(y)),max(max(y))]);
+
+pcolor(x,y,epK);
+% color
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
+%------------------------------
+figname=[cname,'-','tke-ep'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1) % imbalance
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Imbalance',' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(x)),max(max(x))]);
+ylim([min(min(y)),max(max(y))]);
+
+pcolor(x,y,imK);
+% color
+shading interp;colormap jet;
+hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
+if(cb) caxis([budgetsmin,budgetsmax]);end;
+%------------------------------
+figname=[cname,'-','tke-im'];
+saveas(fig,figname,'jpeg');
+end
+
+
+
 %=============================================================
 end % end plotting vector fields
 %=============================================================
 
 
 
-
-%=============================================================
 % line plots
-if(nx == 1)
-y0=y0(1);
-eta=(y-y0)/(1.05-y0);
+%=============================================================
+if(1) % peak
 %------------------------------
-figure; fig=gcf; ax=gca; ax.FontSize=14;
-ax.XScale='linear'; ax.YScale='linear';
-lgd=legend('location','southeast');lgd.FontSize=10;
-hold on; grid on; axis square;
+ix=floor(0.0*nx)+1;
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Budgets at x/\lambda=',num2str(x(1,ix)),' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+%daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('\zeta/H');
+ylabel('\eta_{ij}/U^2');
+%lgd
+lgd=legend('location','southeast');lgd.FontSize=14;
 
-title([casename,' Reynolds Stresses ','atime:',num2str(at),'s'],'fontsize',14);
-xlabel(['<u',c,'u',c,'>/U_m^2']);
-ylabel('\eta/H');
-ylim([0,1]);
-plot(tk(:,:,1)/ufavg,eta,'linewidth',2.00,'DisplayName',['<u',c,'u',c,'>'])
-plot(tk(:,:,2)/ufavg,eta,'linewidth',2.00,'DisplayName',['<v',c,'v',c,'>'])
-plot(tk(:,:,3)/ufavg,eta,'linewidth',2.00,'DisplayName',['<w',c,'w',c,'>'])
-plot(tkK      /ufavg,eta,'linewidth',2.00,'DisplayName',['TKE=0.5<u_j',c,'u_j',c,'>'])
+plot(ze(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
+plot(ze(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
+plot(ze(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
+plot(ze(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
+plot(ze(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
+plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
+plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
+plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
 %------------------------------
+figname=[cname,'-','tke-budgets-peak'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(1) % valley
+%------------------------------
+ix=floor(0.5*nx)+1;
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Budgets at x/\lambda=',num2str(x(1,ix)),' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+%daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('\zeta/H');
+ylabel('\eta_{ij}/U^2');
+%lgd
+lgd=legend('location','southeast');lgd.FontSize=14;
+
+plot(ze(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
+plot(ze(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
+plot(ze(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
+plot(ze(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
+plot(ze(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
+plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
+plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
+plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+%------------------------------
+figname=[cname,'-','tke-budgets-valley'];
+saveas(fig,figname,'jpeg');
 end
 %=============================================================
 end
