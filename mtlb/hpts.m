@@ -9,9 +9,9 @@
 
 %-----------------------------------------------------%
 % points
-nx=1; % nx=number of x-points
-ny=1000; % ny=number of y points per x-location
-h=1.05; % height to go up to in Y
+nx=200; % nx=number of x-points
+ny=200; % ny=number of y points per x-location
+h=0.40; % height to go up to in Y
 casename='smoothWavyWall';
 %-----------------------------------------------------%
 % geometry

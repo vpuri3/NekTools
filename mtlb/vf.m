@@ -144,17 +144,38 @@ div=reshape(div,[ny,nx]);
 %=============================================================
 % geometry
 %=============================================================
+% case specifics
+if(strcmp(casename,'smoothWavyWall'))
+	lx1=8;
+	nelx=16; % ==nelx/XLEN
+	nely=16;
+
+	d2=0;
+elseif(strcmp(casename,'roughWavyWall'))
+	lx1=8;
+	nelx=32; % ==nelx/XLEN
+	nely=32;
+
+	d2=0.4*d;
+end
+
+% mesh
+%xmesh=sem1dmesh(lx1,nelx,0) % \in [0,1]
+%ymesh=sem1dmesh(lx1,nely,1)
+%nxmesh=length(xmesh);
+%nymesh=length(ymesh);
+
+%xmesh=ones(nymesh,1)*xmesh';
+%
+
 % offsettign x
 x = x - floor(min(min(x)));
 % bottom wall
-x0 = linspace(min(min(x)),max(max(x)),1e3);
-d =2.54;
-l =20*d;
-f =5;
-d2=0.4*d;
-if(strcmp(casename,'smoothWavyWall'))
-	d2=0;
-end
+x0=linspace(min(min(x)),max(max(x)),1e3);
+%x0=xmesh;
+d=2.54;
+l=20*d;
+f=5;
 x0=x0*l;
 y0=   d *cos(2*pi*x0/l); % bottom wall
 ys=y0;
@@ -178,7 +199,31 @@ end
 c = char(39);
 if(nx>1) % plot vector fields
 %=============================================================
-if(1) % quiver plot
+if(0) % mesh
+[xmesh,ymesh] = meshgrid(0:0.05:1);
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' Mesh'],'fontsize',14);
+% pos
+daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('x/\lambda_1');
+ylabel('y');
+xlim([min(min(xmesh)),max(max(xmesh))]);
+ylim([min(min(ymesh)),max(max(ymesh))]);
+
+mesh(xmesh,ymesh,0*xmesh)
+% color
+colormap([0,0,0])
+%------------------------------
+figname=[cname,'-','mesh'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(0) % quiver plot
 %------------------------------
 Ix=1:10:nx;
 Iy=1:10:ny;
@@ -219,7 +264,7 @@ figname=[cname,'-','vel'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % quiver plot zoomed in
+if(0) % quiver plot zoomed in
 %------------------------------
 I=find(y>0.20);
 xx=x;yy=y;uu=u;vv=v;
@@ -263,7 +308,7 @@ figname=[cname,'-','vel-zoom'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -287,7 +332,7 @@ figname=[cname,'-','stress'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -312,7 +357,7 @@ figname=[cname,'-','tke'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -337,7 +382,7 @@ figname=[cname,'-','tke-cn'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -362,7 +407,7 @@ figname=[cname,'-','tke-pr'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -387,7 +432,7 @@ figname=[cname,'-','tke-td'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -412,7 +457,7 @@ figname=[cname,'-','tke-pt'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -437,7 +482,7 @@ figname=[cname,'-','tke-vd'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1)
+if(0)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -462,7 +507,7 @@ figname=[cname,'-','tke-ep'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % imbalance
+if(0) % imbalance
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -497,7 +542,7 @@ end % end plotting vector fields
 
 % line plots
 %=============================================================
-if(1) % peak
+if(0) % crest
 %------------------------------
 ix=floor(0.0*nx)+1;
 figure;
@@ -522,11 +567,11 @@ plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
 plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
 plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
 %------------------------------
-figname=[cname,'-','tke-budgets-peak'];
+figname=[cname,'-','tke-budgets-crest'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % valley
+if(0) % trough
 %------------------------------
 ix=floor(0.5*nx)+1;
 figure;
@@ -551,7 +596,36 @@ plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
 plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
 plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
 %------------------------------
-figname=[cname,'-','tke-budgets-valley'];
+figname=[cname,'-','tke-budgets-trough'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(0) % reattachment point
+%------------------------------
+ix=floor(0.7*nx)+1;
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' TKE Budgets at x/\lambda=',num2str(x(1,ix)),' atime:',num2str(at),'s'],'fontsize',14);
+% pos
+%daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
+% ax
+xlabel('\zeta/H');
+ylabel('\eta_{ij}/U^2');
+%lgd
+lgd=legend('location','southeast');lgd.FontSize=14;
+
+plot(ze(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
+plot(ze(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
+plot(ze(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
+plot(ze(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
+plot(ze(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
+plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
+plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
+plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+%------------------------------
+figname=[cname,'-','tke-budgets-reattach'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
