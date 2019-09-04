@@ -6,22 +6,19 @@ function z = sem1dmesh(lx1,e,ifcheby)
 %
 
 [z0,w0]=zwgll(lx1-1);
-z0= 0.5*(z0+1);
+z0= 0.5*(z0+1);      % [0,1]
 
 % get element mesh
 if(ifcheby)
-	dtheta=(0:e')*pi/e;
+	dtheta=(0:e)'*pi/e;
 	ze=(1-cos(dtheta))*0.5;
 else
-	ze=0:1/e:1'; % size e+1
+	ze=(0:1/e:1)'; % element mesh (size e+1)
 end
 
-z=ze(1);
-for i=1:e
-	zelm=ze(i)+z0(2:end)*(ze(i+1)-ze(i));
-	z=[z;zelm];
-end
+z = kron(diff(ze),z0) + kron(ze(1:end-1),ones(lx1,1));
+z = unique(z);
 
-%figure;plot(z,z*0,'kx');gird on;
+%figure;plot(z,z*0,'kx');grid on;
 
 end
