@@ -3,7 +3,7 @@ function vf(nx,ny,casename,miscstr,visc)
 % nx --> number of x-points
 % ny --> number of y-points per x-point
 %
-% example: vf(200,200,'smoothWavyWall','',1/4780) 
+% example: vf(151,150,'smoothWavyWall','',1/4780) 
 %
 
 %=============================================================
@@ -141,32 +141,23 @@ vdK=reshape(vdK,[ny,nx]);
 tkK=reshape(tkK,[ny,nx]);
 imK=reshape(imK,[ny,nx]);
 div=reshape(div,[ny,nx]);
+
 %=============================================================
 % geometry
 %=============================================================
-% offsettign x
 x=x-floor(min(min(x))); % x \in [0,1]
 
-% case specifics
-d=2.54;
-l=20*d;
-f=5;
+xlen=4;
+lx1=8;
 if(strcmp(casename,'smoothWavyWall'))
-	lx1=8;
 	nelx=64;
 	nely=16;
-
-	d2=0;
 elseif(strcmp(casename,'roughWavyWall'))
-	lx1=8;
 	nelx=128;
 	nely=32;
-
-	d2=0.4*d;
 end
-xlen=4;
 
-% mesh
+% create mesh
 xmesh=sem1dmesh(lx1,nelx,0)*xlen; % \in [0,1]
 ymesh=sem1dmesh(lx1,nely,1);
 nxmesh=length(xmesh);
@@ -174,27 +165,7 @@ nymesh=length(ymesh);
 xmesh=ones(nymesh,1)*xmesh';
 ymesh=ymesh*ones(1,nxmesh);
 
-% bottom wall
-xw=xmesh(1,:);
-xw=xw*l;
-yw=   d *cos(2*pi*xw/l);
-ys=yw; % sww just for reference
-yw=yw+d2*cos(2*pi*xw/l*f);
-H =l+d;
-%H=l+d+d2; % should be but isn't
-sx=1/l;
-xw=xw*sx;
-sy=H/(H+d+d2);
-H =H*sx;
-yw=(yw+d+d2)*sy*sx;
-ys=(ys+d+d2)*sy*sx; % smooth wall just for reference
-
-% zeta
-ze=(y-y(1,:))./(H-y(1,:)); % == ze/H
-
-% deform mesh
-ymesh=(1-yw/H).*ymesh+yw;
-zemesh=(ymesh-ymesh(1,:))./(H-ymesh(1,:)); % == ze/H
+[xmesh,ymesh,xw,yw] = wavyWall(xmesh,ymesh,casename);
 
 %=============================================================
 % plotting
@@ -243,10 +214,12 @@ vv=v(Iy,Ix);
 % reference quiver
 sy=length(Iy);
 sx=length(Ix);
-xx=[xx,xx(:,2)];
-yy=[yy,y(end,1)*ones(sx,1)+5e-3];
-uu=[uu,nan*ones(sx,1)];uu(end,end)=1.0;
-vv=[vv,nan*ones(sx,1)];vv(end,end)=0.0;
+%xx=[xx,xx(:,2)];
+%yy=[yy,yy(end,1)*ones(sx,1)+5e-3];
+xx=[xx,nan*ones(sy,1)];xx(end,end)=xx(end,2);
+yy=[yy,nan*ones(sy,1)];yy(end,end)=y (end,1)+5e-3;
+uu=[uu,nan*ones(sy,1)];uu(end,end)=1.0;
+vv=[vv,nan*ones(sy,1)];vv(end,end)=0.0;
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -272,7 +245,7 @@ figname=[cname,'-','vel'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % quiver plot zoomed in
+if(1) % quiver plot zoomed in
 %------------------------------
 I=find(y>0.20);
 xx=x;yy=y;uu=u;vv=v;
@@ -309,14 +282,14 @@ lgd=legend('location','southeast');lgd.FontSize=14;
 
 quiver(xx,yy,uu,vv,'k','displayname','Velocity')
 text(xx(end,end),yy(end,end),'U','verticalalignment','bottom','fontsize',14);
-plot(x0,y0,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
-%plot(x0,ys,'k--','linewidth',1.00,'displayname','Smooth Wall');
+plot(xw,yw,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
+%plot(xw,ys,'k--','linewidth',1.00,'displayname','Smooth Wall');
 %------------------------------
 figname=[cname,'-','vel-zoom'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -327,6 +300,7 @@ title([casename,' Surface Stress Profiles ','atime:',num2str(at),'s'],'fontsize'
 daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
 ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
+xlim([0,1]);
 xlabel('x/\lambda_1');
 ylabel('(p-p_{ref})/\rhoU^2, \tau/\rhoU^2');
 %lgd
@@ -334,13 +308,13 @@ lgd=legend('location','northwest');lgd.FontSize=14;
 
 plot(x(1,:),p(1,:)-min(p(1,:)),'r-','linewidth',2.00,'displayname','Surface Pressure');
 plot(x(1,:),Tm(1,:),'b-','linewidth',2.00,'displayname','Shear Stress');
-plot(x0,y0-2*(d+d2)/l,'k--'  ,'linewidth',1.00,'displayname','Bottom Wall');
+plot(xw,yw-max(yw),'k--'  ,'linewidth',1.00,'displayname','Bottom Wall');
 %------------------------------
 figname=[cname,'-','stress'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -365,7 +339,7 @@ figname=[cname,'-','tke'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -390,7 +364,7 @@ figname=[cname,'-','tke-cn'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -415,11 +389,12 @@ figname=[cname,'-','tke-pr'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
 hold on;grid on;
+%clf(fig);colordef(fig,'black');
 % title
 title([casename,' TKE Turbulent Diffusion',' atime:',num2str(at),'s'],'fontsize',14);
 % pos
@@ -440,7 +415,7 @@ figname=[cname,'-','tke-td'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -465,7 +440,7 @@ figname=[cname,'-','tke-pt'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -490,7 +465,7 @@ figname=[cname,'-','tke-vd'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0)
+if(1)
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -515,7 +490,7 @@ figname=[cname,'-','tke-ep'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % imbalance
+if(1) % imbalance
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -533,6 +508,8 @@ ylim([min(min(y)),max(max(y))]);
 pcolor(x,y,imK);
 % color
 shading interp;colormap jet;
+% mesh
+%mesh(xmesh,ymesh,0*xmesh);
 hcb=colorbar;title(hcb,['\eta_{ij}/U^2'],'fontsize',14);
 if(cb) caxis([budgetsmin,budgetsmax]);end;
 %------------------------------
@@ -550,38 +527,41 @@ end % end plotting vector fields
 
 % line plots
 %=============================================================
-if(0) % crest
+if(1) % crest
 %------------------------------
 ix=floor(0.0*nx)+1;
+ixmesh=1+(0)*lx1;
 figure;
 fig=gcf;ax=gca;
 hold on;grid on;
 % title
 title([casename,' TKE Budgets at x/\lambda=',num2str(x(1,ix)),' atime:',num2str(at),'s'],'fontsize',14);
-% pos
-%daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
-xlabel('\zeta/H');
+xlim([-inf,0.15]);
+xlabel('y/H');
 ylabel('\eta_{ij}/U^2');
 %lgd
-lgd=legend('location','southeast');lgd.FontSize=14;
+lgd=legend('location','southeast');lgd.FontSize=12;
 
-plot(ze(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
-plot(ze(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
-plot(ze(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
-plot(ze(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
-plot(ze(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
-plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
-plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
-plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+plot(y(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
+plot(y(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
+plot(y(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
+plot(y(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
+plot(y(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
+plot(y(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
+plot(y(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
+plot(y(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+% mesh
+plot(ymesh(:,ixmesh),0*ymesh(:,ixmesh),'kx','linewidth',1.00,'DisplayName',['Mesh'])
 %------------------------------
 figname=[cname,'-','tke-budgets-crest'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % trough
+if(1) % trough
 %------------------------------
-ix=floor(0.5*nx)+1;
+ix=ceil(0.5*nx);
+ixmesh=1+(0.25*nelx*0.5)*(lx1-1);
 figure;
 fig=gcf;ax=gca;
 hold on;grid on;
@@ -590,27 +570,30 @@ title([casename,' TKE Budgets at x/\lambda=',num2str(x(1,ix)),' atime:',num2str(
 % pos
 %daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
-xlabel('\zeta/H');
+xlim([-inf,0.25]);
+xlabel('y/H');
 ylabel('\eta_{ij}/U^2');
 %lgd
-lgd=legend('location','southeast');lgd.FontSize=14;
+lgd=legend('location','southeast');lgd.FontSize=12;
 
-plot(ze(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
-plot(ze(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
-plot(ze(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
-plot(ze(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
-plot(ze(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
-plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
-plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
-plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+plot(y(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
+plot(y(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
+plot(y(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
+plot(y(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
+plot(y(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
+plot(y(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
+plot(y(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
+plot(y(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+% mesh
+plot(ymesh(:,ixmesh),0*ymesh(:,ixmesh),'kx','linewidth',1.00,'DisplayName',['Mesh'])
 %------------------------------
 figname=[cname,'-','tke-budgets-trough'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % reattachment point
+if(1) % reattachment point
 %------------------------------
-ix=floor(0.7*nx)+1;
+ix=floor(0.70*nx);
 figure;
 fig=gcf;ax=gca;
 hold on;grid on;
@@ -619,19 +602,20 @@ title([casename,' TKE Budgets at x/\lambda=',num2str(x(1,ix)),' atime:',num2str(
 % pos
 %daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
-xlabel('\zeta/H');
+xlim([-inf,0.4]);
+xlabel('y/H');
 ylabel('\eta_{ij}/U^2');
 %lgd
-lgd=legend('location','southeast');lgd.FontSize=14;
+lgd=legend('location','southeast');lgd.FontSize=12;
 
-plot(ze(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
-plot(ze(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
-plot(ze(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
-plot(ze(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
-plot(ze(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
-plot(ze(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
-plot(ze(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
-plot(ze(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+plot(y(:,ix),tkK(:,ix),'-','linewidth',2.00,'DisplayName',['TKE'])
+plot(y(:,ix),cnK(:,ix),'-','linewidth',2.00,'DisplayName',['Convection'])
+plot(y(:,ix),prK(:,ix),'-','linewidth',2.00,'DisplayName',['Production'])
+plot(y(:,ix),ptK(:,ix),'-','linewidth',2.00,'DisplayName',['Pres Transp'])
+plot(y(:,ix),tdK(:,ix),'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
+plot(y(:,ix),vdK(:,ix),'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
+plot(y(:,ix),epK(:,ix),'-','linewidth',2.00,'DisplayName',['Dissipation'])
+plot(y(:,ix),imK(:,ix),'k-','linewidth',1.00,'DisplayName',['Imbalance'])
 %------------------------------
 figname=[cname,'-','tke-budgets-reattach'];
 saveas(fig,figname,'jpeg');
