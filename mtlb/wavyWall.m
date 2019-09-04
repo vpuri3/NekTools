@@ -33,6 +33,4 @@ ys=(ys+d+d2)*sy*sx; % smooth wall just for reference
 
 yd=(1-yw/H).*y+yw;
 
-%figure;plot(xw,yw);
-
 end
