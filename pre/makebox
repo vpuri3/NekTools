@@ -3,20 +3,20 @@
 ###########
 # usage: ./makebox <case>
 #
-# script pased on by Pablo Brubeck
+# script pased down by Pablo Brubeck
 ###########
 
 case=$1
 
 core=$HOME"/Nek5000/bin/"
 sfx='box'
-box=$case'.'$sfx
+boxfile=$case'.'$sfx
 
 ## modify box
 #sed -i "/nelx,nely,nelz for Box/c\-"$2" -"$3" -"$4"   nelx,nely,nelz for Box" $case".box"
 
 $core'genbox' << DOF
-$box
+$boxfile
 DOF
 
 $core'reatore2' << DOF
