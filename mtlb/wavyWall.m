@@ -1,6 +1,6 @@
 %
 % Apply geometric deformation to vectors
-% x,y,z of size (ny,nx) and return
+% x,y of size (ny,nx) and return
 % deformed xd,yd of same size
 %
 function [xd,yd,xw,yw] = wavyWall(x,y,casename)
