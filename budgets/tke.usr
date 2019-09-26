@@ -27,9 +27,7 @@ c
       call rzero(tkk,ntot)
       call rzero(imb,ntot)
 c
-      call rzero(iL2,ntot)
       call rzero(div,ntot) ! <ui,i> == 0
-      call rzero(dL2,ntot)
 c
       do i=1,ntot
          cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
@@ -57,22 +55,18 @@ c
 c
          imb(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
      $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
-c
-         iL2(i,1,1,1)=    imb(i,1,1,1)*    imb(i,1,1,1)
-         div(i,1,1,1)= udxavg(i,1,1,1)+ vdyavg(i,1,1,1)+ wdzavg(i,1,1,1)
-         dL2(i,1,1,1)=    div(i,1,1,1)*    div(i,1,1,1)
       enddo
+
+      call comp_div(div,uavg,vavg,wavg)
 
       tkmax=glmax(tkk,ntot)
       call avg_3d(tkave,tkk)
 
       immax=glmax(imb,ntot)
       call avg_3d(imave,imb)
-      call avg_3d(im_L2,iL2)
-      im_L2 = sqrt(im_L2)
+      call comp_L2(im_L2,imb)
 
-      call avg_3d(divL2,dL2)
-      divL2 = sqrt(divL2)
+      call comp_L2(divL2,div)
 
       return
       end

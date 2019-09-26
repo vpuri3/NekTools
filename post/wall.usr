@@ -1023,6 +1023,27 @@ c-----------------------------------------------------------------------
 c AVERAGING ROUTINES
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
+      subroutine comp_L2(uL2,u)
+      include 'SIZE'
+      include 'TOTAL'
+
+      real uL2, u(1)
+
+      real u2(lx1*ly1*lz1*lelv)
+      integer nt
+
+      nt = lx1*ly1*lz1*nelv;
+
+      do i=1,nt
+        u2(i) = u(i) * u(i)
+      enddo
+
+      call avg_3d(uL2,u2)
+      uL2 = sqrt(uL2)
+
+      return
+      end
+c-----------------------------------------------------------------------
       subroutine avg_3d(ua,u)
       include 'SIZE'
       include 'TOTAL'
