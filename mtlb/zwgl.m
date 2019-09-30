@@ -15,7 +15,7 @@ a=-1; b=1;
 % the definite integral using sum(f.*w);
 %
 % Written by Greg von Winckel - 02/25/2004
-%N=N-1;
+N=N-1;
 N1=N+1; N2=N+2;
 
 xu=linspace(-1,1,N1)';

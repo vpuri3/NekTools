@@ -524,3 +524,74 @@ c
       return
       end
 c-----------------------------------------------------------------------
+      subroutine hom_budgets(idir)
+      include 'SIZE'
+      include 'TOTAL'
+      include 'BUDGETSINCOMP'
+
+      integer idir
+
+      integer ntot
+
+      if(nid.eq.0)write(6,*)'Homogenizing budgets in direction',idir
+
+      ntot = lx1*ly1*lz1*nelv
+
+      if(idir.eq.1) then
+        call rzero(udxavg,ntot)
+        call rzero(vdxavg,ntot)
+        call rzero(wdxavg,ntot)
+        call rzero(udxrms,ntot)
+        call rzero(vdxrms,ntot)
+        call rzero(wdxrms,ntot)
+        call rzero(dpdxavg,ntot)
+        call rzero(udpdxavg,ntot)
+        call rzero(vdpdxavg,ntot)
+        call rzero(wdpdxavg,ntot)
+        call rzero(uvdxms,ntot)
+        call rzero(uwdxms,ntot)
+        call rzero(vwdxms,ntot)
+        call rzero(pudxavg,ntot)
+        call rzero(pvdxavg,ntot)
+        call rzero(pwdxavg,ntot)
+      endif
+      if(idir.eq.2) then
+        call rzero(udyavg,ntot)
+        call rzero(vdyavg,ntot)
+        call rzero(wdyavg,ntot)
+        call rzero(udyrms,ntot)
+        call rzero(vdyrms,ntot)
+        call rzero(wdyrms,ntot)
+        call rzero(dpdyavg,ntot)
+        call rzero(udpdyavg,ntot)
+        call rzero(vdpdyavg,ntot)
+        call rzero(wdpdyavg,ntot)
+        call rzero(uvdyms,ntot)
+        call rzero(uwdyms,ntot)
+        call rzero(vwdyms,ntot)
+        call rzero(pudyavg,ntot)
+        call rzero(pvdyavg,ntot)
+        call rzero(pwdyavg,ntot)
+      endif
+      if(idir.eq.3) then
+        call rzero(udzavg,ntot)
+        call rzero(vdzavg,ntot)
+        call rzero(wdzavg,ntot)
+        call rzero(udzrms,ntot)
+        call rzero(vdzrms,ntot)
+        call rzero(wdzrms,ntot)
+        call rzero(dpdzavg,ntot)
+        call rzero(udpdzavg,ntot)
+        call rzero(vdpdzavg,ntot)
+        call rzero(wdpdzavg,ntot)
+        call rzero(uvdzms,ntot)
+        call rzero(uwdzms,ntot)
+        call rzero(vwdzms,ntot)
+        call rzero(pudzavg,ntot)
+        call rzero(pvdzavg,ntot)
+        call rzero(pwdzavg,ntot)
+      endif
+
+      return
+      end
+c-----------------------------------------------------------------------

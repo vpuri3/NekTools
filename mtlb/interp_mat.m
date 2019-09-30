@@ -1,4 +1,4 @@
-      function[J] =  interp_mat(xo,xi)
+      function[J] =  Interp_mat(xo,xi)
 %
 %     Compute the interpolation matrix from xi to xo
 %
