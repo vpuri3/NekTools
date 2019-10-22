@@ -196,7 +196,6 @@ xlim([min(min(xmesh)),max(max(xmesh))]);
 ylim([min(min(ymesh)),max(max(ymesh))]);
 
 mesh(xmesh,ymesh,0*xmesh)
-%mesh(xmesh,zemesh,0*xmesh)
 % color
 colormap([0,0,0])
 %------------------------------
