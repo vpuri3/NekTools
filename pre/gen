@@ -1,0 +1,6 @@
+#!/bin/bash
+# gen <case>
+
+echo -e "$1.box"   | genbox
+echo -e "box\n$1"  | reatore2
+echo -e "$1\n0.01" | genmap
