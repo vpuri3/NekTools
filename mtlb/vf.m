@@ -114,10 +114,13 @@ v=reshape(v,[ny,nx]);
 w=reshape(w,[ny,nx]);
 p=reshape(p,[ny,nx]);
 
+uvar=reshape(tk(:,1),[ny,nx]);
+vvar=reshape(tk(:,2),[ny,nx]);
+wvar=reshape(tk(:,3),[ny,nx]);
+
 up=reshape(up,[ny,nx]);
 yp=reshape(yp,[ny,nx]);
 Tm=reshape(Tm,[ny,nx]);
-
 uf=reshape(uf,[ny,nx]);
 
 cn=reshape(cn,[ny,nx,3]);
@@ -203,7 +206,7 @@ figname=[cname,'-','mesh'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % quiver plot
+if(0) % quiver plot
 %------------------------------
 Ix=1:5:nx;
 Iy=1:5:ny;
@@ -283,14 +286,14 @@ plot(xw,yw,'k','linewidth',1.00,'displayname','Bottom Wall');
 quiver(xq,yq,uq,vq,'k','displayname','Velocity')
 text(xq(end,end),yq(end,end),'U','verticalalignment','bottom','fontsize',14);
 % streamline
-p=streamline(x,y,u,v,strtx,strty,[1e-1,1e4]);
+streamline(x,y,u,v,strtx,strty,[1e-1,1e4]);
 plot(strtx,strty,'kx','linewidth',0.5)
 %------------------------------
 figname=[cname,'-','streamline'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % surface stresses
+if(0) % surface stresses
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -315,32 +318,48 @@ figname=[cname,'-','stress'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % RS Budgets
-%=============================================================
-splt(x,y,tkK,tk(:,:,1),tk(:,:,2),tk(:,:,3),Tmavg,visc,casename,cname,'Reynolds Stresses','rs');
-splt(x,y,cnK,cn(:,:,1),cn(:,:,2),cn(:,:,3),Tmavg,visc,casename,cname,'Convection','cn');
-splt(x,y,prK,pr(:,:,1),pr(:,:,2),pr(:,:,3),Tmavg,visc,casename,cname,'Production','pr');
-splt(x,y,ptK,pt(:,:,1),pt(:,:,2),pt(:,:,3),Tmavg,visc,casename,cname,'Pressure Transport','pt');
-splt(x,y,tdK,td(:,:,1),td(:,:,2),td(:,:,3),Tmavg,visc,casename,cname,'Turbulent Diffusion','td');
-splt(x,y,vdK,vd(:,:,1),vd(:,:,2),vd(:,:,3),Tmavg,visc,casename,cname,'Viscous Diffusion','vd');
-splt(x,y,epK,ep(:,:,1),ep(:,:,2),ep(:,:,3),Tmavg,visc,casename,cname,'Dissipation','ep');
-%=============================================================
-end
-%=============================================================
-if(0) % TKE Budgets
-%=============================================================
-cplt(x,y,xw,yw,tkK,Tmavg,visc,casename,cname,'TKE'                    ,'tkK');
-cplt(x,y,xw,yw,cnK,Tmavg,visc,casename,cname,'TKE Convection'         ,'cnK');
-cplt(x,y,xw,yw,prK,Tmavg,visc,casename,cname,'TKE Production'         ,'prK');
-cplt(x,y,xw,yw,ptK,Tmavg,visc,casename,cname,'TKE Pressure Transport' ,'ptK');
-cplt(x,y,xw,yw,tdK,Tmavg,visc,casename,cname,'TKE Turbulent Diffusion','tdK');
-cplt(x,y,xw,yw,vdK,Tmavg,visc,casename,cname,'TKE Viscous Diffusion'  ,'vdK');
-cplt(x,y,xw,yw,epK,Tmavg,visc,casename,cname,'TKE Dissipation'        ,'epK');
-cplt(x,y,xw,yw,imK,Tmavg,visc,casename,cname,'TKE Imbalance'          ,'imK');
-%=============================================================
-end
-%=============================================================
+if(1) % attachment/reattachment point
+%------------------------------
+figure;
+fig=gcf;ax=gca;
+hold on;grid on;
+% title
+title([casename,' Velocity off the all '],'fontsize',14)
+% pos
+daspect([1,2,1]);set(fig,'position',[0,0,1000,500])
+% ax
+ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
+xlim([0,1]);
+xlabel('$$x/\lambda_1$$');
+ylabel('$$ u $$');
+%lgd
+lgd=legend('location','northwest');lgd.FontSize=14;
 
+plot(x(2,:),u(2,:),'b-','linewidth',2.00,'displayname','$$u$$ right off the wall');
+plot(xw,yw-max(yw),'k--'  ,'linewidth',1.00,'displayname','Bottom Wall');
+%------------------------------
+figname=[cname,'-','separation'];
+saveas(fig,figname,'jpeg');
+end
+%=============================================================
+if(0) % RS, TK Budgets
+%=============================================================
+bplt(x,y,tkK,tk(:,:,1),tk(:,:,2),tk(:,:,3),Tmavg,visc,casename,cname,'Reynolds Stresses','rs');
+bplt(x,y,cnK,cn(:,:,1),cn(:,:,2),cn(:,:,3),Tmavg,visc,casename,cname,'Convection','cn');
+bplt(x,y,prK,pr(:,:,1),pr(:,:,2),pr(:,:,3),Tmavg,visc,casename,cname,'Production','pr');
+bplt(x,y,ptK,pt(:,:,1),pt(:,:,2),pt(:,:,3),Tmavg,visc,casename,cname,'Pressure Transport','pt');
+bplt(x,y,tdK,td(:,:,1),td(:,:,2),td(:,:,3),Tmavg,visc,casename,cname,'Turbulent Diffusion','td');
+bplt(x,y,vdK,vd(:,:,1),vd(:,:,2),vd(:,:,3),Tmavg,visc,casename,cname,'Viscous Diffusion','vd');
+bplt(x,y,epK,ep(:,:,1),ep(:,:,2),ep(:,:,3),Tmavg,visc,casename,cname,'Dissipation','ep');
+%=============================================================
+end
+%=============================================================
+if(0) % scalar fields
+%=============================================================
+cplt(x,y,xw,yw,uvar,1,casename,cname,'u Variance','uvar','$$U^2$$');
+cplt(x,y,xw,yw,vvar,1,casename,cname,'v Variance','vvar','$$U^2$$');
+%=============================================================
+end
 %=============================================================
 if(0) % line plots
 %------------------------------

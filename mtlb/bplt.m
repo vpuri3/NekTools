@@ -1,5 +1,5 @@
 %
-function splt(x,y,u,ux,uy,uz,Tm,visc,casename,cname,bgtname,bgt)
+function bplt(x,y,u,ux,uy,uz,Tm,visc,casename,cname,bgtname,bgt)
 
 if(strcmp(bgt,'rs'))
 	s = 1/(Tm);

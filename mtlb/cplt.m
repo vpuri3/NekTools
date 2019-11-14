@@ -1,13 +1,5 @@
 %
-function cplt(x,y,xw,yw,u,Tm,visc,casename,cname,bgtname,bgt)
-
-if(strcmp(bgt,'tkK'))
-	s = 1/(Tm);
-	ttl = ['$$\frac{\eta_{ij}}{u_\tau^2}$$'];
-else
-	s = 1/(Tm*Tm/visc);
-	ttl = ['$$\frac{\eta_{ij}}{u_\tau^4/\nu}$$'];
-end
+function cplt(x,y,xw,yw,u,s,casename,cname,qtyname,qty,units)
 
 %=============================================================
 figure;
@@ -15,7 +7,7 @@ fig=gcf;ax=gca;
 %------------------------------
 hold on;grid on;
 % title
-title([casename,' ',bgtname],'fontsize',14);
+title([casename,' ',qtyname],'fontsize',14);
 % pos
 daspect([1,1,1]);set(fig,'position',[0,0,1000,500])
 % ax
@@ -30,9 +22,9 @@ pcolor(x,y,u*s);
 % color
 shading interp;colormap jet;
 hcb=colorbar;
-title(hcb,ttl,'interpreter','latex','fontsize',14);
+title(hcb,units,'interpreter','latex','fontsize',14);
 %------------------------------
-figname=[cname,'-',bgt];
+figname=[cname,'-',qty];
 saveas(fig,figname,'jpeg');
 %=============================================================
 
