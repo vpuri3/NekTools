@@ -111,9 +111,8 @@ c
       if(nid.eq.0) then
         write(6,258)'atime:',atime
         write(6,258)'tkmax:',tkmax
-        write(6,258)'tkave:',tkave
+        write(6,258)'tk_L2:',tk_L2
         write(6,258)'immax:',immax
-        write(6,258)'imave:',imave
         write(6,258)'im_L2:',im_L2
         write(6,258)'divL2:',divL2
       endif
@@ -132,7 +131,6 @@ c       write(6,258)'atime:',atime
 c       write(6,258)'tkmax:',tkmax
 c       write(6,258)'tkave:',tkave
 c       write(6,258)'immax:',immax
-c       write(6,258)'imave:',imave
 c     endif
 
 ! comp wall shaer

@@ -1,6 +1,6 @@
 C     Turbulent Kinetic Energy for Incompressible Flow
 
-      real tkmax,tkave,immax,imave,im_L2,divL2
+      real tkmax,tk_L2,immax,im_L2,divL2
 
       real cnk(lx1,ly1,lz1,lelv) ! convection
      $    ,prk(lx1,ly1,lz1,lelv) ! proudction
@@ -15,6 +15,6 @@ C     Turbulent Kinetic Energy for Incompressible Flow
 c
      $    ,div(lx1,ly1,lz1,lelv) ! <u i,i> == 0
 
-      common / tkeincomp / tkmax,tkave,immax,imave,im_L2,divL2
+      common / tkeincomp / tkmax,tk_L2,immax,im_L2,divL2
      $ ,cnk,prk,ptk,pdk,psk,tdk,epk,vdk
      $ ,tkk,imb,div

@@ -60,86 +60,15 @@ c
       call comp_div(div,uavg,vavg,wavg)
 
       tkmax=glmax(tkk,ntot)
-      call avg_3d(tkave,tkk)
+      call comp_L2(tk_L2,tkk)
 
       immax=glmax(imb,ntot)
-      call avg_3d(imave,imb)
       call comp_L2(im_L2,imb)
 
       call comp_L2(divL2,div)
 
       return
       end
-c-----------------------------------------------------------------------
-      subroutine geom_avg_tke2(avgtyp,nelx,nely,nelz,ifld
-     $                        ,gs_line_hndl,idir_line
-     $                        ,gs_plnr_hndl,idir_plnr
-     $                        ,gs_geom_hndl,idir_geom)
-      include 'SIZE'
-      include 'TOTAL'
-      include 'TKEINCOMP'
-
-      integer avgtyp
-c
-      integer ntot
-
-      if(nid.eq.0)write(6,*)'in geom_avg_tke2(...)','avgtyp',avgtyp
-
-      ntot = lx1*ly1*lz1*nelv
-
-      call avg_tensor_wrapper(cnk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(prk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(ptk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(pdk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(psk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(tdk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(epk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(vdk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(tkk,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(imb,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-      call avg_tensor_wrapper(div,avgtyp,nelx,nely,nelz,ifld
-     $                       ,gs_line_hndl,idir_line
-     $                       ,gs_plnr_hndl,idir_plnr
-     $                       ,gs_geom_hndl,idir_geom)
-
-      call avg_3d(tkave,tkk)
-      call avg_3d(imave,imb)
-      tkmax = glmax(tkk,ntot)
-      immax = glmax(imb,ntot)
-
-      return
-      end
-
 c-----------------------------------------------------------------------
       subroutine geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
      $                       ,gs_line_hndl,idir_line
