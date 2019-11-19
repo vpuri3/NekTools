@@ -114,7 +114,6 @@ c
         write(6,258)'tk_L2:',tk_L2
         write(6,258)'immax:',immax
         write(6,258)'im_L2:',im_L2
-        write(6,258)'divL2:',divL2
       endif
 
  258  format(a6,1es15.8)
@@ -156,12 +155,12 @@ c     endif
       time = avtime
 
       if(ifsample) then
-      call sample(cnk,prk,ptk,pdk,div,'tk1',
+      call sample(cnk,prk,ptk,pdk,psk,'tk1',
      $           'conv','prod','pres_tr','pres_df','garbage')
       call sample(psk,tdk,epk,vdk,prk,'tk2',
      $           'pres_st','turb_df','diss','visc_df','garbage')
-      call sample(tkk,imb,div,prk,pdk,'tk3',
-     $           'tkk','imb','div','garbage','garbage')
+      call sample(tkk,imk,psk,prk,pdk,'tk3',
+     $           'tkk','imk','garbage','garbage','garbage')
       call sample(up,yp,Tma,ym1,ym1,'upl',
      $           'uplus','yplus','Wshr','trash','trash')
       endif
@@ -182,7 +181,7 @@ c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'avg')
 c     call outpost2(urms,vrms,wrms,pmrms,trms,ldimt,'rms')
 c     call outpost2(uvms,wums,vwms,pm1avg,tavg,1,'rm2')
       call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
-      call outpost2(tdk,epk,vdk,tkk,imb,1,'tk2')
+      call outpost2(tdk,epk,vdk,tkk,imk,1,'tk2')
 c
       ifxyo = iifxyo
       ifvo  = iifvo
