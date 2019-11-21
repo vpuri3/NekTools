@@ -37,7 +37,7 @@ area=str2num(area(6:end));
 %ufavg=cell2mat(ufavg);
 %ufavg=str2num(ufavg(7:end));
 
-visc;dsty=1;
+dsty=1;
 ufavg=sqrt(Tmavg/dsty);
 
 ['Tmavg=',num2str(Tmavg)];
@@ -190,7 +190,8 @@ hold on;grid on;
 % title
 title([casename,' Mesh'],'fontsize',14);
 % pos
-daspect([1,1,1]);set(fig,'position',[0,0,1000,250])
+daspect([1,1,1]);
+set(fig,'position',[585,1e3,1000,250])
 % ax
 ax.FontSize=14;
 xlabel('$$x$$');
@@ -206,10 +207,10 @@ figname=[cname,'-','mesh'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % quiver plot
+if(1) % quiver plot
 %------------------------------
-Ix=1:5:nx;
-Iy=1:5:ny;
+Ix=1:10:nx;
+Iy=1:10:ny;
 xq=x(Iy,Ix);
 yq=y(Iy,Ix);
 uq=u(Iy,Ix);
@@ -226,21 +227,22 @@ vq=[vq,nan*ones(sy,1)];vq(end,end)=0.0;
 figure;
 fig=gcf;ax=gca;
 hold on;grid on; % title
-title([casename,' '],'fontsize',14)
+title([casename,' Mean Flow Field'],'fontsize',14)
 % pos
-daspect([1,1,1]);set(fig,'position',[0,0,1e3,500])
+daspect([1,1,1]);
+set(fig,'position',[585,1e3,1000,500])
 % ax
 ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
 xlim([min(min(x)),max(max(x))]);
 ylim([min(min(y)),max(max(y))+0.02]);
-xlabel('$$x/\lambda_1$$');
+xlabel('$$x/\lambda$$');
 ylabel('$$y$$');
 % lgd
-lgd=legend('location','southeast');lgd.FontSize=14;
+%lgd=legend('location','southeast');lgd.FontSize=14;
 
 quiver(xq,yq,uq,vq,'k','linewidth',1,'displayname','Velocity')
 text(xq(end,end),yq(end,end),'U','verticalalignment','bottom','fontsize',14);
-plot(xw,yw,'k'  ,'linewidth',1.00,'displayname','Bottom Wall');
+plot(xw,yw,'k--','linewidth',1.50,'displayname','Bottom Wall');
 %------------------------------
 figname=[cname,'-','vel'];
 saveas(fig,figname,'jpeg');
@@ -272,16 +274,17 @@ fig=gcf;ax=gca;
 hold on;grid on;
 title([casename,' '],'fontsize',14)
 % pos
-daspect([1,1,1]);set(fig,'position',[0,0,1e3,500])
+daspect([1,1,1]);
+set(fig,'position',[585,1e3,1000,500])
 % ax
 ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
 xlim([min(min(x)),max(max(x))]);
 ylim([min(min(y)),max(max(y))+0.02]);
-xlabel('$$x/\lambda_1$$');
+xlabel('$$x/\lambda$$');
 ylabel('$$y$$');
 
 % wall
-plot(xw,yw,'k','linewidth',1.00,'displayname','Bottom Wall');
+plot(xw,yw,'k','linewidth',1.50,'displayname','Bottom Wall');
 % quiver
 quiver(xq,yq,uq,vq,'k','displayname','Velocity')
 text(xq(end,end),yq(end,end),'U','verticalalignment','bottom','fontsize',14);
@@ -293,7 +296,7 @@ figname=[cname,'-','streamline'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(0) % surface stresses
+if(1) % surface stresses
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -301,24 +304,24 @@ hold on;grid on;
 % title
 title([casename,' Surface Stress Profiles '],'fontsize',14)
 % pos
-daspect([1,2,1]);set(fig,'position',[0,0,1000,500])
+set(fig,'position',[585,1e3,1000,500])
 % ax
 ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
 xlim([0,1]);
-xlabel('$$x/\lambda_1$$');
-ylabel('$$\frac{p-p_\mathrm{ref}}{\frac{1}{2}\rho U^2}$$');
+xlabel('$$x/\lambda$$');
+ylabel('$$\frac{p-p_\mathrm{ref}}{\rho U^2}$$');
 %lgd
 lgd=legend('location','northwest');lgd.FontSize=14;
 
-plot(x(1,:),2*(p(1,:)-min(p(1,:))),'r-','linewidth',2.00,'displayname','Surface Pressure');
-plot(x(1,:),2*Tm(1,:),'b-','linewidth',2.00,'displayname','Shear Stress');
-plot(xw,yw-max(yw),'k--'  ,'linewidth',1.00,'displayname','Bottom Wall');
+plot(x(1,:),p(1,:)-min(p(1,:)),'r-','linewidth',1.50,'displayname','Surface Pressure');
+plot(x(1,:),Tm(1,:),'b-','linewidth',1.50,'displayname','Shear Stress');
+plot(xw,yw-max(yw),'k--'  ,'linewidth',1.50,'displayname','Bottom Wall');
 %------------------------------
 figname=[cname,'-','stress'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
-if(1) % attachment/reattachment point
+if(0) % attachment/reattachment point
 %------------------------------
 figure;
 fig=gcf;ax=gca;
@@ -326,48 +329,50 @@ hold on;grid on;
 % title
 title([casename,' Velocity off the all '],'fontsize',14)
 % pos
-daspect([1,2,1]);set(fig,'position',[0,0,1000,500])
+%daspect([1,2,1]);
+set(fig,'position',[585,1e3,1000,500])
 % ax
 ax.XScale='linear';ax.YScale='linear';ax.FontSize=14;
 xlim([0,1]);
-xlabel('$$x/\lambda_1$$');
+xlabel('$$x/\lambda$$');
 ylabel('$$ u $$');
 %lgd
 lgd=legend('location','northwest');lgd.FontSize=14;
 
-plot(x(2,:),u(2,:),'b-','linewidth',2.00,'displayname','$$u$$ right off the wall');
-plot(xw,yw-max(yw),'k--'  ,'linewidth',1.00,'displayname','Bottom Wall');
+plot(x(2,:),u(2,:),'b-','linewidth',1.50,'displayname','$$u$$ right off the wall');
+plot(xw,yw-max(yw),'k--'  ,'linewidth',1.50,'displayname','Bottom Wall');
 %------------------------------
 figname=[cname,'-','separation'];
 saveas(fig,figname,'jpeg');
 end
 %=============================================================
 if(0) % RS, TK Budgets
-%=============================================================
-bplt(x,y,tkK,tk(:,:,1),tk(:,:,2),tk(:,:,3),Tmavg,visc,casename,cname,'Reynolds Stresses','rs');
-bplt(x,y,cnK,cn(:,:,1),cn(:,:,2),cn(:,:,3),Tmavg,visc,casename,cname,'Convection','cn');
-bplt(x,y,prK,pr(:,:,1),pr(:,:,2),pr(:,:,3),Tmavg,visc,casename,cname,'Production','pr');
-bplt(x,y,ptK,pt(:,:,1),pt(:,:,2),pt(:,:,3),Tmavg,visc,casename,cname,'Pressure Transport','pt');
-bplt(x,y,tdK,td(:,:,1),td(:,:,2),td(:,:,3),Tmavg,visc,casename,cname,'Turbulent Diffusion','td');
-bplt(x,y,vdK,vd(:,:,1),vd(:,:,2),vd(:,:,3),Tmavg,visc,casename,cname,'Viscous Diffusion','vd');
-bplt(x,y,epK,ep(:,:,1),ep(:,:,2),ep(:,:,3),Tmavg,visc,casename,cname,'Dissipation','ep');
-%=============================================================
+%-------------------------------------------------------------
+bplt(x,y,tkK,tk(:,:,1),tk(:,:,2),tk(:,:,3),Tmavg,visc,cname,'Reynolds Stresses','rs');
+bplt(x,y,cnK,cn(:,:,1),cn(:,:,2),cn(:,:,3),Tmavg,visc,cname,'Convection','cn');
+bplt(x,y,prK,pr(:,:,1),pr(:,:,2),pr(:,:,3),Tmavg,visc,cname,'Production','pr');
+bplt(x,y,ptK,pt(:,:,1),pt(:,:,2),pt(:,:,3),Tmavg,visc,cname,'Pressure Transport','pt');
+bplt(x,y,tdK,td(:,:,1),td(:,:,2),td(:,:,3),Tmavg,visc,cname,'Turbulent Diffusion','td');
+bplt(x,y,vdK,vd(:,:,1),vd(:,:,2),vd(:,:,3),Tmavg,visc,cname,'Viscous Diffusion','vd');
+bplt(x,y,epK,ep(:,:,1),ep(:,:,2),ep(:,:,3),Tmavg,visc,cname,'Dissipation','ep');
+bplt(x,y,imK,im(:,:,1),im(:,:,2),im(:,:,3),Tmavg,visc,cname,'Imbalance','im');
+%-------------------------------------------------------------
 end
 %=============================================================
 if(0) % scalar fields
-%=============================================================
-cplt(x,y,xw,yw,uvar,1,casename,cname,'u Variance','uvar','$$U^2$$');
-cplt(x,y,xw,yw,vvar,1,casename,cname,'v Variance','vvar','$$U^2$$');
+%-------------------------------------------------------------
+cplt(x,y,xw,yw,uvar,1,cname,'Streamwise Velocity Variance','uvar','$$U^2$$');
 %=============================================================
 end
-%=============================================================
+%-------------------------------------------------------------
 if(0) % line plots
 %------------------------------
-
 ixx    =[1            ceil(0.5*nx)               ceil(0.7*nx)];
 ixxmesh=[(1+(0)*lx1) (1+(0.25*nelx*0.5)*(lx1-1)) 0           ];
 
-s = 1/Tmavg;
+% scale
+s = 1/Tmavg; % RS
+s = 1/(Tmavg*Tmavg/visc);
 
 for i=1:length(ixx)
 	ix    =ixx(i);
@@ -383,19 +388,18 @@ for i=1:length(ixx)
 	title([casename,' TKE Budgets at $$x/\lambda$$=',strx],'fontsize',14);
 	% ax
 	ax.FontSize=14;
-	xlabel('$$(y-y_w)/H$$');
-	ylabel('$$\frac{\eta_{ij}}{u_\tau^2}$$');
+	xlabel('$$\bar{y}/H$$');
+	ylabel('$$\frac{\dot{\eta_{ij}}}{u_\tau^4/\nu}$$');
 	%lgd
 	lgd=legend('location','southeast');lgd.FontSize=12;
 	
-	plot(ymw,tkK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['TKE'])
-	plot(ymw,cnK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['Convection'])
-	plot(ymw,prK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['Production'])
-	plot(ymw,ptK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['Pres Transp'])
-	plot(ymw,tdK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['Turbulent Diff'])
-	plot(ymw,vdK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['Viscous Diff'])
-	plot(ymw,epK(:,ix)*s,'-','linewidth',2.00,'DisplayName',['Dissipation'])
-	plot(ymw,imK(:,ix)*s,'k-','linewidth',1.00,'DisplayName',['Imbalance'])
+	plot(ymw,cnK(:,ix)*s,'-','linewidth' ,1.50,'DisplayName',['Convection'])
+	plot(ymw,prK(:,ix)*s,'-','linewidth' ,1.50,'DisplayName',['Production'])
+	plot(ymw,ptK(:,ix)*s,'-','linewidth' ,1.50,'DisplayName',['Pres Transp'])
+	plot(ymw,tdK(:,ix)*s,'-','linewidth' ,1.50,'DisplayName',['Turbulent Diff'])
+	plot(ymw,vdK(:,ix)*s,'-','linewidth' ,1.50,'DisplayName',['Viscous Diff'])
+	plot(ymw,epK(:,ix)*s,'-','linewidth' ,1.50,'DisplayName',['Dissipation'])
+	plot(ymw,imK(:,ix)*s,'k-','linewidth',1.50,'DisplayName',['Imbalance'])
 	% mesh
 	%plot(ymesh(:,ixmesh),0*ymesh(:,ixmesh),'kx','linewidth',1.00,'DisplayName',['Mesh'])
 	%------------------------------
@@ -405,3 +409,4 @@ end
 end
 %=============================================================
 end
+%=============================================================
