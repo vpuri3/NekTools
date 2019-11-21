@@ -1,0 +1,55 @@
+Jobid: 1887273
+qsub -n 128 --mode c64 -t 0:10:00 -o ./logfile -A PANDAVal ./nek5000
+Tue Jul 30 15:08:18 2019 -0500 (CDT) submitted with cwd set to: /gpfs/mira-fs0/projects/PANDAVal/vpuri/smoothWavyWall/p
+jobid 1887273 submitted from terminal /dev/pts/22
+Tue Jul 30 20:08:42 2019 +0000 (UTC) vpuri/1887273: Initiating boot at location CET-02440-13771-128.
+Tue Jul 30 20:09:13 2019 +0000 (UTC) 
+Tue Jul 30 20:09:13 2019 +0000 (UTC) Command: '/usr/bin/runjob' '--np' '8192' '--ranks-per-node' '64' '--cwd' '/gpfs/mira-fs0/projects/PANDAVal/vpuri/smoothWavyWall/p' '--block' 'CET-02440-13771-128' '--envs' 'COBALT_JOBID=1887273' '--envs' 'COBALT_STARTTIME=1564517300' '--envs' 'COBALT_ENDTIME=1564517900' '--verbose' '4' ':' '/gpfs/mira-fs0/projects/PANDAVal/vpuri/smoothWavyWall/p/./nek5000'
+Tue Jul 30 20:09:13 2019 +0000 (UTC) 
+Tue Jul 30 20:09:13 2019 +0000 (UTC) Environment:
+Tue Jul 30 20:09:13 2019 +0000 (UTC) LESSOPEN=|/usr/bin/lesspipe.sh %s
+Tue Jul 30 20:09:13 2019 +0000 (UTC) SSH_CLIENT=10.230.1.2 54494 22
+Tue Jul 30 20:09:13 2019 +0000 (UTC) CVS_RSH=ssh
+Tue Jul 30 20:09:13 2019 +0000 (UTC) LOGNAME=root
+Tue Jul 30 20:09:13 2019 +0000 (UTC) USER=root
+Tue Jul 30 20:09:13 2019 +0000 (UTC) HOME=/root
+Tue Jul 30 20:09:13 2019 +0000 (UTC) PATH=/usr/lib64/qt-3.3/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/bgsys/drivers/ppcfloor/bin:/bgsys/drivers/ppcfloor/sbin:/usr/lpp/mmfs/bin:/usr/lpp/mmfs/bin:/root/bin:/dbhome/db2cat/sqllib/bin:/dbhome/db2cat/sqllib/adm:/dbhome/db2cat/sqllib/misc
+Tue Jul 30 20:09:13 2019 +0000 (UTC) ARCH=
+Tue Jul 30 20:09:13 2019 +0000 (UTC) LD_LIBRARY_PATH=/bgsys/drivers/ppcfloor/lib64:/dbhome/db2cat/sqllib/lib64:/dbhome/db2cat/sqllib/lib32
+Tue Jul 30 20:09:13 2019 +0000 (UTC) LANG=en_US.UTF-8
+Tue Jul 30 20:09:13 2019 +0000 (UTC) IBM_DB_DIR=/dbhome/db2cat/sqllib
+Tue Jul 30 20:09:13 2019 +0000 (UTC) TERM=screen-bce
+Tue Jul 30 20:09:13 2019 +0000 (UTC) SHELL=/bin/bash
+Tue Jul 30 20:09:13 2019 +0000 (UTC) QTINC=/usr/lib64/qt-3.3/include
+Tue Jul 30 20:09:13 2019 +0000 (UTC) IBM_DB_LIB=/dbhome/db2cat/sqllib/lib
+Tue Jul 30 20:09:13 2019 +0000 (UTC) DB2INSTANCE=db2cat
+Tue Jul 30 20:09:13 2019 +0000 (UTC) G_BROKEN_FILENAMES=1
+Tue Jul 30 20:09:13 2019 +0000 (UTC) PWD=/root
+Tue Jul 30 20:09:13 2019 +0000 (UTC) HISTSIZE=1000
+Tue Jul 30 20:09:13 2019 +0000 (UTC) PLATFORM=
+Tue Jul 30 20:09:13 2019 +0000 (UTC) MPIRUN_VERBOSE=1
+Tue Jul 30 20:09:13 2019 +0000 (UTC) COBALT_ENDTIME=1564517900
+Tue Jul 30 20:09:13 2019 +0000 (UTC) QTLIB=/usr/lib64/qt-3.3/lib
+Tue Jul 30 20:09:13 2019 +0000 (UTC) DB2LIB=/dbhome/db2cat/sqllib/lib
+Tue Jul 30 20:09:13 2019 +0000 (UTC) CLASSPATH=/usr/share/java/jdom.jar:/dbhome/bgqsysdb/sqllib/tools/clpplus.jar:/dbhome/bgqsysdb/sqllib/tools/antlr-3.2.jar:/dbhome/bgqsysdb/sqllib/tools/jline-0.9.93.jar:/dbhome/db2cat/sqllib/java/db2java.zip:/dbhome/db2cat/sqllib/java/sqlj.zip:/dbhome/db2cat/sqllib/function:/dbhome/db2cat/sqllib/java/db2jcc_license_cu.jar:/dbhome/db2cat/sqllib/tools/clpplus.jar:/dbhome/db2cat/sqllib/tools/antlr-3.2.jar:/dbhome/db2cat/sqllib/tools/jline-0.9.93.jar:/dbhome/db2cat/sqllib/java/db2jcc.jar:.
+Tue Jul 30 20:09:13 2019 +0000 (UTC) IBM_DB_INCLUDE=/dbhome/db2cat/sqllib/include
+Tue Jul 30 20:09:13 2019 +0000 (UTC) DB2_HOME=/dbhome/db2cat/sqllib
+Tue Jul 30 20:09:13 2019 +0000 (UTC) COBALT_STARTTIME=1564517300
+Tue Jul 30 20:09:13 2019 +0000 (UTC) _=/usr/bin/nohup
+Tue Jul 30 20:09:13 2019 +0000 (UTC) LS_COLORS=
+Tue Jul 30 20:09:13 2019 +0000 (UTC) SSH_TTY=/dev/pts/1
+Tue Jul 30 20:09:13 2019 +0000 (UTC) HOSTNAME=cetussn1
+Tue Jul 30 20:09:13 2019 +0000 (UTC) HISTCONTROL=ignoredups
+Tue Jul 30 20:09:13 2019 +0000 (UTC) SHLVL=2
+Tue Jul 30 20:09:13 2019 +0000 (UTC) WHATAMI=
+Tue Jul 30 20:09:13 2019 +0000 (UTC) MAIL=/var/spool/mail/root
+Tue Jul 30 20:09:13 2019 +0000 (UTC) SSH_CONNECTION=10.230.1.2 54494 10.230.1.18 22
+Tue Jul 30 20:09:13 2019 +0000 (UTC) QTDIR=/usr/lib64/qt-3.3
+Tue Jul 30 20:09:13 2019 +0000 (UTC) COBALT_JOBID=1887273
+Tue Jul 30 20:09:13 2019 +0000 (UTC) 
+Tue Jul 30 20:09:13 2019 +0000 (UTC) Info: stdin received from /dev/null
+Tue Jul 30 20:09:13 2019 +0000 (UTC) Info: stdout sent to /gpfs/mira-fs0/projects/PANDAVal/vpuri/smoothWavyWall/p/./logfile
+Tue Jul 30 20:09:13 2019 +0000 (UTC) Info: stderr sent to /gpfs/mira-fs0/projects/PANDAVal/vpuri/smoothWavyWall/p/1887273.error
+Tue Jul 30 20:09:13 2019 +0000 (UTC) 
+Tue Jul 30 20:09:14 2019 +0000 (UTC) vpuri/1887273: Block CET-02440-13771-128 for location CET-02440-13771-128 successfully booted (Initiating). 
+Tue Jul 30 20:12:34 2019 +0000 (UTC) Info: task completed normally with an exit code of 228; initiating job cleanup and removal

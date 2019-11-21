@@ -1,0 +1,32 @@
+#!/bin/bash
+
+###########
+# usage: ./makebox <case>
+#
+# script pased down by Pablo Brubeck
+###########
+
+case=$1
+
+core=$HOME"/Nek5000/bin/"
+sfx='box'
+boxfile=$case'.'$sfx
+
+## modify box
+#sed -i "/nelx,nely,nelz for Box/c\-"$2" -"$3" -"$4"   nelx,nely,nelz for Box" $case".box"
+
+$core'genbox' << DOF
+$boxfile
+DOF
+
+$core'reatore2' << DOF
+$sfx
+$case
+DOF
+
+rm box.rea box.re2
+
+$core'genmap' << DOF
+$case
+0.1
+DOF

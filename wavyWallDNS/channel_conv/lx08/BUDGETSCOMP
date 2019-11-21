@@ -1,0 +1,69 @@
+C     Budgets for REYNOLDS stresses in compressible form
+
+       COMMON /compconvection/
+     $ fconv_uu(lx1,ly1,lz1,lelt),
+     $ fconv_vv(lx1,ly1,lz1,lelt),fconv_ww(lx1,ly1,lz1,lelt),
+     $ fconv_uv(lx1,ly1,lz1,lelt),fconv_uw(lx1,ly1,lz1,lelt),
+     $ fconv_vw(lx1,ly1,lz1,lelt)
+ 
+      COMMON /compproduction/
+     $ fprd_uu(lx1,ly1,lz1,lelt),fprd_vv(lx1,ly1,lz1,lelt),
+     $ fprd_ww(lx1,ly1,lz1,lelt),fprd_uv(lx1,ly1,lz1,lelt),
+     $ fprd_uw(lx1,ly1,lz1,lelt),fprd_vw(lx1,ly1,lz1,lelt)
+
+
+      COMMON /compdissipation/
+     $ atau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ ftau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ agraduTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ agradu(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ fgradu(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ feps_uu(lx1,ly1,lz1,lelt),
+     $ feps_vv(lx1,ly1,lz1,lelt),feps_ww(lx1,ly1,lz1,lelt),
+     $ feps_uv(lx1,ly1,lz1,lelt),feps_uw(lx1,ly1,lz1,lelt),
+     $ feps_vw(lx1,ly1,lz1,lelt)    
+     
+      COMMON /compmasscoupling/
+     $ fmc_uu(lx1,ly1,lz1,lelt),fmc_vv(lx1,ly1,lz1,lelt),
+     $ fmc_ww(lx1,ly1,lz1,lelt),fmc_uv(lx1,ly1,lz1,lelt),
+     $ fmc_uw(lx1,ly1,lz1,lelt),fmc_vw(lx1,ly1,lz1,lelt)
+
+
+       COMMON /comppstrain/
+     $ pdudxavg(lx1,ly1,lz1,lelt),pdudyavg(lx1,ly1,lz1,lelt),
+     $ pdudzavg(lx1,ly1,lz1,lelt),pdvdxavg(lx1,ly1,lz1,lelt),
+     $ pdvdyavg(lx1,ly1,lz1,lelt),pdvdzavg(lx1,ly1,lz1,lelt),
+     $ pdwdxavg(lx1,ly1,lz1,lelt),pdwdyavg(lx1,ly1,lz1,lelt),
+     $ pdwdzavg(lx1,ly1,lz1,lelt),fpst_uu(lx1,ly1,lz1,lelt),
+     $ fpst_vv(lx1,ly1,lz1,lelt),fpst_ww(lx1,ly1,lz1,lelt),
+     $ fpst_uv(lx1,ly1,lz1,lelt),fpst_uw(lx1,ly1,lz1,lelt),
+     $ fpst_vw(lx1,ly1,lz1,lelt)  
+
+
+      COMMON /comptdiffusion/
+     $ fuuu(lx1,ly1,lz1,lelt),fuuv(lx1,ly1,lz1,lelt),
+     $ fuuw(lx1,ly1,lz1,lelt),fuvv(lx1,ly1,lz1,lelt),
+     $ fuww(lx1,ly1,lz1,lelt),fuvw(lx1,ly1,lz1,lelt),
+     $ fvvv(lx1,ly1,lz1,lelt),fvvw(lx1,ly1,lz1,lelt),
+     $ fvww(lx1,ly1,lz1,lelt),fwww(lx1,ly1,lz1,lelt),
+     $ ftdf_uu(lx1,ly1,lz1,lelt),ftdf_vv(lx1,ly1,lz1,lelt),
+     $ ftdf_ww(lx1,ly1,lz1,lelt),ftdf_uv(lx1,ly1,lz1,lelt),
+     $ ftdf_uw(lx1,ly1,lz1,lelt),ftdf_vw(lx1,ly1,lz1,lelt)
+
+
+      COMMON /comppdiffusion/
+     $ upavg(lx1,ly1,lz1,lelt),vpavg(lx1,ly1,lz1,lelt),
+     $ wpavg(lx1,ly1,lz1,lelt),fpdf_uu(lx1,ly1,lz1,lelt),
+     $ fpdf_vv(lx1,ly1,lz1,lelt),fpdf_ww(lx1,ly1,lz1,lelt),
+     $ fpdf_uv(lx1,ly1,lz1,lelt),fpdf_uw(lx1,ly1,lz1,lelt),
+     $ fpdf_vw(lx1,ly1,lz1,lelt)
+
+      COMMON /compvdiffusion/
+     $ auTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ avTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ awTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ fvdf_uu(lx1,ly1,lz1,lelt),fvdf_vv(lx1,ly1,lz1,lelt),
+     $ fvdf_ww(lx1,ly1,lz1,lelt),fvdf_uv(lx1,ly1,lz1,lelt), 
+     $ fvdf_uw(lx1,ly1,lz1,lelt),fvdf_vw(lx1,ly1,lz1,lelt)
+
+

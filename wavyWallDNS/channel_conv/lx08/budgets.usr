@@ -1,0 +1,3985 @@
+c----------------------------------------------------------------------
+C=======================================================================
+C=====     CALCULATION OF AVERAGES AND RE STRESSES BUDGETS        ======
+C=======================================================================
+
+c----------------------------------------------------------------------
+c---Standard Averaging for Incompressible Flows
+c-----------------------------------------------------------------------
+
+      subroutine standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+
+      integer ntdump
+      save ntdump
+      logical ifverbose
+      integer icalld,i,j,k,e
+      save    icalld
+      data    icalld  /0/
+      logical ifPneedsRef
+      save ifPneedsRef
+      data ifPneedsRef /.true./
+      real tSTATFREQ,tSTATSTART
+      integer lxyze,ielem,iside
+      integer readStats
+      real pa(lx1,ly2,lz2), pb(lx1,ly1,lz2),paveVol,vol
+
+      if (ax1.ne.lx1 .or. ay1.ne.ly1 .or. az1.ne.lz1) then
+         if(nid.eq.0) WRITE(6,*)
+     $     'ABORT: wrong size of ax1,ay1,az1 in avg_all(), check SIZEu!'
+         call exitt
+      endif
+      if (ax2.ne.lx2 .or. ay2.ne.ly2 .or. az2.ne.lz2) then
+         if(nid.eq.0) WRITE(6,*)
+     $     'ABORT: wrong size of ax2,ay2,az2 in avg_all(), check SIZEu!'
+         call exitt
+      endif
+
+      lxyze = lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+      call mappr(pm1,pr,pa,pb) ! PN - PN-2
+
+      if (time.lt.tSTATSTART) goto 998 ! Don't start averaging
+
+      if (icalld.eq.0) then
+        ntdump = int(time/tSTATFREQ)
+      endif
+
+      ! Initialization
+      if (icalld.eq.0) then
+
+        icalld = icalld + 1
+        timel  = time
+
+      ! We don't know the average Pm1 if there is no reference,
+      ! let's check if all the boundaries are Dirichlet, if so
+      ! we will substract volAvg(pm1) from each iteration's pm1
+
+        do ielem=1,nelv
+        do iside=1,2*ldim
+
+          if((cbc(iside,ielem,1).eq.'E  ').or.
+     &       (cbc(iside,ielem,1).eq.'W  ').or.
+     &       (cbc(iside,ielem,1).eq.'v  ').or.
+     &       (cbc(iside,ielem,1).eq.'P  ').or.
+     &       (cbc(iside,ielem,1).eq.'p  ').or.
+     &       (cbc(iside,ielem,1).eq.'V  ')) then
+            ifPneedsRef=ifPneedsRef.and..true.
+          else 
+            ifPneedsRef=.false.
+          endif
+        enddo
+        enddo
+
+        ! If P needs ref in a proc, it needs ref in all!
+        call gllog(ifPneedsRef,.false.)
+
+        if(nid.eq.0) write(6,*) "does P need ref?", ifPneedsRef
+
+      if (readStats.eq.0) then
+
+        atime  = 0.
+
+        call rzero(uavg,ntot)
+        call rzero(vavg,ntot)
+        call rzero(wavg,ntot)
+        call rzero(pm1avg,ntot)
+        do i = 1,ldimt
+          call rzero(tavg(1,1,1,1,i),ntott)
+        enddo
+
+        call rzero(urms,ntot)
+        call rzero(vrms,ntot)
+        call rzero(wrms,ntot)
+        call rzero(pmrms,ntot)
+
+        do i = 1,ldimt
+          call rzero(trms(1,1,1,1,i),ntott)
+        enddo
+
+        call rzero(vwms,ntot)
+        call rzero(wums,ntot)
+        call rzero(uvms,ntot)
+
+      ELSE
+      
+      ! We have to read statistics and reinitialize atime
+        call load_standard_incomp(readStats,atime)
+
+      endif
+      endif
+
+      ! Set average pressure to 0 volume average
+     
+      if (ifPneedsRef) then
+
+        !Substract current volume average
+        vol=glsum(bm1,ntot) 
+
+        paveVol=glsc2(pm1,bm1,ntot)/vol
+
+        do i=1,ntot
+          pm1(i,1,1,1)=pm1(i,1,1,1)-paveVol
+        enddo
+
+      endif
+
+      dtime = time  - timel
+      atime = atime + dtime
+      timel = time
+
+      ifverbose=.false.
+      if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
+
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
+
+      if (atime.ne.0..and.dtime.ne.0.) then
+      if(nid.eq.0)WRITE(6,238)'Compute incomp standard statistics...',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
+        beta  = dtime/atime
+        alpha = 1.-beta
+
+      !=========
+        !Compute averages E(X)
+      !=========
+        call avg1    (uavg,vx,alpha,beta,ntot ,'um  ',ifverbose)
+        call avg1    (vavg,vy,alpha,beta,ntot ,'vm  ',ifverbose)
+        call avg1    (wavg,vz,alpha,beta,ntot ,'wm  ',ifverbose)
+        call avg1    (pm1avg,pm1,alpha,beta,ntot ,'prm ',ifverbose)
+c       call avg1    (tavg,t ,alpha,beta,ntott,'tm  ',ifverbose)
+
+        do i = 1,ldimt
+          call avg1 (tavg(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
+     &                 ntott,'psav',ifverbose)
+        enddo
+
+       !=========
+        !Compute averages E(X^2)
+      !=========)
+        call avg2    (urms,vx,alpha,beta,ntot ,'ums ',ifverbose)
+        call avg2    (vrms,vy,alpha,beta,ntot ,'vms ',ifverbose)
+        call avg2    (wrms,vz,alpha,beta,ntot ,'wms ',ifverbose)
+        call avg2    (pmrms,pm1,alpha,beta,ntot ,'prms',ifverbose)
+c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
+
+        do i = 1,ldimt
+          call avg2 (trms(1,1,1,1,i),t(1,1,1,1,i),alpha,beta,
+     &                 ntott,'psms',ifverbose)
+        enddo
+
+      !=========
+        !Compute averages E(XY)
+      !=========
+        call avg3    (uvms,vx,vy,alpha,beta,ntot,'uvm ',ifverbose)
+        call avg3    (vwms,vy,vz,alpha,beta,ntot,'vwm ',ifverbose)
+        call avg3    (wums,vz,vx,alpha,beta,ntot,'wum ',ifverbose)
+
+        call probePoint
+
+      endif
+
+      !=========
+        !Outputs
+      !=========
+      if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
+     &   .or.
+     &   lastep.eq.1) then
+
+c       We change time momentaneously to write down averaging time
+        temp_time=time
+        time = atime
+
+        call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'avg')
+        call outpost2(urms,vrms,wrms,pmrms,trms,ldimt,'rms')
+        call outpost2(uvms,wums,vwms,pm1avg,tavg,1,'rm2')
+
+        time = temp_time
+
+      ntdump=ntdump+1
+
+      endif
+
+ 998  continue
+
+      return
+      end
+
+c----------------------------------------------------------------------
+c---Standard Averaging for Compressible Flows
+c-----------------------------------------------------------------------   
+
+      subroutine standard_comp_avg(tSTATFREQ,tSTATSTART,readStats)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'AVGCOMP'
+      INCLUDE 'FLUIDPROP' 
+
+      integer ntdump
+      save ntdump
+      logical ifverbose
+      integer icalld,i,j,k,e
+      save    icalld
+      data    icalld  /0/
+      real tSTATFREQ,tSTATSTART
+      integer lxyze
+      integer readStats
+
+      !First we compute all terms without density, as for incomp
+
+
+      ! atime, timel should have already been determined by budgets_avg
+
+      lxyze = lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+      call standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
+      ! Where atime is already set, as well as dt, timel
+
+      if (time.lt.tSTATSTART) goto 997 ! don't start averaging
+
+      if (icalld.eq.0) then
+        ntdump = int(time/tSTATFREQ)
+      endif
+
+      ! initialization
+      if (icalld.eq.0) then
+
+        icalld = icalld + 1
+
+      if (readStats.eq.0) then
+
+        call rzero(rhoavg,ntot)
+        call rzero(rhou,ntot)
+        call rzero(rhov,ntot)
+        call rzero(rhow,ntot)
+        call rzero(rhouu,ntot)
+        call rzero(rhovv,ntot)
+        call rzero(rhoww,ntot)
+        call rzero(rhouv,ntot)
+        call rzero(rhouw,ntot)
+        call rzero(rhovw,ntot)
+     
+      ELSE
+        call load_standard_comp(readStats)
+      endif
+      endif
+
+
+      ifverbose=.false.
+      if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
+
+
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
+      if (atime.ne.0..and.dtime.ne.0.) then
+      if(nid.eq.0) WRITE(6,238)'Compute comp standard statistics...  ',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
+        beta  = dtime/atime
+        alpha = 1.-beta
+
+
+      !=========
+        !Compute averages E(X)
+      !=========
+
+        call avg1(rhoavg,dens,alpha,beta,ntot ,'rho ',ifverbose)
+
+        call avg3(rhou,dens,vx,alpha,beta,ntot ,'rhou',ifverbose)
+        call avg3(rhov,dens,vy,alpha,beta,ntot ,'rhov',ifverbose)
+        call avg3(rhow,dens,vz,alpha,beta,ntot ,'rhow',ifverbose)
+
+      !=========
+        !Compute averages E(XY)
+      !=========
+        call avg4(rhouu,dens,vx,vx,alpha,beta,ntot ,'rhuu',ifverbose)
+        call avg4(rhovv,dens,vy,vy,alpha,beta,ntot ,'rhvv',ifverbose)
+        call avg4(rhoww,dens,vz,vz,alpha,beta,ntot ,'rhww',ifverbose)
+        call avg4(rhouv,dens,vx,vy,alpha,beta,ntot ,'rhuv',ifverbose)
+        call avg4(rhouw,dens,vx,vz,alpha,beta,ntot ,'rhuw',ifverbose)
+        call avg4(rhovw,dens,vy,vz,alpha,beta,ntot ,'rhvw',ifverbose)
+
+
+      endif
+
+      !=========
+        !Outputs
+      !=========
+      if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
+     &   .or.
+     &   lastep.eq.1) then
+
+c       We change time momentaneously to write down averaging time
+        temp_time=time
+        time = atime
+
+        call outpost2(rhou,rhov,rhow,rhoavg,tavg,ldimt,'fav')
+        call outpost2(rhouu,rhovv,rhoww,pm1avg,tavg,ldimt,'fs1')
+        call outpost2(rhouv,rhouw,rhovw,pm1avg,tavg,ldimt,'fs2')
+
+        time = temp_time
+
+      ntdump=ntdump+1
+      endif
+
+ 997  continue
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c---Budgets for Incompressible Flow
+c-----------------------------------------------------------------------   
+
+      subroutine budgets_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
+
+c     ASSUMES INCOMPRESSIBLE FLUID.
+c     Determines also buoyancy terms, using Boussiesq approx
+c     Uses the following variables, declared in a REFERENCE file
+c     dens0 (density [kg/m3]),beta0 (theral expansion coeff. [1/K] ),
+c     visc0 (dynamic viscosity [kg/ms]). Writes the terms where the 
+c     entire equation has been divided by dens0
+c
+c     This routine is based on avg_all and computes the terms of the 
+c     turbulent kinetic energy equation. These terms are dumped in a 
+c     series of .fld files and can be interpolated over a set of user-
+c     defined points with the results outputted in .csv files.
+c
+c     E denotes the expected value operator and X,Y two
+c     real valued random variables.
+c
+c     variances and covariances can be computed in a post-processing step:
+c
+c        var(X)   := E(X*X) - E(X)*E(X)
+c        cov(X,Y) := E(X*Y) - E(X)*E(Y)
+c
+c     Note: The E-operator is linear, in the sense that the expected
+c           value is given by E(X) = 1/N * sum[ E(X)_i ], where E(X)_i
+c           is the expected value of the sub-ensemble i (i=1...N).
+c
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+
+      integer ntdump
+      save ntdump
+      logical ifverbose
+      integer icalld,i,j,k,e,ntot
+      save    icalld
+      data    icalld  /0/
+      real tSTATFREQ,tSTATSTART
+      integer lxyze
+      integer readStats
+
+      logical iifxyo
+
+      lxyze = lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+      call standard_incomp_avg(tSTATFREQ,tSTATSTART,readStats)
+
+      if (time.lt.tSTATSTART) goto 996 ! don't start averaging
+
+      if (icalld.eq.0) then
+        ntdump = int(time/tSTATFREQ)
+      endif
+
+      ! initialization
+      if (icalld.eq.0) then
+
+        icalld = icalld + 1
+
+      if (readStats.eq.0) then
+
+        call rzero(udxavg,ntot)
+        call rzero(udyavg,ntot)
+        call rzero(udzavg,ntot)
+        call rzero(vdxavg,ntot)
+        call rzero(vdyavg,ntot)
+        call rzero(vdzavg,ntot)
+        call rzero(wdxavg,ntot)
+        call rzero(wdyavg,ntot)
+        call rzero(wdzavg,ntot)
+        call rzero(udxrms,ntot)
+        call rzero(udyrms,ntot)
+        call rzero(udzrms,ntot)
+        call rzero(vdxrms,ntot)
+        call rzero(vdyrms,ntot)
+        call rzero(vdzrms,ntot)
+        call rzero(wdxrms,ntot)
+        call rzero(wdyrms,ntot)
+        call rzero(wdzrms,ntot)
+        call rzero(upavg,ntot)
+        call rzero(vpavg,ntot)
+        call rzero(wpavg,ntot)
+        call rzero(utavg,ntot)
+        call rzero(vtavg,ntot)
+        call rzero(wtavg,ntot)
+        call rzero(uuuavg,ntot)
+        call rzero(uuvavg,ntot)
+        call rzero(uuwavg,ntot)
+        call rzero(uvvavg,ntot)
+        call rzero(uvwavg,ntot)
+        call rzero(uwwavg,ntot)
+        call rzero(vvvavg,ntot)
+        call rzero(vvwavg,ntot)
+        call rzero(vwwavg,ntot)
+        call rzero(wwwavg,ntot)
+        call rzero(dpdxavg,ntot)
+        call rzero(dpdyavg,ntot)
+        call rzero(dpdzavg,ntot)
+        call rzero(udpdxavg,ntot)
+        call rzero(udpdyavg,ntot)
+        call rzero(udpdzavg,ntot)
+        call rzero(vdpdxavg,ntot)
+        call rzero(vdpdyavg,ntot)
+        call rzero(vdpdzavg,ntot)
+        call rzero(wdpdxavg,ntot)
+        call rzero(wdpdyavg,ntot)
+        call rzero(wdpdzavg,ntot)
+  
+      ELSE
+      
+        call load_budgets_incomp(readStats)
+
+      endif
+      endif
+
+
+      ifverbose=.false.
+      if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
+
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
+
+      if (atime.ne.0..and.dtime.ne.0.) then
+      if(nid.eq.0) WRITE(6,238)'Compute incomp budgets statistics...',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
+        beta  = dtime/atime
+        alpha = 1.-beta
+
+      !=========
+        !Compute averages E(X)
+      !=========
+
+        call gradm1(dudx,dudy,dudz,vx)
+        call gradm1(dvdx,dvdy,dvdz,vy)
+        call gradm1(dwdx,dwdy,dwdz,vz)
+
+        call gradm1(dpdx,dpdy,dpdz,pm1)
+
+      ! Reconciliate gradients at element boundaries
+
+        call opcolv(dudx,dudy,dudz,bm1)
+        call opdssum(dudx,dudy,dudz)
+        call opcolv(dudx,dudy,dudz,binvm1)
+
+        call opcolv(dvdx,dvdy,dvdz,bm1)
+        call opdssum(dvdx,dvdy,dvdz)
+        call opcolv(dvdx,dvdy,dvdz,binvm1)
+
+        call opcolv(dwdx,dwdy,dwdz,bm1)
+        call opdssum(dwdx,dwdy,dwdz)
+        call opcolv(dwdx,dwdy,dwdz,binvm1)
+
+        call opcolv(dpdx,dpdy,dpdz,bm1)
+        call opdssum(dpdx,dpdy,dpdz)
+        call opcolv(dpdx,dpdy,dpdz,binvm1)
+
+
+
+      !=========
+        !Compute Dissipation
+      !=========
+        call avg1(udxavg,dudx,alpha,beta,ntot ,'dudx',ifverbose)
+        call avg1(udyavg,dudy,alpha,beta,ntot ,'dudy',ifverbose)
+        call avg1(udzavg,dudz,alpha,beta,ntot ,'dudz',ifverbose)
+        call avg1(vdxavg,dvdx,alpha,beta,ntot ,'dvdx',ifverbose)
+        call avg1(vdyavg,dvdy,alpha,beta,ntot ,'dvdy',ifverbose)
+        call avg1(vdzavg,dvdz,alpha,beta,ntot ,'dvdz',ifverbose)
+        call avg1(wdxavg,dwdx,alpha,beta,ntot ,'dwdx',ifverbose)
+        call avg1(wdyavg,dwdy,alpha,beta,ntot ,'dwdy',ifverbose)
+        call avg1(wdzavg,dwdz,alpha,beta,ntot ,'dwdz',ifverbose)
+        call avg2(udxrms,dudx,alpha,beta,ntot ,'dudx',ifverbose)
+        call avg2(udyrms,dudy,alpha,beta,ntot ,'dudy',ifverbose)
+        call avg2(udzrms,dudz,alpha,beta,ntot ,'dudz',ifverbose)
+        call avg2(vdxrms,dvdx,alpha,beta,ntot ,'dvdx',ifverbose)
+        call avg2(vdyrms,dvdy,alpha,beta,ntot ,'dvdy',ifverbose)
+        call avg2(vdzrms,dvdz,alpha,beta,ntot ,'dvdz',ifverbose)
+        call avg2(wdxrms,dwdx,alpha,beta,ntot ,'dwdx',ifverbose)
+        call avg2(wdyrms,dwdy,alpha,beta,ntot ,'dwdy',ifverbose)
+        call avg2(wdzrms,dwdz,alpha,beta,ntot ,'dwdz',ifverbose)
+        call avg3(uvdxms,dudx,dvdx,alpha,beta,ntot,'uvx ',ifverbose)
+        call avg3(uvdyms,dudy,dvdy,alpha,beta,ntot,'uvy ',ifverbose)
+        call avg3(uvdzms,dudz,dvdz,alpha,beta,ntot,'uvz ',ifverbose)
+        call avg3(uwdxms,dudx,dwdx,alpha,beta,ntot,'uwx ',ifverbose)
+        call avg3(uwdyms,dudy,dwdy,alpha,beta,ntot,'uwy ',ifverbose)
+        call avg3(uwdzms,dudz,dwdz,alpha,beta,ntot,'uwz ',ifverbose)
+        call avg3(vwdxms,dvdx,dwdx,alpha,beta,ntot,'vwx ',ifverbose)
+        call avg3(vwdyms,dvdy,dwdy,alpha,beta,ntot,'vwy ',ifverbose)
+        call avg3(vwdzms,dvdz,dwdz,alpha,beta,ntot,'vwz ',ifverbose)
+       
+      !=========
+        !Compute Pressure Transport
+      !=========
+        call avg1(dpdxavg,dpdx,alpha,beta,ntot,'dpdx',ifverbose)
+        call avg1(dpdyavg,dpdy,alpha,beta,ntot,'dpdy',ifverbose)
+        call avg1(dpdzavg,dpdz,alpha,beta,ntot,'dpdz',ifverbose)
+
+        call avg3(udpdxavg,dpdx,vx,alpha,beta,ntot,'dpdx',ifverbose)
+        call avg3(udpdyavg,dpdy,vx,alpha,beta,ntot,'dpdy',ifverbose)
+        call avg3(udpdzavg,dpdz,vx,alpha,beta,ntot,'dpdz',ifverbose)
+
+        call avg3(vdpdxavg,dpdx,vy,alpha,beta,ntot,'dpdx',ifverbose)
+        call avg3(vdpdyavg,dpdy,vy,alpha,beta,ntot,'dpdy',ifverbose)
+        call avg3(vdpdzavg,dpdz,vy,alpha,beta,ntot,'dpdz',ifverbose)
+
+        call avg3(wdpdxavg,dpdx,vz,alpha,beta,ntot,'dpdx',ifverbose)
+        call avg3(wdpdyavg,dpdy,vz,alpha,beta,ntot,'dpdy',ifverbose)
+        call avg3(wdpdzavg,dpdz,vz,alpha,beta,ntot,'dpdz',ifverbose)
+      
+
+      !=========
+        !Compute Pressure Diffusion
+      !=========
+        call avg3(upavg,pm1,vx,alpha,beta,ntot,'u   ',ifverbose)
+        call avg3(vpavg,pm1,vy,alpha,beta,ntot,'vp  ',ifverbose)
+        call avg3(wpavg,pm1,vz,alpha,beta,ntot,'wp  ',ifverbose)
+      
+      !=========
+        !Compute Turbulent Diffusion
+      !=========
+        call avg4(uuuavg,vx,vx,vx,alpha,beta,ntot,'uuua',ifverbose)
+        call avg4(uuvavg,vx,vx,vy,alpha,beta,ntot,'uuva',ifverbose)
+        call avg4(uuwavg,vx,vx,vz,alpha,beta,ntot,'uuwa',ifverbose)
+        call avg4(uvvavg,vx,vy,vy,alpha,beta,ntot,'uvva',ifverbose)
+        call avg4(uwwavg,vx,vz,vz,alpha,beta,ntot,'uwwa',ifverbose)
+        call avg4(uvwavg,vx,vy,vz,alpha,beta,ntot,'uvwa',ifverbose)
+        call avg4(vvvavg,vy,vy,vy,alpha,beta,ntot,'vvva',ifverbose)
+        call avg4(vvwavg,vy,vy,vz,alpha,beta,ntot,'vvwa',ifverbose)
+        call avg4(vwwavg,vy,vz,vz,alpha,beta,ntot,'vwwa',ifverbose)
+        call avg4(wwwavg,vz,vz,vz,alpha,beta,ntot,'wwwa',ifverbose)
+      
+      !=========
+        !Compute Pressure Strain
+      !=========
+        call avg3(pudxavg,pm1,dudx,alpha,beta,ntot,'pudx',ifverbose)
+        call avg3(pudyavg,pm1,dudy,alpha,beta,ntot,'pudy',ifverbose)
+        call avg3(pudzavg,pm1,dudz,alpha,beta,ntot,'pudz',ifverbose)
+        call avg3(pvdxavg,pm1,dvdx,alpha,beta,ntot,'pvdx',ifverbose)
+        call avg3(pvdyavg,pm1,dvdy,alpha,beta,ntot,'pvdy',ifverbose)
+        call avg3(pvdzavg,pm1,dvdz,alpha,beta,ntot,'pvdz',ifverbose)
+        call avg3(pwdxavg,pm1,dwdx,alpha,beta,ntot,'pwdx',ifverbose)
+        call avg3(pwdyavg,pm1,dwdy,alpha,beta,ntot,'pwdy',ifverbose)
+        call avg3(pwdzavg,pm1,dwdz,alpha,beta,ntot,'pwdz',ifverbose)
+ 
+      !=========
+        !Compute Buoyancy terms
+      !=========
+        call avg3(utavg,vx,t,alpha,beta,ntot,'utav',ifverbose)
+        call avg3(vtavg,vy,t,alpha,beta,ntot,'vtav',ifverbose)
+        call avg3(wtavg,vz,t,alpha,beta,ntot,'wtav',ifverbose)
+
+
+      endif
+
+      !=========
+        !Outputs
+      !=========
+
+      if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
+     &   .or.
+     &   lastep.eq.1) then
+
+c       We change time momentaneously to write down averaging time
+        temp_time=time
+        time = atime
+
+c       Do not outpost mesh.
+        iifxyo = ifxyo
+        ifxyo  = .false.
+
+        call outpost2(udxavg,udyavg,udzavg,vdxavg,vdyavg,1,'i01')
+        call outpost2(vdzavg,wdxavg,wdyavg,wdzavg,udxrms,1,'i02')
+        call outpost2(udyrms,udzrms,vdxrms,vdyrms,vdzrms,1,'i03')
+        call outpost2(wdxrms,wdyrms,wdzrms,uvdxms,uvdyms,1,'i04')
+        call outpost2(uvdzms,uwdxms,uwdyms,uwdzms,vwdxms,1,'i05')
+        call outpost2(vwdyms,vwdzms,upavg,vpavg,wpavg,1,'i06')
+        call outpost2(uuuavg,uuvavg,uuwavg,uvvavg,uvwavg,1,'i07')
+        call outpost2(uwwavg,vvvavg,vvwavg,vwwavg,wwwavg,1,'i08')
+        call outpost2(pudxavg,pudyavg,pudzavg,pvdxavg,pvdyavg,1,'i09')
+        call outpost2(pvdzavg,pwdxavg,pwdyavg,pwdzavg,utavg,1,'i10')
+        call outpost2(vtavg,wtavg,udpdxavg,udpdyavg,udpdzavg,1,'i11')
+        call outpost2(vdpdxavg,vdpdyavg,vdpdzavg,wdpdxavg,
+     &                wdpdyavg,1,'i12')
+        call outpost2(wdpdzavg,dpdxavg,dpdyavg,dpdzavg,
+     &                dpdzavg,1,'i13')
+
+c  
+        ifxyo = iifxyo
+
+        time = temp_time
+
+      ntdump=ntdump+1
+
+      endif
+
+ 996  continue
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Budgets for Compressible Flow
+c-----------------------------------------------------------------------   
+      subroutine budgets_comp_avg(tSTATFREQ,tSTATSTART,readStats)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'AVGCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'FLUIDPROP' 
+      INCLUDE 'BUDGETSCOMP'
+
+      integer ntdump
+      save ntdump
+      logical ifverbose
+      integer icalld,i,j,k,e,ip
+      save    icalld
+      data    icalld  /0/
+      real tSTATFREQ,tSTATSTART
+      integer lxyze
+      integer readStats
+
+      real rhoavgOld(lx1,ly1,lz1,lelt)
+
+      !First we compute all terms without density, as for incomp
+
+
+      ! atime, timel should have already been determined by budgets_avg
+
+      lxyze = lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+      call copy(rhoavgOld,rhoavg,ntot)
+
+      call standard_comp_avg(tSTATFREQ,tSTATSTART,readStats)
+
+      if (time.lt.tSTATSTART) goto 999 ! don't start averaging
+
+      if (icalld.eq.0) then
+        ntdump = int(time/tSTATFREQ)
+      endif
+
+      ! initialization
+      if (icalld.eq.0) then
+
+        icalld = icalld + 1
+
+      if (readStats.eq.0) then
+
+
+         call rzero(fgradu,ntot*ldim*ldim)
+         call rzero(agradu,ntot*ldim*ldim)
+
+         call rzero(aTau,ntot*ldim*ldim)
+         call rzero(fTau,ntot*ldim*ldim)
+         call rzero(agraduTau,ntot*ldim*ldim)
+         call rzero(auTau,ntot*ldim*ldim)
+         call rzero(avTau,ntot*ldim*ldim)
+         call rzero(awTau,ntot*ldim*ldim)
+
+         call rzero(pdudxavg,ntot)
+         call rzero(pdudyavg,ntot)
+         call rzero(pdudzavg,ntot)
+         call rzero(pdvdxavg,ntot)
+         call rzero(pdvdyavg,ntot)
+         call rzero(pdvdzavg,ntot)
+         call rzero(pdwdxavg,ntot)
+         call rzero(pdwdyavg,ntot)
+         call rzero(pdwdzavg,ntot)
+
+         call rzero(fuuu,ntot)
+         call rzero(fuuv,ntot)
+         call rzero(fuuw,ntot)
+         call rzero(fuvv,ntot)
+         call rzero(fuvw,ntot)
+         call rzero(fuww,ntot)
+         call rzero(fvvv,ntot)
+         call rzero(fvvw,ntot)
+         call rzero(fvww,ntot)
+         call rzero(fwww,ntot)
+
+         call rzero(upavg,ntot)
+         call rzero(vpavg,ntot)
+         call rzero(wpavg,ntot)
+
+      ELSE
+
+      ! We have to read statistics and reinitialize atime
+        call load_budgets_comp(readStats)
+
+      endif
+      endif
+
+
+      ifverbose=.false.
+      if  (time.gt.(ntdump+1)*tSTATFREQ) ifverbose=.true.
+
+ 238  format(a37,a20,1es11.4,a6,1es11.4)
+
+      if (atime.ne.0..and.dtime.ne.0.) then
+      if(nid.eq.0) WRITE(6,238)'Compute comp budgets statistics...   ',
+     & 'Averaging time: ',atime,'  dt: ',dtime
+
+        beta  = dtime/atime
+        alpha = 1.-beta
+      !=========
+        !Compute averages E(X)
+      !=========
+
+        call gradm1(dudx,dudy,dudz,vx)
+        call gradm1(dvdx,dvdy,dvdz,vy)
+        call gradm1(dwdx,dwdy,dwdz,vz)
+
+      ! Reconciliate gradients at element boundaries
+
+        call opcolv(dudx,dudy,dudz,bm1)
+        call opdssum(dudx,dudy,dudz)
+        call opcolv(dudx,dudy,dudz,binvm1)
+
+        call opcolv(dvdx,dvdy,dvdz,bm1)
+        call opdssum(dvdx,dvdy,dvdz)
+        call opcolv(dvdx,dvdy,dvdz,binvm1)
+
+        call opcolv(dwdx,dwdy,dwdz,bm1)
+        call opdssum(dwdx,dwdy,dwdz)
+        call opcolv(dwdx,dwdy,dwdz,binvm1)
+
+        !tau(i,j)= mu * (dui/dxj + duj/dxi -2/3 delta(i,j)duk/dxk)
+        do i=1,ntot
+          gradu(i,1,1,1,1,1)=dudx(i,1,1,1)
+          gradu(i,1,1,1,1,2)=dudy(i,1,1,1)
+          gradu(i,1,1,1,1,3)=dudz(i,1,1,1)
+          gradu(i,1,1,1,2,1)=dvdx(i,1,1,1)
+          gradu(i,1,1,1,2,2)=dvdy(i,1,1,1)
+          gradu(i,1,1,1,2,3)=dvdz(i,1,1,1)
+          gradu(i,1,1,1,3,1)=dwdx(i,1,1,1)
+          gradu(i,1,1,1,3,2)=dwdy(i,1,1,1)
+          gradu(i,1,1,1,3,3)=dwdz(i,1,1,1)
+        enddo
+ 
+        call calcTau(tau,gradu)
+
+
+        ! Favre averaging before updating rho
+        ! rho has been updated in standard_avg, we 
+        ! bring back the original
+c      ! dudx,dudy,dudz
+
+
+
+      !=========
+        !Compute averages E(X)
+      !=========
+c       ! Favre and Reynolds average of gradu(i,j)
+
+        call favg1tensor(fgradu,rhoavgOld,dens,gradu,
+     &                   alpha,beta,ntot,'fgu  ',ifverbose)
+
+        call avg1Tensor(agradu,gradu,
+     &            alpha,beta,ntot,'agu  ',ifverbose)
+
+c       ! Favre and Reynolds average of tau(i,j)
+        call favg1tensor(ftau,rhoavgOld,dens,tau,
+     &                   alpha,beta,ntot,'ftau  ',ifverbose)
+
+        call avg1Tensor(atau,tau,
+     &            alpha,beta,ntot,'atau ',ifverbose)
+
+
+c       ! Time average of gradu(i,k)*tau(k,j) graduTau
+
+        call tensorProduct(graduTau,gradu,tau,ntot)
+       
+ 
+        call avg1Tensor(agraduTau,graduTau,
+     &            alpha,beta,ntot,'agut ',ifverbose)
+
+
+        do ip=1,ntot
+        do i=1,ldim
+        do j=1,ldim
+          uTau(ip,1,1,1,i,j)=vx(ip,1,1,1)*tau(ip,1,1,1,i,j)
+          vTau(ip,1,1,1,i,j)=vy(ip,1,1,1)*tau(ip,1,1,1,i,j)
+          wTau(ip,1,1,1,i,j)=vz(ip,1,1,1)*tau(ip,1,1,1,i,j)
+        enddo 
+        enddo 
+        enddo 
+
+        call avg1(auTau,uTau,
+     &            alpha,beta,ntot*ldim*ldim,'utau',ifverbose)
+        call avg1(avTau,vTau,
+     &            alpha,beta,ntot*ldim*ldim,'vtau',ifverbose)
+        call avg1(awTau,wTau,
+     &            alpha,beta,ntot*ldim*ldim,'wtau',ifverbose)
+
+
+        call avg3(pdudxavg,pm1,dudx,alpha,beta,ntot,'pudx',ifverbose)
+        call avg3(pdudyavg,pm1,dudy,alpha,beta,ntot,'pudy',ifverbose)
+        call avg3(pdudzavg,pm1,dudz,alpha,beta,ntot,'pudz',ifverbose)
+        call avg3(pdvdxavg,pm1,dvdx,alpha,beta,ntot,'pvdx',ifverbose)
+        call avg3(pdvdyavg,pm1,dvdy,alpha,beta,ntot,'pvdy',ifverbose)
+        call avg3(pdvdzavg,pm1,dvdz,alpha,beta,ntot,'pvdz',ifverbose)
+        call avg3(pdwdxavg,pm1,dwdx,alpha,beta,ntot,'pwdx',ifverbose)
+        call avg3(pdwdyavg,pm1,dwdy,alpha,beta,ntot,'pwdy',ifverbose)
+        call avg3(pdwdzavg,pm1,dwdz,alpha,beta,ntot,'pwdz',ifverbose)
+
+
+      !=========
+        !Compute Turbulent Diffusion
+      !=========
+
+        call favg4(fuuu,rhoavgOld,dens,vx,vx,vx,
+     &             alpha,beta,ntot,'uuuavg',ifverbose)
+        call favg4(fuuv,rhoavgOld,dens,vx,vx,vy,
+     &             alpha,beta,ntot,'uuvavg',ifverbose)
+        call favg4(fuuw,rhoavgOld,dens,vx,vx,vz,
+     &             alpha,beta,ntot,'uuwavg',ifverbose)
+        call favg4(fuvv,rhoavgOld,dens,vx,vy,vy,
+     &             alpha,beta,ntot,'uvvavg',ifverbose)
+        call favg4(fuww,rhoavgOld,dens,vx,vz,vz,
+     &             alpha,beta,ntot,'uwwavg',ifverbose)
+        call favg4(fuvw,rhoavgOld,dens,vx,vy,vz,
+     &             alpha,beta,ntot,'uvwavg',ifverbose)
+        call favg4(fvvv,rhoavgOld,dens,vy,vy,vy,
+     &             alpha,beta,ntot,'vvvavg',ifverbose)
+        call favg4(fvvw,rhoavgOld,dens,vy,vy,vz,
+     &             alpha,beta,ntot,'vvwavg',ifverbose)
+        call favg4(fvww,rhoavgOld,dens,vy,vz,vz,
+     &             alpha,beta,ntot,'vwwavg',ifverbose)
+        call favg4(fwww,rhoavgOld,dens,vz,vz,vz,
+     &             alpha,beta,ntot,'wwwavg',ifverbose)
+
+
+      !=========
+        !Compute Pressure Diffusion
+      !=========
+        call avg3(upavg,pm1,vx,alpha,beta,ntot,'up  ',ifverbose)
+        call avg3(vpavg,pm1,vy,alpha,beta,ntot,'vp  ',ifverbose)
+        call avg3(wpavg,pm1,vz,alpha,beta,ntot,'wp  ',ifverbose)
+
+
+
+      endif
+
+      !=========
+        !Outputs
+      !=========
+      if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
+     &   .or.
+     &   (lastep.eq.1)) then
+
+c       We change time momentaneously to write down averaging time
+        temp_time=time
+        time = atime
+
+        call outpost2(fgradu(1,1,1,1,1,1),fgradu(1,1,1,1,1,2),
+     &                fgradu(1,1,1,1,1,3),fgradu(1,1,1,1,2,1),
+     &                fgradu(1,1,1,1,2,2),1,'f01')
+
+        call outpost2(fgradu(1,1,1,1,2,3),fgradu(1,1,1,1,3,1),
+     &                fgradu(1,1,1,1,3,2),fgradu(1,1,1,1,3,3),
+     &                agradu(1,1,1,1,1,1),1,'f02')
+
+        call outpost2(agradu(1,1,1,1,1,2),agradu(1,1,1,1,1,3),
+     &                agradu(1,1,1,1,2,1),agradu(1,1,1,1,2,2),
+     &                agradu(1,1,1,1,2,3),1,'f03')
+
+        call outpost2(agradu(1,1,1,1,3,1),agradu(1,1,1,1,3,2),
+     &                agradu(1,1,1,1,3,3),agraduTau(1,1,1,1,1,1),
+     &                agraduTau(1,1,1,1,1,2),1,'f04')
+ 
+        call outpost2(agraduTau(1,1,1,1,1,3),agraduTau(1,1,1,1,2,1),
+     &                agraduTau(1,1,1,1,2,2),agraduTau(1,1,1,1,2,3),
+     &                agraduTau(1,1,1,1,3,1),1,'f05')
+
+        call outpost2(agraduTau(1,1,1,1,3,2),agraduTau(1,1,1,1,3,3),
+     &                aTau(1,1,1,1,1,1),aTau(1,1,1,1,1,2),
+     &                aTau(1,1,1,1,1,3),1,'f06')
+
+        call outpost2(aTau(1,1,1,1,2,1),aTau(1,1,1,1,2,2),
+     &                aTau(1,1,1,1,2,3),aTau(1,1,1,1,3,1),
+     &                aTau(1,1,1,1,3,2),1,'f07')
+
+        call outpost2(aTau(1,1,1,1,3,3),fTau(1,1,1,1,1,1),
+     &                fTau(1,1,1,1,1,2),fTau(1,1,1,1,1,3),
+     &                fTau(1,1,1,1,2,1),1,'f08')
+
+        call outpost2(fTau(1,1,1,1,2,2),fTau(1,1,1,1,2,3),
+     &                fTau(1,1,1,1,3,1),fTau(1,1,1,1,3,2),
+     &                fTau(1,1,1,1,3,3),1,'f09')
+
+        call outpost2(auTau(1,1,1,1,1,1),auTau(1,1,1,1,1,2),
+     &                auTau(1,1,1,1,1,3),auTau(1,1,1,1,2,1),
+     &                auTau(1,1,1,1,2,2),1,'f10')
+
+        call outpost2(auTau(1,1,1,1,2,3),auTau(1,1,1,1,3,1),
+     &                auTau(1,1,1,1,3,2),auTau(1,1,1,1,3,3),
+     &                avTau(1,1,1,1,1,1),1,'f11')
+
+        call outpost2(avTau(1,1,1,1,1,2),avTau(1,1,1,1,1,3),
+     &                avTau(1,1,1,1,2,1),avTau(1,1,1,1,2,2),
+     &                avTau(1,1,1,1,2,3),1,'f12')
+
+        call outpost2(avTau(1,1,1,1,3,1),avTau(1,1,1,1,3,2),
+     &                avTau(1,1,1,1,3,3),awTau(1,1,1,1,1,1),
+     &                awTau(1,1,1,1,1,2),1,'f13')
+
+        call outpost2(awTau(1,1,1,1,1,3),awTau(1,1,1,1,2,1),
+     &                awTau(1,1,1,1,2,2),awTau(1,1,1,1,2,3),
+     &                awTau(1,1,1,1,3,1),1,'f14')
+
+        call outpost2(awTau(1,1,1,1,3,2),awTau(1,1,1,1,3,3),
+     &                pdudxavg,pdudyavg,pdudzavg,1,'f15')
+
+        call outpost2(pdvdxavg,pdvdyavg,pdvdzavg,pdwdxavg,
+     &                pdwdyavg,1,'f16')
+
+        call outpost2(pdwdzavg,fuuu,
+     &                fuuv,fuuw,fuvv,1,'f17')
+
+        call outpost2(fuvw,fuww,
+     &                fvvv,fvvw,fvww,1,'f18')
+
+        call outpost2(upavg,vpavg,wpavg,wpavg,wpavg,1,'f19')
+
+
+        time = temp_time
+
+      ntdump=ntdump+1
+
+      endif
+
+ 999  continue
+
+      return
+      end
+c-----------------------------------------------------------------------
+c--- Load Standard Averages for Incompressible Flow
+c-----------------------------------------------------------------------
+      subroutine load_standard_incomp(readStats,avtime)
+
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+
+      integer readStats
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+     
+!//////////////////////////////////////////////////
+!Initialize
+!//////////////////////////////////////////////////
+
+ 
+      call rzero(uavg,ntot)
+      call rzero(vavg,ntot)
+      call rzero(wavg,ntot)
+      call rzero(pm1avg,ntot)
+
+      do i = 1,ldimt
+        call rzero(tavg(1,1,1,1,i),ntott)
+      enddo
+     
+      call rzero(urms,ntot)
+      call rzero(vrms,ntot)
+      call rzero(wrms,ntot)
+      call rzero(pmrms,ntot)
+     
+      call rzero(vwms,ntot)
+      call rzero(wums,ntot)
+      call rzero(uvms,ntot)
+ 
+      do i = 1,ldimt
+        call rzero(trms(1,1,1,1,i),ntott)
+      enddo
+     
+
+      call load_avg5(uavg,vavg,wavg,pm1avg,tavg,
+     &              'avg',readStats,avtime,ldimt,.false.)    
+
+      call load_avg5(urms,vrms,wrms,pmrms,trms,
+     &              'rms',readStats,avtime,ldimt,.false.)
+
+      call load_avg3(uvms,wums,vwms,
+     &               'rm2',readStats,avtime,.false.)
+
+cvp
+      atime = avtime
+
+      return
+      end   
+
+c-----------------------------------------------------------------------
+c--- Load Standard Averages for Compressible Flow
+c-----------------------------------------------------------------------
+      subroutine load_standard_comp(readStats)
+c
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVGCOMP'
+
+      character namef*3
+      integer readStats
+      real avtime
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+     
+!//////////////////////////////////////////////////
+!Initialize
+!//////////////////////////////////////////////////
+
+      call rzero(rhou,ntot)
+      call rzero(rhov,ntot)
+      call rzero(rhow,ntot)
+      call rzero(rhouu,ntot)
+      call rzero(rhovv,ntot)
+      call rzero(rhoww,ntot)
+      call rzero(rhouv,ntot)
+      call rzero(rhouw,ntot)
+      call rzero(rhovw,ntot)
+     
+!//////////////////////////////////////////////////
+!Average field files 
+!//////////////////////////////////////////////////
+!Change casename
+
+   !Favre Average Velocity
+      namef = 'fav'
+      call load_avg4(rhou,rhov,rhow,rhoavg,
+     &              namef,readStats,avtime,.false.)    
+
+   !Favre Average RMS
+      namef = 'fs1'
+      call load_avg3(rhouu,rhovv,rhoww,
+     &              namef,readStats,avtime,.false.)    
+   
+   !Favre Average RMS
+      namef = 'fs2'
+      call load_avg3(rhouv,rhouw,rhovw,
+     &              namef,readStats,avtime,.true.)    
+   
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Load Budgets Averages for Incompressible Flow
+c-----------------------------------------------------------------------   
+
+      subroutine load_budgets_incomp(readStats)
+c
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'BUDGETSINCOMP'
+
+      character namef*3
+      integer readStats
+      real avtime 
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+!//////////////////////////////////////////////////
+!Initialize
+!//////////////////////////////////////////////////
+
+      call rzero(udxavg,ntot)
+      call rzero(udyavg,ntot)
+      call rzero(udzavg,ntot)
+      call rzero(vdxavg,ntot)
+      call rzero(vdyavg,ntot)
+      call rzero(vdzavg,ntot)
+      call rzero(wdxavg,ntot)
+      call rzero(wdyavg,ntot)
+      call rzero(wdzavg,ntot)
+      call rzero(udxrms,ntot)
+      call rzero(udyrms,ntot)
+      call rzero(udzrms,ntot)
+      call rzero(vdxrms,ntot)
+      call rzero(vdyrms,ntot)
+      call rzero(vdzrms,ntot)
+      call rzero(wdxrms,ntot)
+      call rzero(wdyrms,ntot)
+      call rzero(wdzrms,ntot)
+      call rzero(uvdxms,ntot)
+      call rzero(uvdyms,ntot)
+      call rzero(uvdzms,ntot)
+      call rzero(uwdxms,ntot)
+      call rzero(uwdyms,ntot)
+      call rzero(uwdzms,ntot)
+      call rzero(vwdxms,ntot)
+      call rzero(vwdyms,ntot)
+      call rzero(vwdzms,ntot)
+      call rzero(upavg,ntot)
+      call rzero(vpavg,ntot)
+      call rzero(wpavg,ntot)
+      call rzero(utavg,ntot)
+      call rzero(vtavg,ntot)
+      call rzero(wtavg,ntot)
+      call rzero(uuuavg,ntot)
+      call rzero(uuvavg,ntot)
+      call rzero(uuwavg,ntot)
+      call rzero(uvvavg,ntot)
+      call rzero(uvwavg,ntot)
+      call rzero(uwwavg,ntot)
+      call rzero(vvvavg,ntot)
+      call rzero(vvwavg,ntot)
+      call rzero(vwwavg,ntot)
+      call rzero(wwwavg,ntot)
+      call rzero(pudxavg,ntot)
+      call rzero(pudyavg,ntot)
+      call rzero(pudzavg,ntot)
+      call rzero(pvdxavg,ntot)
+      call rzero(pvdyavg,ntot)
+      call rzero(pvdzavg,ntot)
+      call rzero(pwdxavg,ntot)
+      call rzero(pwdyavg,ntot)
+      call rzero(pwdzavg,ntot)
+      call rzero(dpdxavg,ntot)
+      call rzero(dpdyavg,ntot)
+      call rzero(dpdzavg,ntot)
+      call rzero(udpdxavg,ntot)
+      call rzero(udpdyavg,ntot)
+      call rzero(udpdzavg,ntot)
+      call rzero(vdpdxavg,ntot)
+      call rzero(vdpdyavg,ntot)
+      call rzero(vdpdzavg,ntot)
+      call rzero(wdpdxavg,ntot)
+      call rzero(wdpdyavg,ntot)
+      call rzero(wdpdzavg,ntot)
+     
+
+!//////////////////////////////////////////////////
+!Average field files 
+!//////////////////////////////////////////////////
+!Change casename
+    
+
+      call load_avg5(udxavg,udyavg,udzavg,vdxavg,vdyavg,'i01',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(vdzavg,wdxavg,wdyavg,wdzavg,udxrms,'i02',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(udyrms,udzrms,vdxrms,vdyrms,vdzrms,'i03',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(wdxrms,wdyrms,wdzrms,uvdxms,uvdyms,'i04',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(uvdzms,uwdxms,uwdyms,uwdzms,vwdxms,'i05',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(vwdyms,vwdzms,upavg,vpavg,wpavg,'i06',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(uuuavg,uuvavg,uuwavg,uvvavg,uvwavg,'i07',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(uwwavg,vvvavg,vvwavg,vwwavg,wwwavg,'i08',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(pudxavg,pudyavg,pudzavg,pvdxavg,pvdyavg,'i09',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(pvdzavg,pwdxavg,pwdyavg,pwdzavg,utavg,'i10',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(vtavg,wtavg,udpdxavg,udpdyavg,udpdzavg,'i11',
+     &               readStats,avtime,1,.false.)
+      call load_avg5(vdpdxavg,vdpdyavg,vdpdzavg,wdpdxavg,wdpdyavg,'i12',
+     &               readStats,avtime,1,.false.)
+      call load_avg4(wdpdzavg,dpdxavg,dpdyavg,dpdzavg,'i13',
+     &               readStats,avtime,.true.)
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Load Budgets Averages for Compressible Flow
+c-----------------------------------------------------------------------   
+
+      subroutine load_budgets_comp(readStats)
+c
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'BUDGETSCOMP'
+
+      character namef*3
+      integer readStats
+      real avgime
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+     
+!//////////////////////////////////////////////////
+!Initialize
+!//////////////////////////////////////////////////
+
+
+      call rzero(fgradu,ntot*ldim*ldim)
+      call rzero(agradu,ntot*ldim*ldim)
+
+      call rzero(aTau,ntot*ldim*ldim)
+      call rzero(fTau,ntot*ldim*ldim)
+      call rzero(agraduTau,ntot*ldim*ldim)
+      call rzero(auTau,ntot*ldim*ldim)
+      call rzero(avTau,ntot*ldim*ldim)
+      call rzero(awTau,ntot*ldim*ldim)
+
+      call rzero(pdudx,ntot)
+      call rzero(pdudy,ntot)
+      call rzero(pdudz,ntot)
+      call rzero(pdvdx,ntot)
+      call rzero(pdvdy,ntot)
+      call rzero(pdvdz,ntot)
+      call rzero(pdwdx,ntot)
+      call rzero(pdwdy,ntot)
+      call rzero(pdwdz,ntot)
+
+      call rzero(fuuu,ntot)
+      call rzero(fuuv,ntot)
+      call rzero(fuuw,ntot)
+      call rzero(fuvv,ntot)
+      call rzero(fuvw,ntot)
+      call rzero(fuww,ntot)
+      call rzero(fvvv,ntot)
+      call rzero(fvvw,ntot)
+      call rzero(fvww,ntot)
+      call rzero(fwww,ntot)
+
+      call rzero(upavg,ntot)
+      call rzero(vpavg,ntot)
+      call rzero(wpavg,ntot)
+
+ 
+!//////////////////////////////////////////////////
+!Average field files 
+!//////////////////////////////////////////////////
+!Change casename
+
+
+        call load_avg5(fgradu(1,1,1,1,1,1),fgradu(1,1,1,1,1,2),
+     &       fgradu(1,1,1,1,1,3),fgradu(1,1,1,1,2,1),
+     &       fgradu(1,1,1,1,2,2),'f01',readStats,avtime,1,.false.)
+
+        call load_avg5(fgradu(1,1,1,1,2,3),fgradu(1,1,1,1,3,1),
+     &       fgradu(1,1,1,1,3,2),fgradu(1,1,1,1,3,3),
+     &       agradu(1,1,1,1,1,1),'f02',readStats,avtime,1,.false.)
+
+        call load_avg5(agradu(1,1,1,1,1,2),agradu(1,1,1,1,1,3),
+     &       agradu(1,1,1,1,2,1),agradu(1,1,1,1,2,2),
+     &       agradu(1,1,1,1,2,3),'f03',readStats,avtime,1,.false.)
+
+        call load_avg5(agradu(1,1,1,1,3,1),agradu(1,1,1,1,3,2),
+     &       agradu(1,1,1,1,3,3),agraduTau(1,1,1,1,1,1),
+     &       agraduTau(1,1,1,1,1,2),'f04',readStats,avtime,1,.false.)
+ 
+        call load_avg5(agraduTau(1,1,1,1,1,3),agraduTau(1,1,1,1,2,1),
+     &       agraduTau(1,1,1,1,2,2),agraduTau(1,1,1,1,2,3),
+     &       agraduTau(1,1,1,1,3,1),'f05',readStats,avtime,1,.false.)
+
+        call load_avg5(agraduTau(1,1,1,1,3,2),agraduTau(1,1,1,1,3,3),
+     &       aTau(1,1,1,1,1,1),aTau(1,1,1,1,1,2),
+     &       aTau(1,1,1,1,1,3),'f06',readStats,avtime,1,.false.)
+
+        call load_avg5(aTau(1,1,1,1,2,1),aTau(1,1,1,1,2,2),
+     &       aTau(1,1,1,1,2,3),aTau(1,1,1,1,3,1),
+     &       aTau(1,1,1,1,3,2),'f07',readStats,avtime,1,.false.)
+
+        call load_avg5(aTau(1,1,1,1,3,3),fTau(1,1,1,1,1,1),
+     &       fTau(1,1,1,1,1,2),fTau(1,1,1,1,1,3),
+     &       fTau(1,1,1,1,2,1),'f08',readStats,avtime,1,.false.)
+
+        call load_avg5(fTau(1,1,1,1,2,2),fTau(1,1,1,1,2,3),
+     &       fTau(1,1,1,1,3,1),fTau(1,1,1,1,3,2),
+     &       fTau(1,1,1,1,3,3),'f09',readStats,avtime,1,.false.)
+
+        call load_avg5(auTau(1,1,1,1,1,1),auTau(1,1,1,1,1,2),
+     &       auTau(1,1,1,1,1,3),auTau(1,1,1,1,2,1),
+     &       auTau(1,1,1,1,2,2),'f10',readStats,avtime,1,.false.)
+
+        call load_avg5(auTau(1,1,1,1,2,3),auTau(1,1,1,1,3,1),
+     &       auTau(1,1,1,1,3,2),auTau(1,1,1,1,3,3),
+     &       avTau(1,1,1,1,1,1),'f11',readStats,avtime,1,.false.)
+
+        call load_avg5(avTau(1,1,1,1,1,2),avTau(1,1,1,1,1,3),
+     &       avTau(1,1,1,1,2,1),avTau(1,1,1,1,2,2),
+     &       avTau(1,1,1,1,2,3),'f12',readStats,avtime,1,.false.)
+
+        call load_avg5(avTau(1,1,1,1,3,1),avTau(1,1,1,1,3,2),
+     &       avTau(1,1,1,1,3,3),awTau(1,1,1,1,1,1),
+     &       awTau(1,1,1,1,1,2),'f13',readStats,avtime,1,.false.)
+
+        call load_avg5(awTau(1,1,1,1,1,3),awTau(1,1,1,1,2,1),
+     &       awTau(1,1,1,1,2,2),awTau(1,1,1,1,2,3),
+     &       awTau(1,1,1,1,3,1),'f14',readStats,avtime,1,.false.)
+
+        call load_avg5(awTau(1,1,1,1,3,2),awTau(1,1,1,1,3,3),
+     &  pdudxavg,pdudyavg,pdudzavg,'f15',readStats,avtime,1,.false.)
+
+        call load_avg5(pdvdxavg,pdvdyavg,pdvdzavg,pdwdxavg,
+     &       pdwdyavg,'f16',readStats,avtime,1,.false.)
+
+        call load_avg5(pdwdzavg,fuuu,
+     &       fuuv,fuuw,fuvv,'f17',readStats,avtime,1,.false.)
+
+        call load_avg5(fuvw,fuww,
+     &       fvvv,fvvw,fvww,'f18',readStats,avtime,1,.false.)
+
+        call load_avg3(upavg,vpavg,wpavg,
+     &       'f19',readStats,avtime,.true.)
+
+     
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Calculate standard statistics for Incompressible flow
+c-----------------------------------------------------------------------   
+
+      subroutine standard_incomp_calc(readStats,ifsample)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+
+      logical ifsample
+      character namef*3
+      integer readStats
+      real temp_time
+      integer lxyze
+
+      lxyze=lx1*ly1*lz1*lelt
+
+      if (ax1.ne.lx1 .or. ay1.ne.ly1 .or. az1.ne.lz1) then
+        if(nid.eq.0) WRITE(6,*)
+     $     'ABORT: wrong size of ax1,ay1,az1 in avg_all(), check SIZE!'
+        call exitt
+      endif
+      if (ax2.ne.lx2 .or. ay2.ne.ay2 .or. az2.ne.lz2) then
+        if(nid.eq.0) WRITE(6,*)
+     $     'ABORT: wrong size of ax2,ay2,az2 in avg_all(), check SIZE!'
+        call exitt
+      endif
+
+      call rzero(uvari,ntot)
+      call rzero(vvari,ntot)
+      call rzero(wvari,ntot)
+      call rzero(uvcov,ntot)
+      call rzero(vwcov,ntot)
+      call rzero(wucov,ntot)
+      call rzero(tvari,ntot)
+      call rzero(pvari,ntot)
+
+      ! REad averages or use the current values of all vars
+      if (readStats.ne.0) then
+        if (nid.eq.0) write(6,*) 'Loading standard averages...'
+        call load_standard_incomp(readStats,atime)
+      endif
+
+   !Var, Covar, RMS, AVG (Reynolds stress)
+      if (nid.eq.0) write(6,*) 'Calculating uiuj...'
+    !uu
+      call variance(uvari,urms,uavg)
+    !vv
+      call variance(vvari,vrms,vavg)
+    !ww
+      call variance(wvari,wrms,wavg)
+    !uv
+      call covariance(uvcov,uvms,uavg,vavg)
+    !vw
+      call covariance(vwcov,vwms,vavg,wavg)
+    !wu
+      call covariance(wucov,wums,wavg,uavg)   
+    !pp
+      call variance(pvari,pmrms,pm1avg)
+    !tt
+      call variance(tvari,trms,tavg)
+ 
+
+      if (nid.eq.0) write(6,*) 'Outpost:'
+     
+        temp_time=time 
+        time=atime
+
+c     !Average Velocity
+c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
+
+c     !Average Variance 
+c     call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
+
+c     !Average Covariance  
+c     call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
+ 
+      time=temp_time
+
+
+
+      if (ifsample) then
+
+        temp_time=time 
+        time=atime
+
+       call sample(uavg,  vavg,  wavg,  pm1avg,  tavg,'ave',
+     &            'uavg','vavg','wavg','pm1avg','tavg')
+
+       call sample(uvari,  vvari,  wvari,  pvari,  tvari,'var',
+     &            'uvari','vvari','wvari','pvari','tvari')
+
+       call sample(uvcov, vwcov,  wucov,  pm1avg,  tavg,'cov',
+     &             'uvcov','vwcov','wucov','pm1avg','tavg')
+
+
+      time=temp_time
+
+      endif
+
+
+
+
+
+      return
+      end
+
+
+c-----------------------------------------------------------------------
+c--- Calculate standard statistics for Compressible flow
+c-----------------------------------------------------------------------   
+
+      subroutine standard_comp_calc(readStats,ifsample)
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVGCOMP'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+
+      logical ifsample
+      character namef*3
+      integer readStats
+      real temp_time
+      integer lxyze
+
+      lxyze=lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+
+      call standard_incomp_calc(readStats,ifsample)
+
+
+      call rzero(favu,ntot)
+      call rzero(favv,ntot)
+      call rzero(favw,ntot)
+
+      call rzero(rhofuu,ntot)
+      call rzero(rhofvv,ntot)
+      call rzero(rhofww,ntot)
+      call rzero(rhofuv,ntot)
+      call rzero(rhofuw,ntot)
+      call rzero(rhofvw,ntot)
+
+      call rzero(fuu,ntot)
+      call rzero(fvv,ntot)
+      call rzero(fww,ntot)
+      call rzero(fuv,ntot)
+      call rzero(fuw,ntot)
+      call rzero(fvw,ntot)
+
+
+      ! REad averages or use the current values of all vars
+      if (readStats.ne.0) then
+        if (nid.eq.0) write(6,*) 'Loading comp averages...'
+        call load_standard_comp(readStats)
+      endif
+
+
+      ! Favre averages
+      if (nid .eq.0)write(6,*)'Calculating Favre averages...'
+
+      ! fu
+      call invcol3(favu,rhou,rhoavg,ntot)
+      ! fv
+      call invcol3(favv,rhov,rhoavg,ntot)
+      ! fw
+      call invcol3(favw,rhow,rhoavg,ntot)
+
+      ! fuu
+      call covariance2(rhofuu,rhouu,rhoavg,favu,favu)
+      call invcol3(fuu,rhofuu,rhoavg,ntot)
+      ! fvv
+      call covariance2(rhofvv,rhovv,rhoavg,favv,favv)
+      call invcol3(fvv,rhofvv,rhoavg,ntot)
+      ! fww
+      call covariance2(rhofww,rhoww,rhoavg,favw,favw)
+      call invcol3(fww,rhofww,rhoavg,ntot)
+      ! fuv
+      call covariance2(rhofuv,rhouv,rhoavg,favu,favv)
+      call invcol3(fuv,rhofuv,rhoavg,ntot)
+      ! fuw
+      call covariance2(rhofuw,rhouw,rhoavg,favu,favw)
+      call invcol3(fuw,rhofuw,rhoavg,ntot)
+      ! fvw
+      call covariance2(rhofvw,rhovw,rhoavg,favv,favw)
+      call invcol3(fvw,rhofvw,rhoavg,ntot)
+
+
+      if (nid.eq.0) write(6,*) 'Outpost:'
+
+        temp_time=time
+        time=atime
+
+      !Average Velocity
+      call outpost2(favu,favv,favw,pm1avg,tavg,1,'fag')
+
+      !Average RMS  
+      call outpost2(fuu,fvv,fww,pm1avg,tavg,1,'frm')
+      call outpost2(fuv,fuw,fvw,pm1avg,tavg,1,'fr2')
+
+      time=temp_time
+
+
+      if (ifsample) then
+
+        temp_time=time
+        time=atime
+
+       call sample(favu,  favv,  favw,  pm1avg,  tavg,'fag',
+     &            'fu','fv','fw','pm1avg','tavg')
+
+       call sample(fuu,  fvv,  fww,  pm1avg,  tavg,'frm',
+     &            'fuu','fvv','fww','pm1avg','tavg')
+
+       call sample(fuv,  fuw,  fvw,  pm1avg,  tavg,'fr2',
+     &            'fuv','fuw','fvw','pm1avg','tavg')
+
+      time=temp_time
+
+      endif
+
+
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Calculate budgets for Incompressible flows
+c-----------------------------------------------------------------------
+
+      subroutine budgets_incomp_calc(readStats,ifsample)
+c
+c     Important! Call this after budgets_avg
+c
+c     This routine is based on avg_all and computes the terms of the 
+c     turbulent kinetic energy equation. These terms are dumped in a 
+c     series of .fld files and can be interpolated over a set of user-
+c     defined points with the results outputted in .csv files.
+c
+c     E denotes the expected value operator and X,Y two
+c     real valued random variables.
+c
+c     variances and covariances can be computed in post-processing step:
+c
+c        var(X)   := E(X^X) - E(X)*E(X)
+c        cov(X,Y) := E(X*Y) - E(X)*E(Y)
+c
+c     Note: The E-operator is linear, in the sense that the expected
+c           value is given by E(X) = 1/N * sum[ E(X)_i ], where E(X)_i
+c           is the expected value of the sub-ensemble i (i=1...N).
+c
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+
+      logical ifsample
+      character namef*3
+      integer readStats 
+      real temp_time
+      integer lxyze
+   
+      lxyze=lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+     
+
+      call standard_incomp_calc(readStats,ifsample)
+
+      ! REad averages or use the current values of all vars
+      if (readStats.ne.0) then
+        if (nid.eq.0) write(6,*) 'Loading incomp averages...'
+        call load_budgets_incomp(readStats)
+      endif
+
+c      call dssum(udxavg,lx1,ly1,lz1)
+c      call col2  (udxavg,vmult,nglob1)
+
+c      call dssum(pudxavg,lx1,ly1,lz1)
+c      call col2  (pudxavg,vmult,nglob1)
+
+!//////////////////////////////////////////////////
+!Calculate KE budget Terms
+!//////////////////////////////////////////////////
+
+   !Dissipation
+      if (nid.eq.0) write(6,*) 'Calculating dissipation...'
+    !uu
+      call ke_diss(eps_uu,udxrms,udyrms,udzrms,udxavg,udyavg,
+     $                     udzavg,udxavg,udyavg,udzavg)  
+    !vv
+      call ke_diss(eps_vv,vdxrms,vdyrms,vdzrms,vdxavg,vdyavg,
+     $                     vdzavg,vdxavg,vdyavg,vdzavg)
+    !ww
+      call ke_diss(eps_ww,wdxrms,wdyrms,wdzrms,wdxavg,wdyavg,
+     $                     wdzavg,wdxavg,wdyavg,wdzavg)
+    !uv
+      call ke_diss(eps_uv,uvdxms,uvdyms,uvdzms,udxavg,udyavg,
+     $                     udzavg,vdxavg,vdyavg,vdzavg)
+    !uw
+      call ke_diss(eps_uw,uwdxms,uwdyms,uwdzms,udxavg,udyavg,
+     $                     udzavg,wdxavg,wdyavg,wdzavg)
+    !vw
+      call ke_diss(eps_vw,vwdxms,vwdyms,vwdzms,vdxavg,vdyavg,
+     $                     vdzavg,wdxavg,wdyavg,wdzavg)    
+    
+   !Production
+      if (nid.eq.0) write(6,*) 'Calculating production...'
+    !uu
+      call ke_prod(prd_uu,uavg,vavg,wavg,uavg,uavg,urms,uvms,wums,
+     $                urms,uvms,wums)
+    !vv
+      call ke_prod(prd_vv,uavg,vavg,wavg,vavg,vavg,uvms,vrms,vwms,
+     $                uvms,vrms,vwms)
+    !ww
+      call ke_prod(prd_ww,uavg,vavg,wavg,wavg,wavg,wums,vwms,wrms,
+     $                wums,vwms,wrms)
+    !uv
+      call ke_prod(prd_uv,uavg,vavg,wavg,uavg,vavg,urms,uvms,wums,
+     $                uvms,vrms,vwms)
+    !uw
+      call ke_prod(prd_uw,uavg,vavg,wavg,uavg,wavg,urms,uvms,wums,
+     $                wums,vwms,wrms)
+    !vw
+      call ke_prod(prd_vw,uavg,vavg,wavg,vavg,wavg,uvms,vrms,vwms,
+     $                wums,vwms,wrms)
+   
+
+ 
+	!Pressure Transport
+      if (nid.eq.0) write(6,*) 'Calculating pressure transport..'
+    !uu
+      call ke_ptr(ptr_uu,udpdxavg,uavg,dpdxavg,udpdxavg,uavg,dpdxavg)
+    !vv
+      call ke_ptr(ptr_vv,vdpdyavg,vavg,dpdyavg,vdpdyavg,vavg,dpdyavg)
+    !ww
+      call ke_ptr(ptr_ww,wdpdzavg,wavg,dpdzavg,wdpdzavg,wavg,dpdzavg)
+    !uv
+      call ke_ptr(ptr_uv,udpdyavg,uavg,dpdyavg,vdpdxavg,vavg,dpdxavg)
+    !uw
+      call ke_ptr(ptr_uw,udpdzavg,uavg,dpdzavg,wdpdxavg,wavg,dpdxavg)
+    !vw
+      call ke_ptr(ptr_vw,vdpdzavg,vavg,dpdzavg,wdpdyavg,wavg,dpdyavg)
+
+ 
+	!Pressure Diffusion
+      if (nid.eq.0) write(6,*) 'Calculating pressure diffusion..'
+    !uu
+      call ke_pdif(pdf_uu,pm1avg,uavg,uavg,upavg,upavg,1,1)
+    !vv
+      call ke_pdif(pdf_vv,pm1avg,vavg,vavg,vpavg,vpavg,2,2)
+    !ww
+      call ke_pdif(pdf_ww,pm1avg,wavg,wavg,wpavg,wpavg,3,3)
+    !uv
+      call ke_pdif(pdf_uv,pm1avg,uavg,vavg,upavg,vpavg,1,2)
+    !uw
+      call ke_pdif(pdf_uw,pm1avg,uavg,wavg,upavg,wpavg,1,3)
+    !vw
+      call ke_pdif(pdf_vw,pm1avg,vavg,wavg,vpavg,wpavg,2,3)
+ 
+   !Pressure Strain
+      if (nid.eq.0) write(6,*) 'Calculating pressure strain..'
+    !uu
+      call ke_pstr(pst_uu,pm1avg,udxavg,udxavg,pudxavg,pudxavg)
+    !vv
+      call ke_pstr(pst_vv,pm1avg,vdyavg,vdyavg,pvdyavg,pvdyavg)
+    !ww
+      call ke_pstr(pst_ww,pm1avg,wdzavg,wdzavg,pwdzavg,pwdzavg)
+    !uv
+      call ke_pstr(pst_uv,pm1avg,udyavg,vdxavg,pudyavg,pvdxavg)
+    !uw
+      call ke_pstr(pst_uw,pm1avg,udzavg,wdxavg,pudzavg,pwdxavg)
+    !vw
+      call ke_pstr(pst_vw,pm1avg,vdzavg,wdyavg,pvdzavg,pwdyavg)
+     
+   !Viscous Diffusion
+      if (nid.eq.0) write(6,*) 'Calculating viscous diffusion..'
+    !uu
+      call ke_vdif(vdf_uu,uavg,uavg,urms)
+    !vv
+      call ke_vdif(vdf_vv,vavg,vavg,vrms)
+    !ww
+      call ke_vdif(vdf_ww,wavg,wavg,wrms)
+    !uv
+      call ke_vdif(vdf_uv,uavg,vavg,uvms)
+    !uw
+      call ke_vdif(vdf_uw,uavg,wavg,wums)
+    !vw
+      call ke_vdif(vdf_vw,vavg,wavg,vwms)  
+	  
+   !Turbulent Diffusion
+      if (nid.eq.0) write(6,*) 'Calculating turbulent diffusion..'
+    !uu
+      call ke_tdif(tdf_uu,uavg,vavg,wavg,uavg,uavg,urms,uuuavg,
+     $                uuvavg,uuwavg,urms,uvms,wums,urms,uvms,wums)
+    !vv
+      call ke_tdif(tdf_vv,uavg,vavg,wavg,vavg,vavg,vrms,uvvavg,
+     $                vvvavg,vvwavg,uvms,vrms,vwms,uvms,vrms,vwms)
+    !ww
+      call ke_tdif(tdf_ww,uavg,vavg,wavg,wavg,wavg,wrms,uwwavg,
+     $                vwwavg,wwwavg,wums,vwms,wrms,wums,vwms,wrms)
+    !uv
+      call ke_tdif(tdf_uv,uavg,vavg,wavg,uavg,vavg,uvms,uuvavg,
+     $                uvvavg,uvwavg,urms,uvms,wums,uvms,vrms,vwms)
+    !uw
+      call ke_tdif(tdf_uw,uavg,vavg,wavg,uavg,wavg,wums,uuwavg,
+     $                uvwavg,uwwavg,urms,uvms,wums,wums,vwms,wrms)
+    !vw
+      call ke_tdif(tdf_vw,uavg,vavg,wavg,vavg,wavg,vwms,uvwavg,
+     $                vvwavg,vwwavg,uvms,vrms,vwms,wums,vwms,wrms)
+
+ 
+   !Buoyancy
+      if (nid.eq.0) write(6,*) 'Calculating buoyancy..'
+    !uu
+      call ke_buoy(buo_uu,uavg,uavg,tavg,utavg,utavg,g,beta0,1,1)
+    !vv
+      call ke_buoy(buo_vv,vavg,vavg,tavg,vtavg,vtavg,g,beta0,2,2)
+    !ww
+      call ke_buoy(buo_ww,wavg,wavg,tavg,wtavg,wtavg,g,beta0,3,3)
+    !uv
+      call ke_buoy(buo_uv,uavg,vavg,tavg,utavg,vtavg,g,beta0,1,2)
+    !uw
+      call ke_buoy(buo_uw,uavg,wavg,tavg,utavg,wtavg,g,beta0,1,3)
+    !vw
+      call ke_buoy(buo_vw,vavg,wavg,tavg,vtavg,wtavg,g,beta0,2,3)
+ 
+
+   !Convection
+      if (nid.eq.0) write(6,*) 'Calculating convection..'
+    !uu
+      call ke_conv(conv_uu,uvari,uavg,vavg,wavg)
+    !vv
+      call ke_conv(conv_vv,vvari,uavg,vavg,wavg)
+    !ww
+      call ke_conv(conv_ww,wvari,uavg,vavg,wavg)
+    !uv
+      call ke_conv(conv_uv,uvcov,uavg,vavg,wavg)
+    !uw
+      call ke_conv(conv_uw,wucov,uavg,vavg,wavg)
+    !vw
+      call ke_conv(conv_vw,vwcov,uavg,vavg,wavg)
+
+!//////////////////////////////////////////////////
+!Prepare Output
+!//////////////////////////////////////////////////
+
+ 
+
+      if (nid.eq.0) write(6,*) 'Outpost:'
+     
+        temp_time=time 
+        time=atime
+
+     
+c  !Average Convection
+c     call outpost2(conv_uu,conv_vv,conv_ww,pm1avg,tavg,1,'cn1')
+c     call outpost2(conv_uv,conv_uw,conv_vw,pm1avg,tavg,1,'cn2')
+c
+c  !Average Dissipation   
+c     call outpost2(eps_uu,eps_vv,eps_ww,pm1avg,tavg,1,'ep1')
+c     call outpost2(eps_uv,eps_uw,eps_vw,pm1avg,tavg,1,'ep2')
+c    
+c  !Average Pressure transport
+c     call outpost2(ptr_uu,ptr_vv,ptr_ww,pm1avg,tavg,1,'pt1')
+c     call outpost2(ptr_uv,ptr_uw,ptr_vw,pm1avg,tavg,1,'pt2')
+c
+c  !Average Production   
+c     call outpost2(prd_uu,prd_vv,prd_ww,pm1avg,tavg,1,'pr1')
+c     call outpost2(prd_uv,prd_uw,prd_vw,pm1avg,tavg,1,'pr2')
+c    
+c  !Average Turbulent Diffusion    
+c     call outpost2(tdf_uu,tdf_vv,tdf_ww,pm1avg,tavg,1,'td1')
+c     call outpost2(tdf_uv,tdf_uw,tdf_vw,pm1avg,tavg,1,'td2')
+c
+c  !Average Pressure Diffusion    
+c     call outpost2(pdf_uu,pdf_vv,pdf_ww,pm1avg,tavg,1,'pd1')
+c     call outpost2(pdf_uv,pdf_uw,pdf_vw,pm1avg,tavg,1,'pd2')
+c    
+c  !Average Pressure Strain   
+c     call outpost2(pst_uu,pst_vv,pst_ww,pm1avg,tavg,1,'ps1')
+c     call outpost2(pst_uv,pst_uw,pst_vw,pm1avg,tavg,1,'ps2')   
+c
+c  !Average Viscous Strain  
+c     call outpost2(vdf_uu,vdf_vv,vdf_ww,pm1avg,tavg,1,'vd1')
+c     call outpost2(vdf_uv,vdf_uw,vdf_vw,pm1avg,tavg,1,'vd2')     
+c    
+c  !Average Buoyancy 
+c     call outpost2(buo_uu,buo_vv,buo_ww,pm1avg,tavg,1,'bu1')
+c     call outpost2(buo_uv,buo_uw,buo_vw,pm1avg,tavg,1,'bu2')     
+
+      time=temp_time
+
+
+
+
+      if (ifsample) then
+
+        temp_time=time 
+        time=atime
+
+       call sample(conv_uu, conv_vv,  conv_ww,  pm1avg,  tavg,'cn1',
+     &            'conv_uu','conv_vv','conv_ww','pm1avg','tavg')
+
+c      call sample(conv_uv,  conv_uw,  conv_vw,  pm1avg,  tavg,'cn2',
+c    &            'conv_uv','conv_uw','conv_vw','pm1avg','tavg')
+
+       call sample(eps_uu,  eps_vv,  eps_ww,  pm1avg,  tavg,'ep1',
+     &            'eps_uu','eps_vv','eps_ww','pm1avg','tavg')
+
+c      call sample(eps_uv, eps_uw,  eps_vw,  pm1avg,  tavg,'ep2',
+c    &            'eps_uv','eps_uw','eps_vw','pm1avg','tavg')
+
+       call sample(prd_uu,  prd_vv,  prd_ww,  pm1avg,  tavg,'pr1',
+     &            'prd_uu','prd_vv','prd_ww','pm1avg','tavg')
+
+c      call sample(prd_uv,  prd_uw,  prd_vw,  pm1avg,  tavg,'pr2',
+c    &            'prd_uv','prd_uw','prd_vw','pm1avg','tavg')
+
+       call sample(ptr_uu,  ptr_vv,  ptr_ww,  pm1avg,  tavg,'pt1',
+     &            'ptr_uu','ptr_vv','ptr_ww','pm1avg','tavg')
+
+c      call sample(ptr_uv,  ptr_uw,  ptr_vw,  pm1avg,  tavg,'pt2',
+c    &            'ptr_uv','ptr_uw','ptr_vw','pm1avg','tavg')
+
+       call sample(tdf_uu,  tdf_vv,  tdf_ww,  pm1avg, tavg,'td1',
+     &            'tdf_uu','tdf_vv','tdf_ww','pm1avg','tavg')
+
+c      call sample(tdf_uv,  tdf_uw,  tdf_vw,  pm1avg,  tavg,'td2',
+c    &            'tdf_uv','tdf_uw','tdf_vw','pm1avg','tavg')
+
+       call sample(pdf_uu,  pdf_vv,  pdf_ww,  pm1avg,  tavg,'pd1',
+     &            'pdf_uu','pdf_vv','pdf_ww','pm1avg','tavg')
+
+c      call sample(pdf_uv,  pdf_uw,  pdf_vw,  pm1avg,  tavg,'pd2',
+c    &            'pdf_uv','pdf_uw','pdf_vw','pm1avg','tavg')
+
+       call sample(pst_uu,  pst_vv,  pst_ww,  pm1avg,  tavg,'ps1',
+     &            'pst_uu','pst_vv','pst_ww','pm1avg','tavg')
+
+c      call sample(pst_uv,  pst_uw,  pst_vw,  pm1avg,  tavg,'ps2',
+c    &            'pst_uv','pst_uw','pst_vw','pm1avg','tavg')   
+
+       call sample(vdf_uu,  vdf_vv,  vdf_ww,  pm1avg,  tavg,'vd1',
+     &            'vdf_uu','vdf_vv','vdf_ww','pm1avg','tavg')
+
+c      call sample(vdf_uv,  vdf_uw,  vdf_vw,  pm1avg,  tavg,'vd2',
+c    &            'vdf_uv','vdf_uw','vdf_vw','pm1avg','tavg')     
+
+c      call sample(buo_uu,  buo_vv,  buo_ww,  pm1avg,  tavg,'bu1',
+c    &            'buo_uu','buo_vv','buo_ww','pm1avg','tavg')
+
+c      call sample(buo_uv,  buo_uw,  buo_vw,  pm1avg,  tavg,'bu2',     
+c    &            'buo_uv','buo_uw','buo_vw','pm1avg','tavg')     
+
+      time=temp_time
+
+      endif
+
+
+      return
+      end
+
+
+c-----------------------------------------------------------------------
+c--- Calculate budgets for Compressible flows
+c-----------------------------------------------------------------------
+
+      subroutine budgets_comp_calc(readStats,ifsample)
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'AVGCOMP'
+      INCLUDE 'FLUIDPROP'
+      INCLUDE 'BUDGETSCOMP'
+
+      logical ifsample
+      character namef*3
+      integer readStats
+      real temp_time
+      integer lxyze
+
+      lxyze=lx1*ly1*lz1*lelt
+
+      ntot  = nx1*ny1*nz1*nelv
+      ntott = nx1*ny1*nz1*nelt
+      nto2  = nx2*ny2*nz2*nelv
+
+
+      call standard_comp_calc(readStats,ifsample)
+
+
+      ! REad averages or use the current values of all vars
+      if (readStats.ne.0) then
+        if (nid.eq.0) write(6,*) 'Loading comp averages...'
+        call load_budgets_comp(readStats)
+      endif
+
+
+      !Convection
+      if (nid.eq.0) write(6,*) 'Calculating comp convection..'
+      !uu
+      call ke_conv(fconv_uu,fuu,rhou,rhov,rhow)
+      !vv
+      call ke_conv(fconv_vv,fvv,rhou,rhov,rhow)
+      !ww
+      call ke_conv(fconv_ww,fww,rhou,rhov,rhow)
+      !uv
+      call ke_conv(fconv_uv,fuv,rhou,rhov,rhow)
+      !uw
+      call ke_conv(fconv_uw,fuw,rhou,rhov,rhow)
+      !vw
+      call ke_conv(fconv_vw,fvw,rhou,rhov,rhow)
+
+
+      !Production
+      if (nid.eq.0) write(6,*) 'Calculating comp production...'
+      !uu
+      call ke_prod(fprd_uu,rhou,rhov,rhow,favu,favu,rhouu,rhouv,rhouw,
+     $                rhouu,rhouv,rhouw)
+      !vv
+      call ke_prod(fprd_vv,rhou,rhov,rhow,favv,favv,rhouv,rhovv,rhovw,
+     $                rhouv,rhovv,rhovw)
+      !ww
+      call ke_prod(fprd_ww,rhou,rhov,rhow,favw,favw,rhouw,rhovw,rhoww,
+     $                rhouw,rhovw,rhoww)
+      !uv
+      call ke_prod(fprd_uv,rhou,rhov,rhow,favu,favv,rhouu,rhouv,rhouw,
+     $                rhouv,rhovv,rhovw)
+      !uw
+      call ke_prod(fprd_uw,rhou,rhov,rhow,favu,favw,rhouu,rhouv,rhouw,
+     $                rhouw,rhovw,rhoww)
+      !vw
+      call ke_prod(fprd_vw,rhou,rhov,rhow,favv,favw,rhouv,rhovv,rhovw,
+     $                rhouw,rhovw,rhoww)
+
+
+      !Dissipation
+      if (nid.eq.0) write(6,*) 'Calculating comp dissipation...'
+
+      call ke_diss_comp(feps_uu,feps_vv,feps_ww,
+     &                  feps_uv,feps_uw,feps_vw,
+     &                  agradutau,
+     &                  agradu,
+     &                  fgradu,
+     &                  atau,
+     &                  ftau)
+
+
+
+      !Mass flux coupling
+      if (nid.eq.0) write(6,*)'Calculating comp mass flux coupling...'
+
+      !uu
+      call ke_mass_coupling(fmc_uu,uavg,favu,uavg,favu,pm1avg,
+     &                      ftau,1,1)
+
+      !vv 
+      call ke_mass_coupling(fmc_vv,vavg,favv,vavg,favv,pm1avg,
+     &                      ftau,2,2)
+
+      !ww 
+      call ke_mass_coupling(fmc_ww,wavg,favw,wavg,favw,pm1avg,
+     &                      ftau,3,3)
+
+      !uv
+      call ke_mass_coupling(fmc_uv,uavg,favu,vavg,favv,pm1avg,
+     &                      ftau,1,2)
+
+      !uw
+      call ke_mass_coupling(fmc_uw,uavg,favu,wavg,favw,pm1avg,
+     &                      ftau,1,3)
+
+
+      !Pressure Strain
+      if (nid.eq.0)write(6,*)'Calculating comp pressure strain...'
+      !uu
+      call ke_pstr_comp(fpst_uu,pm1avg,agradu(1,1,1,1,1,1),
+     &                  agradu(1,1,1,1,1,1),pdudxavg,pdudxavg)
+      !vv
+      call ke_pstr_comp(fpst_vv,pm1avg,agradu(1,1,1,1,2,2),
+     &                  agradu(1,1,1,1,2,2),pdvdyavg,pdvdyavg)
+      !ww
+      call ke_pstr_comp(fpst_ww,pm1avg,agradu(1,1,1,1,3,3),
+     &                  agradu(1,1,1,1,3,3),pdwdzavg,pdwdzavg)
+      !uv
+      call ke_pstr_comp(fpst_uv,pm1avg,agradu(1,1,1,1,1,2),
+     &                  agradu(1,1,1,1,2,1),pdudyavg,pdvdxavg)
+      !uw
+      call ke_pstr_comp(fpst_uw,pm1avg,agradu(1,1,1,1,1,3),
+     &                  agradu(1,1,1,1,3,1),pdudzavg,pdwdxavg)
+      !vw
+      call ke_pstr_comp(fpst_vw,pm1avg,agradu(1,1,1,1,2,3),
+     &                  agradu(1,1,1,1,3,2),pdvdzavg,pdwdyavg)
+      
+
+      !Turbulent Diffusion
+      if (nid.eq.0)write(6,*)'Calculating comp turbulent diffusion...'
+      !uu
+      call ke_tdif_comp(ftdf_uu,favu,favv,favw,favu,favu,rhouu,fuuu,
+     $        fuuv,fuuw,rhouu,rhouv,rhouw,rhouu,rhouv,rhouw,rhoavg)
+      !vv
+      call ke_tdif_comp(ftdf_vv,favu,favv,favw,favv,favv,rhovv,fuvv,
+     $        fvvv,fvvw,rhouv,rhovv,rhovw,rhouv,rhovv,rhovw,rhoavg)
+      !ww
+      call ke_tdif_comp(ftdf_ww,favu,favv,favw,favw,favw,rhoww,fuww,
+     $        fvww,fwww,rhouw,rhovw,rhoww,rhouw,rhovw,rhoww,rhoavg)
+      !uv
+      call ke_tdif_comp(ftdf_uv,favu,favv,favw,favu,favv,rhouv,fuuv,
+     $        fuvv,fuvw,rhouu,rhouv,rhouw,rhouv,rhovv,rhovw,rhoavg)
+      !uw
+      call ke_tdif_comp(ftdf_uw,favu,favv,favw,favu,favw,rhouw,fuuw,
+     $        fuvw,fuww,rhouu,rhouv,rhouw,rhouw,rhovw,rhoww,rhoavg)
+       !vw
+      call ke_tdif_comp(ftdf_vw,favu,favv,favw,favv,favw,rhovw,fuvw,
+     $        fvvw,fvww,rhouv,rhovv,rhovw,rhouw,rhovw,rhoww,rhoavg)
+    
+	!Pressure Diffusion
+      if (nid.eq.0)write(6,*)'Calculating comp pressure diffusion...'
+      !uu
+      call ke_pdif_comp(fpdf_uu,pm1avg,uavg,uavg,upavg,upavg,1,1)
+      !vv
+      call ke_pdif_comp(fpdf_vv,pm1avg,vavg,vavg,vpavg,vpavg,2,2)
+      !ww
+      call ke_pdif_comp(fpdf_ww,pm1avg,wavg,wavg,wpavg,wpavg,3,3)
+      !uv
+      call ke_pdif_comp(fpdf_uv,pm1avg,uavg,vavg,upavg,vpavg,1,2)
+      !uw
+      call ke_pdif_comp(fpdf_uw,pm1avg,uavg,wavg,upavg,wpavg,1,3)
+      !vw
+      call ke_pdif_comp(fpdf_vw,pm1avg,vavg,wavg,vpavg,wpavg,2,3)
+ 
+  
+	!Viscous diffusion
+      if (nid.eq.0) write(6,*)'Calculating comp viscous diffusion...'
+      
+      !uu
+      call ke_vdif_comp(fvdf_uu,
+     &                  autau,uavg,favu,autau,uavg,favu,atau,ftau,
+     &                  1,1)
+
+      call ke_vdif_comp(fvdf_vv,
+     &                  avtau,vavg,favv,avtau,vavg,favv,atau,ftau,
+     &                  2,2)
+
+      call ke_vdif_comp(fvdf_ww,
+     &                  awtau,wavg,favw,awtau,wavg,favw,atau,ftau,
+     &                  3,3)
+
+      call ke_vdif_comp(fvdf_uv,
+     &                  autau,uavg,favu,avtau,vavg,favv,atau,ftau,
+     &                  1,2)
+
+      call ke_vdif_comp(fvdf_uw,
+     &                  autau,uavg,favu,awtau,wavg,favw,atau,ftau,
+     &                  1,3)
+
+      call ke_vdif_comp(fvdf_vw,
+     &                  avtau,vavg,favv,awtau,wavg,favw,atau,ftau,
+     &                  1,3)
+
+      if (nid.eq.0) write(6,*) 'Outpost:'
+
+        temp_time=time
+        time=atime
+
+    !Convection
+      call outpost2(fconv_uu,fconv_vv,fconv_ww,pm1avg,tavg,1,'fc1')
+      call outpost2(fconv_uv,fconv_uw,fconv_vw,pm1avg,tavg,1,'fc2')
+
+    !Production
+      call outpost2(fprd_uu,fprd_vv,fprd_ww,pm1avg,tavg,1,'fp1')
+      call outpost2(fprd_uv,fprd_uw,fprd_vw,pm1avg,tavg,1,'fp2')
+
+    !Dissipation
+      call outpost2(feps_uu,feps_vv,feps_ww,pm1avg,tavg,1,'fe1')
+      call outpost2(feps_uv,feps_uw,feps_vw,pm1avg,tavg,1,'fe2')
+
+    !Mass coupling
+      call outpost2(fmc_uu,fmc_vv,fmc_ww,pm1avg,tavg,1,'fm1')
+      call outpost2(fmc_uv,fmc_uw,fmc_vw,pm1avg,tavg,1,'fm2')
+
+    !Pressure strain
+      call outpost2(fpst_uu,fpst_vv,fpst_ww,pm1avg,tavg,1,'fn1')
+      call outpost2(fpst_uv,fpst_uw,fpst_vw,pm1avg,tavg,1,'fn2')
+
+    !Turbulent diffusion
+      call outpost2(ftdf_uu,ftdf_vv,ftdf_ww,pm1avg,tavg,1,'ft1')
+      call outpost2(ftdf_uv,ftdf_uw,ftdf_vw,pm1avg,tavg,1,'ft2')
+
+    !Pressure diffusion
+      call outpost2(fpdf_uu,fpdf_vv,fpdf_ww,pm1avg,tavg,1,'fd1')
+      call outpost2(fpdf_uv,fpdf_uw,fpdf_vw,pm1avg,tavg,1,'fd2')
+
+    !Viscous diffusion
+      call outpost2(fvdf_uu,fvdf_vv,fvdf_ww,pm1avg,tavg,1,'fv1')
+      call outpost2(fvdf_uv,fvdf_uw,fvdf_vw,pm1avg,tavg,1,'fv2')
+
+      time=temp_time
+
+
+      if (ifsample) then
+
+        temp_time=time
+        time=atime
+
+       call sample(fconv_uu,fconv_vv,fconv_ww,rhoavg,rhoavg,'fc1',
+     &            'fconv_uu','fconv_vv','fconv_ww','rhoavg','rhoavg')
+
+       call sample(fconv_uv,fconv_uw,fconv_vw,rhoavg,rhoavg,'fc2',
+     &            'fconv_uv','fconv_uw','fconv_vw','rhoavg','rhoavg')
+
+       call sample(fprd_uu,fprd_vv,fprd_ww,rhoavg,rhoavg,'fp1',
+     &            'fprd_uu','fprd_vv','fprd_ww','rhoavg','rhoavg')
+
+       call sample(fprd_uv,fprd_uw,fprd_vw,rhoavg,rhoavg,'fp2',
+     &            'fprd_uv','fprd_uw','fprd_vw','rhoavg','rhoavg')
+
+       call sample(feps_uu,feps_vv,feps_ww,rhoavg,rhoavg,'fe1',
+     &            'feps_uu','feps_vv','feps_ww','rhoavg','rhoavg')
+
+       call sample(feps_uv,feps_uw,feps_vw,rhoavg,rhoavg,'fe2',
+     &            'feps_uv','feps_uw','feps_vw','rhoavg','rhoavg')
+
+       call sample(fmc_uu,fmc_vv,fmc_ww,rhoavg,rhoavg,'fm1',
+     &            'fmc_uu','fmc_vv','fmc_ww','rhoavg','rhoavg')
+
+       call sample(fmc_uv,fmc_uw,fmc_vw,rhoavg,rhoavg,'fm2',
+     &            'fmc_uv','fmc_uw','fmc_vw','rhoavg','rhoavg')
+
+       call sample(fpst_uu,fpst_vv,fpst_ww,rhoavg,rhoavg,'fn1',
+     &            'fpst_uu','fpst_vv','fpst_ww','rhoavg','rhoavg')
+
+       call sample(fpst_uv,fpst_uw,fpst_vw,rhoavg,rhoavg,'fn2',
+     &            'fpst_uv','fpst_uw','fpst_vw','rhoavg','rhoavg')
+
+       call sample(ftdf_uu,ftdf_vv,ftdf_ww,rhoavg,rhoavg,'ft1',
+     &            'ftdf_uu','ftdf_vv','ftdf_ww','rhoavg','rhoavg')
+
+       call sample(ftdf_uv,ftdf_uw,ftdf_vw,rhoavg,rhoavg,'ft2',
+     &            'ftdf_uv','ftdf_uw','ftdf_vw','rhoavg','rhoavg')
+
+       call sample(fpdf_uu,fpdf_vv,fpdf_ww,rhoavg,rhoavg,'fd1',
+     &            'fpdf_uu','fpdf_vv','fpdf_ww','rhoavg','rhoavg')
+
+       call sample(fpdf_uv,fpdf_uw,fpdf_vw,rhoavg,rhoavg,'fd2',
+     &            'fpdf_uv','fpdf_uw','fpdf_vw','rhoavg','rhoavg')
+
+       call sample(fvdf_uu,fvdf_vv,fvdf_ww,rhoavg,rhoavg,'fv1',
+     &            'fvdf_uu','fvdf_vv','fvdf_ww','rhoavg','rhoavg')
+
+       call sample(fvdf_uv,fvdf_uw,fvdf_vw,rhoavg,rhoavg,'fv2',
+     &            'fvdf_uv','fvdf_uw','fvdf_vw','rhoavg','rhoavg')
+
+
+
+      time=temp_time
+
+      endif
+
+
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c-----------------------------------------------------------------------
+c---Dissipation 
+c-----------------------------------------------------------------------
+      subroutine ke_diss(eps,abx,aby,abz,adx,ady,adz,bdx,bdy,bdz)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'NEKUSE'
+      INCLUDE 'REFERENCE'
+
+      integer i,j,k,m
+      
+      real eps(lx1,ly1,lz1,lelt),abx(lx1,ly1,lz1,lelt),
+     $     aby(lx1,ly1,lz1,lelt),abz(lx1,ly1,lz1,lelt),
+     $     adx(lx1,ly1,lz1,lelt),ady(lx1,ly1,lz1,lelt),
+     $     adz(lx1,ly1,lz1,lelt),bdx(lx1,ly1,lz1,lelt),
+     $     bdy(lx1,ly1,lz1,lelt),bdz(lx1,ly1,lz1,lelt)
+     
+      do i=1,lx1*ly1*lz1*lelt
+            eps(i,1,1,1) = -2.0*visc0/dens0*(
+     $                     abx(i,1,1,1)+
+     $                     aby(i,1,1,1)+abz(i,1,1,1)-              
+     $                     adx(i,1,1,1)*bdx(i,1,1,1)-
+     $                     ady(i,1,1,1)*bdy(i,1,1,1)-
+     $                     adz(i,1,1,1)*bdz(i,1,1,1))
+      enddo
+      return
+      end
+c-----------------------------------------------------------------------
+c--- Production
+c-----------------------------------------------------------------------
+      subroutine ke_prod(prd,u,v,w,a,b,aums,avms,awms,bums,bvms,bwms)
+     
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+
+      integer i,j,k,m
+
+      real u(lx1,ly1,lz1,lelt),v(lx1,ly1,lz1,lelt),w(lx1,ly1,lz1,lelt),
+     $     a(lx1,ly1,lz1,lelt),b(lx1,ly1,lz1,lelt),
+     $     aums(lx1,ly1,lz1,lelt),avms(lx1,ly1,lz1,lelt),
+     $     awms(lx1,ly1,lz1,lelt),bums(lx1,ly1,lz1,lelt),
+     $     bvms(lx1,ly1,lz1,lelt),bwms(lx1,ly1,lz1,lelt),
+     $     adx(lx1,ly1,lz1,lelt),ady(lx1,ly1,lz1,lelt),
+     $     adz(lx1,ly1,lz1,lelt),bdx(lx1,ly1,lz1,lelt),
+     $     bdy(lx1,ly1,lz1,lelt),bdz(lx1,ly1,lz1,lelt),
+     $     prd(lx1,ly1,lz1,lelt)
+
+      call gradm1(adx,ady,adz,a)
+ 
+      call opcolv(adx,ady,adz,bm1)
+      call opdssum(adx,ady,adz)
+      call opcolv(adx,ady,adz,binvm1)
+
+      call gradm1(bdx,bdy,bdz,b)
+
+      call opcolv(bdx,bdy,bdz,bm1)
+      call opdssum(bdx,bdy,bdz)
+      call opcolv(bdx,bdy,bdz,binvm1)
+
+      do i=1,lx1*ly1*lz1*lelt
+            prd(i,1,1,1) = (a(i,1,1,1)*u(i,1,1,1)-
+     $           aums(i,1,1,1))*bdx(i,1,1,1)+
+     $           (a(i,1,1,1)*v(i,1,1,1)-avms(i,1,1,1))*bdy(i,1,1,1)+
+     $           (a(i,1,1,1)*w(i,1,1,1)-awms(i,1,1,1))*bdz(i,1,1,1)+
+     $           (b(i,1,1,1)*u(i,1,1,1)-bums(i,1,1,1))*adx(i,1,1,1)+
+     $           (b(i,1,1,1)*v(i,1,1,1)-bvms(i,1,1,1))*ady(i,1,1,1)+
+     $           (b(i,1,1,1)*w(i,1,1,1)-bwms(i,1,1,1))*adz(i,1,1,1)
+      enddo
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Pressure Diffusion
+c-----------------------------------------------------------------------
+      subroutine ke_pdif(pdf,p, a,  b,  ppa,  ppb,  ii,jj)
+!                            p  ui  uj  pui  puj   i j
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'REFERENCE'
+
+      integer i,j,k,m,ii,jj
+      real dp1(lx1,ly1,lz1,lelt),
+     &     dp2(lx1,ly1,lz1,lelt),
+     &     dp3(lx1,ly1,lz1,lelt) 
+
+      real d11(lx1,ly1,lz1,lelt),
+     &     d12(lx1,ly1,lz1,lelt),
+     &     d13(lx1,ly1,lz1,lelt) 
+
+      real d21(lx1,ly1,lz1,lelt),
+     &     d22(lx1,ly1,lz1,lelt),
+     &     d23(lx1,ly1,lz1,lelt) 
+
+      real d31(lx1,ly1,lz1,lelt),
+     &     d32(lx1,ly1,lz1,lelt),
+     &     d33(lx1,ly1,lz1,lelt) 
+
+      real pdf(lx1,ly1,lz1,lelt),p(lx1,ly1,lz1,lelt),
+     $     a(lx1,ly1,lz1,lelt),b(lx1,ly1,lz1,lelt),
+     $     ppa(lx1,ly1,lz1,lelt),ppb(lx1,ly1,lz1,lelt)
+
+
+
+      do i=1,(lx1*ly1*lz1*lelt)
+            dp1(i,1,1,1)= 
+     &         (ppa(i,1,1,1)-p(i,1,1,1)*a(i,1,1,1))*delta(jj,1)
+     &        +(ppb(i,1,1,1)-p(i,1,1,1)*b(i,1,1,1))*delta(ii,1)
+
+            dp2(i,1,1,1)= 
+     &         (ppa(i,1,1,1)-p(i,1,1,1)*a(i,1,1,1))*delta(jj,2)
+     &        +(ppb(i,1,1,1)-p(i,1,1,1)*b(i,1,1,1))*delta(ii,2)
+
+            dp3(i,1,1,1)= 
+     &         (ppa(i,1,1,1)-p(i,1,1,1)*a(i,1,1,1))*delta(jj,3)
+     &        +(ppb(i,1,1,1)-p(i,1,1,1)*b(i,1,1,1))*delta(ii,3)
+      enddo
+
+      call gradm1(d11,d12,d13,dp1)
+
+      call opcolv(d11,d12,d13,bm1)
+      call opdssum(d11,d12,d13)
+      call opcolv(d11,d12,d13,binvm1)
+
+      call gradm1(d21,d22,d23,dp2)
+
+      call opcolv(d21,d22,d23,bm1)
+      call opdssum(d21,d22,d23)
+      call opcolv(d21,d22,d23,binvm1)
+
+      call gradm1(d31,d32,d33,dp3)
+
+      call opcolv(d31,d32,d33,bm1)
+      call opdssum(d31,d32,d33)
+      call opcolv(d31,d32,d33,binvm1)
+
+
+      do i=1,lx1*ly1*lz1*lelt
+            pdf(i,1,1,1) = -1.0/dens0*(
+     &                            d11(i,1,1,1)
+     &                           +d22(i,1,1,1)
+     &                           +d33(i,1,1,1))
+      enddo
+
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Pressure Transport
+c-----------------------------------------------------------------------
+      subroutine ke_ptr(ptr,uidpdxj,ui,dpdxj,ujdpdxi,uj,dpdxi)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'REFERENCE'
+
+      integer i
+      real ptr(lx1,ly1,lz1,lelt)
+      real ui(lx1,ly1,lz1,lelt),uj(lx1,ly1,lz1,lelt)
+      real dpdxi(lx1,ly1,lz1,lelt),dpdxj(lx1,ly1,lz1,lelt)
+      real ujdpdxi(lx1,ly1,lz1,lelt),uidpdxj(lx1,ly1,lz1,lelt)
+
+      do i=1,lx1*ly1*lz1*lelt
+        ptr(i,1,1,1)=-1.0/dens0*(
+     &               uidpdxj(i,1,1,1)-ui(i,1,1,1)*dpdxj(i,1,1,1)+
+     &               ujdpdxi(i,1,1,1)-uj(i,1,1,1)*dpdxi(i,1,1,1))
+      enddo
+      
+      return
+      end
+c-----------------------------------------------------------------------
+c--- Pressure Strain
+c-----------------------------------------------------------------------
+      subroutine ke_pstr(pst,p,adb,bda,padb,pbda)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'REFERENCE'
+
+      integer i,j,k,m
+      real pst(lx1,ly1,lz1,lelt),p(lx1,ly1,lz1,lelt),
+     $     adb(lx1,ly1,lz1,lelt),bda(lx1,ly1,lz1,lelt),
+     $     padb(lx1,ly1,lz1,lelt),pbda(lx1,ly1,lz1,lelt)
+
+      do i=1,lx1*ly1*lz1*lelt
+            pst(i,1,1,1) = -1.0/dens0*(padb(i,1,1,1)-
+     $                   p(i,1,1,1)*adb(i,1,1,1)+
+     $                   pbda(i,1,1,1)-p(i,1,1,1)*bda(i,1,1,1))
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
+c--- Viscous Diffusion
+c-----------------------------------------------------------------------
+      subroutine ke_vdif(vdf,a,b,abms)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'NEKUSE'
+      INCLUDE 'REFERENCE'
+
+      integer i,j,k,m
+      real vdf(lx1,ly1,lz1,lelt),a(lx1,ly1,lz1,lelt),
+     $     b(lx1,ly1,lz1,lelt),abms(lx1,ly1,lz1,lelt),
+     $     vdf_temp(lx1,ly1,lz1,lelt)
+
+
+      do i=1,lx1*ly1*lz1*lelt
+            vdf_temp(i,1,1,1) = visc0/dens0*
+     $                (abms(i,1,1,1)-a(i,1,1,1)*b(i,1,1,1))
+      enddo
+
+      call laplacian(vdf,vdf_temp)
+
+      return
+      end
+c-----------------------------------------------------------------------
+c--- Turbulent Diffusion
+c-----------------------------------------------------------------------
+      subroutine ke_tdif(tdf,u,v,w,a,b,ba,abu,abv,abw,au,av,aw,bu,bv,bw)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'NEKUSE'
+
+      integer i,j,k,m
+
+      real tdf(lx1,ly1,lz1,lelt),a(lx1,ly1,lz1,lelt),
+     $     b(lx1,ly1,lz1,lelt),u(lx1,ly1,lz1,lelt),
+     $     v(lx1,ly1,lz1,lelt),w(lx1,ly1,lz1,lelt),
+     $     au(lx1,ly1,lz1,lelt),av(lx1,ly1,lz1,lelt),
+     $     aw(lx1,ly1,lz1,lelt),bu(lx1,ly1,lz1,lelt),
+     $     bv(lx1,ly1,lz1,lelt),bw(lx1,ly1,lz1,lelt),
+     $     abu(lx1,ly1,lz1,lelt),abv(lx1,ly1,lz1,lelt),
+     $     abw(lx1,ly1,lz1,lelt),ba(lx1,ly1,lz1,lelt)
+
+      common /tdif_calc/
+     $     tdf1(lx1,ly1,lz1,lelt),tdf2(lx1,ly1,lz1,lelt),
+     $     tdf3(lx1,ly1,lz1,lelt),tdf1dx(lx1,ly1,lz1,lelt),
+     $     tdf1dy(lx1,ly1,lz1,lelt),tdf1dz(lx1,ly1,lz1,lelt),
+     $     tdf2dx(lx1,ly1,lz1,lelt),tdf2dy(lx1,ly1,lz1,lelt),
+     $     tdf2dz(lx1,ly1,lz1,lelt),tdf3dx(lx1,ly1,lz1,lelt),
+     $     tdf3dy(lx1,ly1,lz1,lelt),tdf3dz(lx1,ly1,lz1,lelt)
+
+      do i=1,lx1*ly1*lz1*lelt
+            tdf1(i,1,1,1) = abu(i,1,1,1)-
+     $                   au(i,1,1,1)*b(i,1,1,1)-
+     $                   a(i,1,1,1)*bu(i,1,1,1)-
+     $                   ba(i,1,1,1)*u(i,1,1,1)+
+     $                   2*a(i,1,1,1)*b(i,1,1,1)*u(i,1,1,1)
+
+            tdf2(i,1,1,1) = abv(i,1,1,1)-
+     $                   av(i,1,1,1)*b(i,1,1,1)-
+     $                   a(i,1,1,1)*bv(i,1,1,1)-
+     $                   ba(i,1,1,1)*v(i,1,1,1)+
+     $                   2*a(i,1,1,1)*b(i,1,1,1)*v(i,1,1,1)
+
+            tdf3(i,1,1,1) = abw(i,1,1,1)-
+     $                   aw(i,1,1,1)*b(i,1,1,1)-
+     $                   a(i,1,1,1)*bw(i,1,1,1)-
+     $                   ba(i,1,1,1)*w(i,1,1,1)+
+     $                   2*a(i,1,1,1)*b(i,1,1,1)*w(i,1,1,1)
+      enddo
+     
+      call gradm1(tdf1dx,tdf1dy,tdf1dz,tdf1)
+
+      call opcolv(tdf1dx,tdf1dy,tdf1dz,bm1)
+      call opdssum(tdf1dx,tdf1dy,tdf1dz)
+      call opcolv(tdf1dx,tdf1dy,tdf1dz,binvm1)
+
+      call gradm1(tdf2dx,tdf2dy,tdf2dz,tdf2)
+
+      call opcolv(tdf2dx,tdf2dy,tdf2dz,bm1)
+      call opdssum(tdf2dx,tdf2dy,tdf2dz)
+      call opcolv(tdf2dx,tdf2dy,tdf2dz,binvm1)
+
+      call gradm1(tdf3dx,tdf3dy,tdf3dz,tdf3)
+
+      call opcolv(tdf3dx,tdf3dy,tdf3dz,bm1)
+      call opdssum(tdf3dx,tdf3dy,tdf3dz)
+      call opcolv(tdf3dx,tdf3dy,tdf3dz,binvm1)
+     
+      do i=1,lx1*ly1*lz1*lelt
+              tdf(i,1,1,1) = -tdf1dx(i,1,1,1)-tdf2dy(i,1,1,1)-
+     $                  tdf3dz(i,1,1,1)
+      enddo
+ 
+      return 
+      end
+
+c-----------------------------------------------------------------------
+c--- Buoyancy
+c-----------------------------------------------------------------------
+      subroutine ke_buoy(buo,a,b,t,at,bt,g,beta,ii,jj)
+
+      INCLUDE 'SIZE'
+   
+      integer ii,jj,i
+      real buo(lx1,ly1,lz1,lelt), a(lx1,ly1,lz1,lelt)
+      real b(lx1,ly1,lz1,lelt), at(lx1,ly1,lz1,lelt)
+      real bt(lx1,ly1,lz1,lelt),t(lx1,ly1,lz1,lelt,ldimt)
+      real g(3),beta
+
+      do i=1,lx1*ly1*lz1*lelt
+        buo(i,1,1,1)=-beta*(
+     &                  g(ii)*(bt(i,1,1,1)-b(i,1,1,1)*t(i,1,1,1,1))+
+     &                  g(jj)*(at(i,1,1,1)-a(i,1,1,1)*t(i,1,1,1,1)))
+      enddo
+
+      return 
+      end
+
+c-----------------------------------------------------------------------
+c--- Convection
+c-----------------------------------------------------------------------
+      subroutine ke_conv(conv,uiuj,u,v,w)
+
+      include 'SIZE'
+      INCLUDE 'TOTAL'
+
+      integer i,ntot
+      real conv(lx1,ly1,lz1,lelt),uiuj(lx1,ly1,lz1,lelt),
+     &     u(lx1,ly1,lz1,lelt),v(lx1,ly1,lz1,lelt),
+     &     w(lx1,ly1,lz1,lelt)
+
+      real dd1(lx1,ly1,lz1,lelt),
+     &     dd2(lx1,ly1,lz1,lelt),
+     &     dd3(lx1,ly1,lz1,lelt) 
+
+      real d11(lx1,ly1,lz1,lelt),
+     &     d12(lx1,ly1,lz1,lelt),
+     &     d13(lx1,ly1,lz1,lelt) 
+
+      real d21(lx1,ly1,lz1,lelt),
+     &     d22(lx1,ly1,lz1,lelt),
+     &     d23(lx1,ly1,lz1,lelt) 
+
+      real d31(lx1,ly1,lz1,lelt),
+     &     d32(lx1,ly1,lz1,lelt),
+     &     d33(lx1,ly1,lz1,lelt) 
+
+
+      ntot=lx1*ly1*lz1*lelt 
+
+      call col3(dd1,uiuj,u,ntot)
+      call col3(dd2,uiuj,v,ntot)
+      call col3(dd3,uiuj,w,ntot)
+
+      call gradm1(d11,d12,d13,dd1)
+
+      call opcolv(d11,d12,d13,bm1)
+      call opdssum(d11,d12,d13)
+      call opcolv(d11,d12,d13,binvm1)
+
+
+      call gradm1(d21,d22,d23,dd2)
+
+      call opcolv(d21,d22,d23,bm1)
+      call opdssum(d21,d22,d23)
+      call opcolv(d21,d22,d23,binvm1)
+    
+
+      call gradm1(d31,d32,d33,dd3)
+
+      call opcolv(d31,d32,d33,bm1)
+      call opdssum(d31,d32,d33)
+      call opcolv(d31,d32,d33,binvm1)
+
+      do i=1,lx1*ly1*lz1*lelt
+        conv(i,1,1,1)=d11(i,1,1,1)+
+     &                d22(i,1,1,1)+
+     &                d33(i,1,1,1)
+      enddo
+
+      return
+      end
+
+
+c-----------------------------------------------------------------------
+c--- Compressible dissipation
+c-----------------------------------------------------------------------
+
+      subroutine ke_diss_comp(feps_uu,feps_vv,feps_ww,
+     &                        feps_uv,feps_uw,feps_vw,
+     &                        agradutau,
+     &                        agradu,
+     &                        fgradu,
+     &                        atau,
+     &                        ftau)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+
+      real feps_uu(lx1,ly1,lz1,lelt)
+      real feps_vv(lx1,ly1,lz1,lelt)
+      real feps_ww(lx1,ly1,lz1,lelt)
+      real feps_uv(lx1,ly1,lz1,lelt)
+      real feps_uw(lx1,ly1,lz1,lelt)
+      real feps_vw(lx1,ly1,lz1,lelt)
+      real agradutau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     agradu(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     fgradu(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     atau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     ftau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     feps(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     agraduftau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     fgraduatau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &     fgraduftau(lx1,ly1,lz1,lelt,ldim,ldim)
+
+      integer ip,i,j,n
+
+      n=lx1*ly1*lz1*lelt
+      call tensorProduct(agraduftau,agradu,ftau,n)
+      call tensorProduct(fgraduatau,fgradu,atau,n)
+      call tensorProduct(fgraduftau,fgradu,ftau,n)
+
+      do ip=1,n
+
+      ! We wouldn't actually need to calculate all but let's
+      ! keep it simple for now
+
+      do i=1,ldim
+      do j=1,ldim
+        feps(ip,1,1,1,i,j)=-(
+     &                        (
+     &                          agradutau(ip,1,1,1,i,j)-
+     &                          agraduftau(ip,1,1,1,i,j)-
+     &                          fgraduatau(ip,1,1,1,i,j)+
+     &                          fgraduftau(ip,1,1,1,i,j)
+     &                         )+
+     &                         ( 
+     &                          agradutau(ip,1,1,1,j,i)-
+     &                          agraduftau(ip,1,1,1,j,i)-
+     &                          fgraduatau(ip,1,1,1,j,i)+
+     &                          fgraduftau(ip,1,1,1,j,i)
+     &                         )
+     &                       )
+      enddo
+      enddo
+        feps_uu(ip,1,1,1)=feps(ip,1,1,1,1,1)
+        feps_vv(ip,1,1,1)=feps(ip,1,1,1,2,2)
+        feps_ww(ip,1,1,1)=feps(ip,1,1,1,3,3)
+        feps_uv(ip,1,1,1)=feps(ip,1,1,1,1,2)
+        feps_uw(ip,1,1,1)=feps(ip,1,1,1,1,3)
+        feps_vw(ip,1,1,1)=feps(ip,1,1,1,2,3)
+      enddo
+
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Compressible Mass flux coupling
+c-----------------------------------------------------------------------
+      subroutine ke_mass_coupling(fmc,uiavg,favui,ujavg,favuj,pm1avg,
+     &                            ftau,ii,jj)
+
+      include 'SIZE'      
+      include 'TOTAL'      
+      include 'FLUIDPROP'      
+
+      integer ii,jj,i
+      real fmc(lx1,ly1,lz1,lelt),
+     &     uiavg(1),favui(1),
+     &     ujavg(1),favuj(1),pm1avg(1),
+     &     ftau(lx1,ly1,lz1,lelt,ldim,ldim)
+      integer lxyze
+      parameter (lxyze=lx1*ly1*lz1*lelt)
+      real pgrad(lxyze,3),taukidiv(lxyze,3),taukjdiv(lxyze,3)
+
+
+      call gradm1(pgrad(1,1),pgrad(1,2),pgrad(1,3),pm1avg)
+
+      call opcolv(pgrad(1,1),pgrad(1,2),pgrad(1,3),bm1)
+      call opdssum(pgrad(1,1),pgrad(1,2),pgrad(1,3))
+      call opcolv(pgrad(1,1),pgrad(1,2),pgrad(1,3),binvm1)
+
+      call gradm1(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),
+     &            ftau(1,1,1,1,ii,1))
+      call opcolv(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),bm1)
+      call opdssum(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3))
+      call opcolv(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),binvm1)
+
+      call gradm1(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),
+     &            ftau(1,1,1,1,jj,1))
+      call opcolv(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),bm1)
+      call opdssum(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3))
+      call opcolv(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),binvm1)
+
+      do i=1,lx1*ly1*lz1*lelt
+        fmc(i,1,1,1)=(ujavg(i)-favuj(i))*taukidiv(i,1)+
+     &               (uiavg(i)-favui(i))*taukjdiv(i,1)
+      enddo
+
+      call gradm1(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),
+     &            ftau(1,1,1,1,ii,2))
+      call opcolv(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),bm1)
+      call opdssum(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3))
+      call opcolv(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),binvm1)
+
+      call gradm1(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),
+     &            ftau(1,1,1,1,jj,2))
+      call opcolv(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),bm1)
+      call opdssum(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3))
+      call opcolv(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),binvm1)
+
+      do i=1,lx1*ly1*lz1*lelt
+        fmc(i,1,1,1)=fmc(i,1,1,1)+(ujavg(i)-favuj(i))*taukidiv(i,2)+
+     &               (uiavg(i)-favui(i))*taukjdiv(i,2)
+      enddo
+
+      call gradm1(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),
+     &            ftau(1,1,1,1,ii,3))
+      call opcolv(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),bm1)
+      call opdssum(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3))
+      call opcolv(taukidiv(1,1),taukidiv(1,2),taukidiv(1,3),binvm1)
+
+      call gradm1(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),
+     &            ftau(1,1,1,1,jj,3))
+      call opcolv(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),bm1)
+      call opdssum(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3))
+      call opcolv(taukjdiv(1,1),taukjdiv(1,2),taukjdiv(1,3),binvm1)
+
+      do i=1,lx1*ly1*lz1*lelt
+        fmc(i,1,1,1)=(ujavg(i)-favuj(i))*taukidiv(i,3)+
+     &               (uiavg(i)-favui(i))*taukjdiv(i,3)
+
+        fmc(i,1,1,1)=fmc(i,1,1,1)*visc(i,1,1,1)
+
+      enddo
+
+      call gradm1(pgrad(1,1),pgrad(1,2),pgrad(1,3),pm1avg)
+
+      call opcolv(pgrad(1,1),pgrad(1,2),pgrad(1,3),bm1)
+      call opdssum(pgrad(1,1),pgrad(1,2),pgrad(1,3))
+      call opcolv(pgrad(1,1),pgrad(1,2),pgrad(1,3),binvm1)
+
+
+      do i=1,lx1*ly1*lz1*lelt
+        fmc(i,1,1,1)=fmc(i,1,1,1)-
+     &                (uiavg(i)-favui(i))*pgrad(i,jj)-
+     &                (ujavg(i)-favuj(i))*pgrad(i,ii)
+
+      enddo
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Compressible Pressure Strain
+c-----------------------------------------------------------------------
+      subroutine ke_pstr_comp(pst,p,adb,bda,padb,pbda)
+      INCLUDE 'SIZE'
+
+      integer i,j,k,m
+      real pst(lx1,ly1,lz1,lelt),p(lx1,ly1,lz1,lelt),
+     $     adb(1),bda(1),
+     $     padb(lx1,ly1,lz1,lelt),pbda(lx1,ly1,lz1,lelt)
+
+      do i=1,lx1*ly1*lz1*lelt
+            pst(i,1,1,1) = -1.0*(padb(i,1,1,1)-
+     $                   p(i,1,1,1)*adb(i)+
+     $                   pbda(i,1,1,1)-p(i,1,1,1)*bda(i))
+      enddo
+
+      return
+      end
+
+
+c-----------------------------------------------------------------------
+c--- Compressible Turbulent Diffusion
+c-----------------------------------------------------------------------
+      subroutine ke_tdif_comp(tdf,u,v,w,a,b,ba,abu,abv,abw,au,av,aw,
+     &                        bu,bv,bw,rhoavg)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'NEKUSE'
+
+      integer i,j,k,m
+
+      real tdf(lx1,ly1,lz1,lelt),a(lx1,ly1,lz1,lelt),
+     $     b(lx1,ly1,lz1,lelt),u(lx1,ly1,lz1,lelt),
+     $     v(lx1,ly1,lz1,lelt),w(lx1,ly1,lz1,lelt),
+     $     au(lx1,ly1,lz1,lelt),av(lx1,ly1,lz1,lelt),
+     $     aw(lx1,ly1,lz1,lelt),bu(lx1,ly1,lz1,lelt),
+     $     bv(lx1,ly1,lz1,lelt),bw(lx1,ly1,lz1,lelt),
+     $     abu(lx1,ly1,lz1,lelt),abv(lx1,ly1,lz1,lelt),
+     $     abw(lx1,ly1,lz1,lelt),ba(lx1,ly1,lz1,lelt)
+
+      real rhoavg(lx1,ly1,lz1,lelt),rho
+
+      common /tdif_calc/
+     $     tdf1(lx1,ly1,lz1,lelt),tdf2(lx1,ly1,lz1,lelt),
+     $     tdf3(lx1,ly1,lz1,lelt),tdf1dx(lx1,ly1,lz1,lelt),
+     $     tdf1dy(lx1,ly1,lz1,lelt),tdf1dz(lx1,ly1,lz1,lelt),
+     $     tdf2dx(lx1,ly1,lz1,lelt),tdf2dy(lx1,ly1,lz1,lelt),
+     $     tdf2dz(lx1,ly1,lz1,lelt),tdf3dx(lx1,ly1,lz1,lelt),
+     $     tdf3dy(lx1,ly1,lz1,lelt),tdf3dz(lx1,ly1,lz1,lelt)
+
+
+
+
+      do i=1,lx1*ly1*lz1*lelt
+        rho=rhoavg(i,1,1,1)
+            tdf1(i,1,1,1) = abu(i,1,1,1)-
+     $                   au(i,1,1,1)*b(i,1,1,1)/rho-
+     $                   a(i,1,1,1)*bu(i,1,1,1)/rho-
+     $                   ba(i,1,1,1)*u(i,1,1,1)/rho+
+     $                   2*a(i,1,1,1)*b(i,1,1,1)*u(i,1,1,1)
+
+            tdf2(i,1,1,1) = abv(i,1,1,1)-
+     $                   av(i,1,1,1)*b(i,1,1,1)/rho-
+     $                   a(i,1,1,1)*bv(i,1,1,1)/rho-
+     $                   ba(i,1,1,1)*v(i,1,1,1)/rho+
+     $                   2*a(i,1,1,1)*b(i,1,1,1)*v(i,1,1,1)
+
+            tdf3(i,1,1,1) = abw(i,1,1,1)-
+     $                   aw(i,1,1,1)*b(i,1,1,1)/rho-
+     $                   a(i,1,1,1)*bw(i,1,1,1)/rho-
+     $                   ba(i,1,1,1)*w(i,1,1,1)/rho+
+     $                   2*a(i,1,1,1)*b(i,1,1,1)*w(i,1,1,1)
+      enddo
+     
+      call gradm1(tdf1dx,tdf1dy,tdf1dz,tdf1)
+
+      call opcolv(tdf1dx,tdf1dy,tdf1dz,bm1)
+      call opdssum(tdf1dx,tdf1dy,tdf1dz)
+      call opcolv(tdf1dx,tdf1dy,tdf1dz,binvm1)
+
+      call gradm1(tdf2dx,tdf2dy,tdf2dz,tdf2)
+
+      call opcolv(tdf2dx,tdf2dy,tdf2dz,bm1)
+      call opdssum(tdf2dx,tdf2dy,tdf2dz)
+      call opcolv(tdf2dx,tdf2dy,tdf2dz,binvm1)
+
+      call gradm1(tdf3dx,tdf3dy,tdf3dz,tdf3)
+
+      call opcolv(tdf3dx,tdf3dy,tdf3dz,bm1)
+      call opdssum(tdf3dx,tdf3dy,tdf3dz)
+      call opcolv(tdf3dx,tdf3dy,tdf3dz,binvm1)
+     
+      do i=1,lx1*ly1*lz1*lelt
+              tdf(i,1,1,1) = -rhoavg(i,1,1,1)*
+     &  (tdf1dx(i,1,1,1)+tdf2dy(i,1,1,1)+tdf3dz(i,1,1,1))
+      enddo
+ 
+      return 
+      end
+
+c-----------------------------------------------------------------------
+c--- Compressible Pressure Diffusion
+c-----------------------------------------------------------------------
+      subroutine ke_pdif_comp(pdf,p, a,  b,  ppa,  ppb,  ii,jj)
+!                            p  ui  uj  pui  puj   i j
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+
+      integer i,j,k,m,ii,jj
+      real dp1(lx1,ly1,lz1,lelt),
+     &     dp2(lx1,ly1,lz1,lelt),
+     &     dp3(lx1,ly1,lz1,lelt) 
+
+      real d11(lx1,ly1,lz1,lelt),
+     &     d12(lx1,ly1,lz1,lelt),
+     &     d13(lx1,ly1,lz1,lelt) 
+
+      real d21(lx1,ly1,lz1,lelt),
+     &     d22(lx1,ly1,lz1,lelt),
+     &     d23(lx1,ly1,lz1,lelt) 
+
+      real d31(lx1,ly1,lz1,lelt),
+     &     d32(lx1,ly1,lz1,lelt),
+     &     d33(lx1,ly1,lz1,lelt) 
+
+      real pdf(lx1,ly1,lz1,lelt),p(lx1,ly1,lz1,lelt),
+     $     a(lx1,ly1,lz1,lelt),b(lx1,ly1,lz1,lelt),
+     $     ppa(lx1,ly1,lz1,lelt),ppb(lx1,ly1,lz1,lelt)
+
+
+
+      do i=1,(lx1*ly1*lz1*lelt)
+            dp1(i,1,1,1)= 
+     &         (ppa(i,1,1,1)-p(i,1,1,1)*a(i,1,1,1))*delta(jj,1)
+     &        +(ppb(i,1,1,1)-p(i,1,1,1)*b(i,1,1,1))*delta(ii,1)
+
+            dp2(i,1,1,1)= 
+     &         (ppa(i,1,1,1)-p(i,1,1,1)*a(i,1,1,1))*delta(jj,2)
+     &        +(ppb(i,1,1,1)-p(i,1,1,1)*b(i,1,1,1))*delta(ii,2)
+
+            dp3(i,1,1,1)= 
+     &         (ppa(i,1,1,1)-p(i,1,1,1)*a(i,1,1,1))*delta(jj,3)
+     &        +(ppb(i,1,1,1)-p(i,1,1,1)*b(i,1,1,1))*delta(ii,3)
+      enddo
+
+      call gradm1(d11,d12,d13,dp1)
+
+      call opcolv(d11,d12,d13,bm1)
+      call opdssum(d11,d12,d13)
+      call opcolv(d11,d12,d13,binvm1)
+
+      call gradm1(d21,d22,d23,dp2)
+
+      call opcolv(d21,d22,d23,bm1)
+      call opdssum(d21,d22,d23)
+      call opcolv(d21,d22,d23,binvm1)
+
+      call gradm1(d31,d32,d33,dp3)
+
+      call opcolv(d31,d32,d33,bm1)
+      call opdssum(d31,d32,d33)
+      call opcolv(d31,d32,d33,binvm1)
+
+
+      do i=1,lx1*ly1*lz1*lelt
+            pdf(i,1,1,1) = -1.0*(
+     &                            d11(i,1,1,1)
+     &                           +d22(i,1,1,1)
+     &                           +d33(i,1,1,1))
+      enddo
+
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Compressible viscous diffusion
+c-----------------------------------------------------------------------
+      subroutine ke_vdif_comp(fvdf,
+     &                  auitau,uiavg,fui,aujtau,ujavg,fuj,atau,ftau,
+     &                  ii,jj)
+
+      INCLUDE 'SIZE' 
+      INCLUDE 'TOTAL'
+
+       real fvdf(1),
+     &      auitau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &      uiavg(lx1,ly1,lz1,lelt),
+     &      fui(lx1,ly1,lz1,lelt),
+     &      aujtau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &      ujavg(lx1,ly1,lz1,lelt),
+     &      fuj(lx1,ly1,lz1,lelt),
+     &      atau(lx1,ly1,lz1,lelt,ldim,ldim),
+     &      ftau(lx1,ly1,lz1,lelt,ldim,ldim)
+
+      integer ii,jj,lxyze,i,j,ip,k
+      parameter (lxyze=lx1*ly1*lz1*lelt)
+      real uitaujk(lxyze,3),ujtauik(lxyze,3)
+      real itaudiv(lxyze,3),jtaudiv(lxyze,3)
+
+
+      do ip=1,lxyze
+        do k=1,ldim
+        uitaujk(ip,k)=auitau(ip,1,1,1,jj,k)
+     &           -uiavg(ip,1,1,1)*ftau(ip,1,1,1,jj,k)
+     &           -fui(ip,1,1,1)*atau(ip,1,1,1,jj,k)
+     &           +fui(ip,1,1,1)*ftau(ip,1,1,1,jj,k)
+        ujtauik(ip,k)=aujtau(ip,1,1,1,jj,k)
+     &           -ujavg(ip,1,1,1)*ftau(ip,1,1,1,ii,k)
+     &           -fuj(ip,1,1,1)*atau(ip,1,1,1,ii,k)
+     &           +fuj(ip,1,1,1)*ftau(ip,1,1,1,ii,k)
+        enddo
+      enddo
+
+      call gradm1(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),uitaujk(1,1))
+
+      call opcolv(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),bm1)
+      call opdssum(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3))
+      call opcolv(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),binvm1)
+
+      call gradm1(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),ujtauik(1,1))
+
+      call opcolv(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),bm1)
+      call opdssum(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3))
+      call opcolv(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),binvm1)
+
+
+      do i=1,lxyze
+        fvdf(i)=itaudiv(i,1)+jtaudiv(i,1)
+      enddo
+
+      call gradm1(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),uitaujk(1,2))
+
+      call opcolv(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),bm1)
+      call opdssum(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3))
+      call opcolv(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),binvm1)
+
+      call gradm1(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),ujtauik(1,2))
+
+      call opcolv(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),bm1)
+      call opdssum(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3))
+      call opcolv(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),binvm1)
+
+
+      do i=1,lxyze
+        fvdf(i)=fvdf(i)+itaudiv(i,2)+jtaudiv(i,2)
+      enddo
+
+      call gradm1(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),uitaujk(1,3))
+
+      call opcolv(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),bm1)
+      call opdssum(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3))
+      call opcolv(itaudiv(1,1),itaudiv(1,2),itaudiv(1,3),binvm1)
+
+      call gradm1(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),ujtauik(1,3))
+
+      call opcolv(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),bm1)
+      call opdssum(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3))
+      call opcolv(jtaudiv(1,1),jtaudiv(1,2),jtaudiv(1,3),binvm1)
+
+
+      do i=1,lxyze
+        fvdf(i)=fvdf(i)+itaudiv(i,3)+jtaudiv(i,3)
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
+c--- Variance 
+c-----------------------------------------------------------------------
+      subroutine variance(var,rms,avg)
+
+      INCLUDE 'SIZE'
+    
+      integer i,j,k,m
+
+      real var(lx1,ly1,lz1,lelt),rms(lx1,ly1,lz1,lelt),
+     $    avg(lx1,ly1,lz1,lelt)
+
+
+      do i=1,lx1*ly1*lz1*lelt
+        var(i,1,1,1) = rms(i,1,1,1) - avg(i,1,1,1) * avg(i,1,1,1)
+      enddo
+
+      return
+      end
+     
+c-----------------------------------------------------------------------
+c--- Covariance
+c-----------------------------------------------------------------------
+      subroutine covariance(cov,ijms,i_avg,j_avg)
+
+      INCLUDE 'SIZE'
+
+      integer i,j,k,m
+
+      real cov(lx1,ly1,lz1,lelt), ijms(lx1,ly1,lz1,lelt),
+     $     i_avg(lx1,ly1,lz1,lelt), j_avg(lx1,ly1,lz1,lelt)
+
+      do i=1,lx1*ly1*lz1*lelt
+        cov(i,1,1,1) = ijms(i,1,1,1) - i_avg(i,1,1,1) * j_avg(i,1,1,1)
+      enddo
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Covariance2 for Favre averaging
+c-----------------------------------------------------------------------
+      subroutine covariance2(cov,ijkms,i_avg,j_avg,k_avg)
+      INCLUDE 'SIZE'
+
+      integer i,j,k,m
+
+      real cov(lx1,ly1,lz1,lelt), ijkms(lx1,ly1,lz1,lelt),
+     $     i_avg(lx1,ly1,lz1,lelt), j_avg(lx1,ly1,lz1,lelt),
+     $     k_avg(lx1,ly1,lz1,lelt)
+
+      do i=1,lx1*ly1*lz1*lelt
+        cov(i,1,1,1) = ijkms(i,1,1,1)-i_avg(i,1,1,1)*j_avg(i,1,1,1)
+     &                                              *k_avg(i,1,1,1)
+      enddo
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Lapacian
+c-----------------------------------------------------------------------
+      subroutine laplacian(gradd,u)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'NEKUSE'
+
+c  Computes the laplacian of variable u using gradm1
+
+      real gradd(lx1,ly1,lz1,lelt),u(lx1,ly1,lz1,lelt),
+     $     udx(lx1,ly1,lz1,lelt),udy(lx1,ly1,lz1,lelt),
+     $     udz(lx1,ly1,lz1,lelt),udxx(lx1,ly1,lz1,lelt),
+     $     udxy(lx1,ly1,lz1,lelt),udxz(lx1,ly1,lz1,lelt),
+     $     udyx(lx1,ly1,lz1,lelt),udyy(lx1,ly1,lz1,lelt),
+     $     udyz(lx1,ly1,lz1,lelt),udzx(lx1,ly1,lz1,lelt),
+     $     udzy(lx1,ly1,lz1,lelt),udzz(lx1,ly1,lz1,lelt)
+
+      integer i,j,k,m
+
+
+      call gradm1(udx,udy,udz,u)
+
+      call opcolv(udx,udy,udz,bm1)
+      call opdssum(udx,udy,udz)
+      call opcolv(udx,udy,udz,binvm1)
+
+      call gradm1(udxx,udxy,udxz,udx)
+
+      call opcolv(udxx,udxy,udxz,bm1)
+      call opdssum(udxx,udxy,udxz)
+      call opcolv(udxx,udxy,udxz,binvm1)
+
+      call gradm1(udyx,udyy,udyz,udy)
+
+      call opcolv(udyx,udyy,udyz,bm1)
+      call opdssum(udyx,udyy,udyz)
+      call opcolv(udyx,udyy,udyz,binvm1)
+
+      call gradm1(udzx,udzy,udzz,udz)
+
+      call opcolv(udzx,udzy,udzz,bm1)
+      call opdssum(udzx,udzy,udzz)
+      call opcolv(udzx,udzy,udzz,binvm1)
+
+
+
+      do i=1,lx1*ly1*lz1*lelt
+          gradd(i,1,1,1) = udxx(i,1,1,1)+udyy(i,1,1,1)+
+     $                     udzz(i,1,1,1)
+      enddo
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c--- Kolomogorov
+c-----------------------------------------------------------------------
+      subroutine kolmogorov(readStats)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'BUDGETSINCOMP'
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'NEKUSE'
+      INCLUDE 'REFERENCE'
+
+      integer readStats
+      real kin_vis,
+     $ koldiff(lx1,ly1,lz1,lelt), kolrat(lx1,ly1,lz1,lelt)
+
+      real gs(lx1,ly1,lz1,lelt), kolmog(lx1,ly1,lz1,lelt),
+     $ diss(lx1,ly1,lz1,lelt), kolmog_t(lx1,ly1,lz1,lelt),
+     $ gamma, vol_tot, avgkol_l, avgkol_t,
+     $ kol_l_min, kol_l_max, kol_t_min, kol_t_max, kol_r_max
+     
+      ntot = nx1*ny1*nz1*nelv
+      kin_vis=visc0/dens0
+      gamma = 1.
+      gamma = gamma/ldim
+
+c Calculate distance between GLL points
+
+      do m=1,nelv
+        do k=1,nz1
+          km = max(1  ,k-1)
+          kp = min(nz1,k+1)
+
+          do j=1,ny1
+            jm = max(1  ,j-1)
+            jp = min(ny1,j+1)
+
+            do i=1,nx1
+              im = max(1  ,i-1)
+              ip = min(nx1,i+1)
+
+              di = (xm1(ip,j,k,m)-xm1(im,j,k,m))**2
+     $            + (ym1(ip,j,k,m)-ym1(im,j,k,m))**2
+     $            + (zm1(ip,j,k,m)-zm1(im,j,k,m))**2
+
+              dj = (xm1(i,jp,k,m)-xm1(i,jm,k,m))**2
+     $            + (ym1(i,jp,k,m)-ym1(i,jm,k,m))**2
+     $            + (zm1(i,jp,k,m)-zm1(i,jm,k,m))**2
+
+              dk = (xm1(i,j,kp,m)-xm1(i,j,km,m))**2
+     $            + (ym1(i,j,kp,m)-ym1(i,j,km,m))**2
+     $            + (zm1(i,j,kp,m)-zm1(i,j,km,m))**2
+
+              di = sqrt(di)/(ip-im)
+              dj = sqrt(dj)/(jp-jm)
+              dk = sqrt(dk)/(kp-km)
+              gs(i,j,k,m) = (di*dj*dk)**gamma
+
+            enddo
+          enddo
+        enddo
+      enddo
+
+
+c Calculate the 6 dissipation component values and sum them for dissipation
+
+      if (readStats.ne.0) then
+        call load_standard_incomp(readStats,atime)
+        call load_budgets_incomp(readStats)
+      endif
+
+c       uu
+        call ke_diss(eps_uu,udxrms,udyrms,udzrms,udxavg,udyavg,
+     $                     udzavg,udxavg,udyavg,udzavg)
+c       vv
+        call ke_diss(eps_vv,vdxrms,vdyrms,vdzrms,vdxavg,vdyavg,
+     $                     vdzavg,vdxavg,vdyavg,vdzavg)
+c       ww
+        call ke_diss(eps_ww,wdxrms,wdyrms,wdzrms,wdxavg,wdyavg,
+     $                     wdzavg,wdxavg,wdyavg,wdzavg)
+c       uv
+        call ke_diss(eps_uv,uvdxms,uvdyms,uvdzms,udxavg,udyavg,
+     $                     udzavg,vdxavg,vdyavg,vdzavg)
+c       uw
+        call ke_diss(eps_uw,uwdxms,uwdyms,uwdzms,udxavg,udyavg,
+     $                     udzavg,wdxavg,wdyavg,wdzavg)
+c       vw
+        call ke_diss(eps_vw,vwdxms,vwdyms,vwdzms,vdxavg,vdyavg,
+     $                     vdzavg,wdxavg,wdyavg,wdzavg)
+
+
+      do i=1,lx1*ly1*lz1*lelt
+      diss(i,1,1,1) = sqrt(eps_uu(i,1,1,1)**2 + eps_vv(i,1,1,1)**2 +
+     $                     eps_ww(i,1,1,1)**2 + eps_uv(i,1,1,1)**2 +
+     $                     eps_uv(i,1,1,1)**2 + eps_uw(i,1,1,1)**2 + 
+     $                     eps_uw(i,1,1,1)**2 + eps_vw(i,1,1,1)**2 +
+     $                     eps_vw(i,1,1,1)**2)
+      enddo
+
+      do i=1,lx1*ly1*lz1*lelt
+        kolmog(i,1,1,1) = ((kin_vis**3)/diss(i,1,1,1))**0.25
+        kolmog_t(i,1,1,1) = (kin_vis/diss(i,1,1,1))**0.5
+        koldiff(i,1,1,1) = kolmog(i,1,1,1) - gs(i,1,1,1)
+        kolrat(i,1,1,1) = gs(i,1,1,1)/kolmog(i,1,1,1)
+      enddo
+ 
+      kol_l_min = glmin(kolmog,ntot)
+      kol_t_min = glmin(kolmog_t,ntot)
+      kol_r_max = glmax(kolrat,ntot)
+      grid_sp = glmax(gs,ntot)
+
+      call outpost2(gs,kolmog,kolmog_t,koldiff,kolrat,ldimt,'kol')
+
+      return
+      end
+c-----------------------------------------------------------------------
+c---LOAD_AVGS     
+c-----------------------------------------------------------------------
+      subroutine load_avg1(avgq1,cname,
+     &                   readStats,avtime,lastRead)
+   
+      INCLUDE 'SIZE'
+      INCLUDE 'ZPER'
+      INCLUDE 'TOTAL'
+
+      real avgq1(lx1,ly1,lz1,lelt)
+      character (3) cname
+      integer readStats
+      real avtime 
+      logical lastRead
+
+      call load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,
+     &              cname,readStats,avtime,1,lastRead,1)
+
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine load_avg2(avgq1,avgq2,cname,
+     &                   readStats,avtime,lastRead)
+   
+      INCLUDE 'SIZE'
+      INCLUDE 'ZPER'
+      INCLUDE 'TOTAL'
+
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt)
+      character (3) cname
+      integer readStats
+      real avtime 
+      logical lastRead
+
+      call load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,
+     &              cname,readStats,avtime,1,lastRead,2)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine load_avg3(avgq1,avgq2,avgq3,cname,
+     &                   readStats,avtime,lastRead)
+   
+      INCLUDE 'SIZE'
+      INCLUDE 'ZPER'
+      INCLUDE 'TOTAL'
+
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt)
+     &    ,avgq3(lx1,ly1,lz1,lelt)
+      character (3) cname
+      integer readStats
+      real avtime 
+      logical lastRead
+
+      call load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,
+     &              cname,readStats,avtime,1,lastRead,3)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine load_avg4(avgq1,avgq2,avgq3,avgq4,cname,
+     &                   readStats,avtime,lastRead)
+   
+      INCLUDE 'SIZE'
+      INCLUDE 'ZPER'
+      INCLUDE 'TOTAL'
+
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
+     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt)
+      character (3) cname
+      integer readStats
+      real avtime 
+      logical lastRead
+
+      call load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,
+     &              cname,readStats,avtime,1,lastRead,4)
+
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine load_avg5(avgq1,avgq2,avgq3,avgq4,avgq5,cname,
+     &                   readStats,avtime,ldimtRead,lastRead)
+      INCLUDE 'SIZE'
+      INCLUDE 'ZPER'
+      INCLUDE 'TOTAL'
+
+      real avgq1(lx1,ly1,lz1,lelt),avgq2(lx1,ly1,lz1,lelt),
+     &     avgq3(lx1,ly1,lz1,lelt),avgq4(lx1,ly1,lz1,lelt),
+     &     avgq5(lx1,ly1,lz1,lelt)
+      character (3) cname
+      integer readStats,ldimtRead
+      real avtime 
+      logical lastRead
+
+      call load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,
+     &              cname,readStats,avtime,ldimtRead,lastRead,5)
+
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine load_avg(avgq1,avgq2,avgq3,avgq4,avgq5,cname,
+     &         readStats,avtime,ldimtRead,lastRead,nFieldsToRead)
+   
+      !IMPLICIT none
+      
+      INCLUDE 'SIZE'
+      INCLUDE 'ZPER'
+      INCLUDE 'TOTAL'
+
+      logical lastRead
+      real avtime
+      integer readStats,ldimtRead
+      parameter(ltot1=lx1*ly1*lz1*lelt)
+      parameter(ltot2=lx2*ly2*lz2*lelt)
+      real avgq1(1),avgq2(1),avgq3(1),avgq4(1),avgq5(ltot1,ldimtRead)
+
+      real temp_time
+      common /outtmp/  w1(ltot1),w2(ltot1),w3(ltot1),wp(ltot2)
+     &                ,wt(ltot1,ldimt)
+
+      integer nFieldsToRead
+      common /size/ lname
+      
+      integer numf,ntot, i, j ,k,m
+      logical there
+      real alpha, beta
+      character fpath*255
+      character(len=255) cwd
+      character (132) auxName,lstr,format_string
+      character (1) fileName(132)
+      character (1) initcOld(132)
+      character (3) cname
+
+      ntot1 = lx1*ly1*lz1*nelt
+      ntot2 = lx2*ly2*lz2*nelt
+    
+      if(ldimtRead.gt.ldimt) then
+        write(6,*) 'ABORT: Reading too many fields (ldimtRead>ldimt)!'
+        call exitt
+      endif
+
+c     zero out solution arrays
+      if (nFieldsToRead.gt.4) then
+         do i=1,ldimtRead
+            call rzero(avgq5(1,i),ntot1)
+         enddo
+      endif
+      if (nFieldsToRead.gt.3) call rzero(avgq4,ntot2)
+      if (nFieldsToRead.gt.2) call rzero(avgq3,ntot1)
+      if (nFieldsToRead.gt.1) call rzero(avgq2,ntot1)
+                              call rzero(avgq1,ntot1)
+
+c     store state variables
+      call copy(w1,vx,ntot1)
+      call copy(w2,vy,ntot1)
+      call copy(w3,vz,ntot1)
+      call copy(wp,pr,ntot2)
+      do i=1,ldimt
+         call copy(wt(1,i),t(1,1,1,1,i),ntot1)
+      enddo
+      
+      temp_time = time
+
+c     store initc
+      call chcopy(initcOld(1),initc(1),132)
+      
+c     modify initc
+      call blank(fileName,132)
+      call blank(format_string,132)
+      call blank(lstr,132)
+
+      ls=ltrunc(session,132) 
+      call chcopy(fileName,cname,3) 
+      call chcopy(fileName(4),session,ls) 
+      call chcopy(fileName(4+ls),'0.f',3) 
+
+      call chcopy(auxName,fileName,ls+7)
+
+      write(lstr,"(I2)") ltrunc(fileName,132)
+
+      format_string = "(A"//trim(lstr)//",I5.5)"
+         
+      write(fpath,format_string)auxName,readStats
+
+c     read data into solution arrays
+      INQUIRE(FILE=fpath,EXIST=there)
+      if (THERE) then
+        WRITE(initc(1),format_string)auxName,readStats
+        call restart(1)
+        call nekgsync()         
+
+      call printminmax
+
+        if (nFieldsToRead.gt.4) then
+           do i=1,ldimtRead
+              call copy(avgq5(1,i),t(1,1,1,1,i),ntot1)
+           enddo
+        endif
+        if (nFieldsToRead.gt.3) call copy(avgq4,pr,ntot2)
+        if (nFieldsToRead.gt.2) call copy(avgq3,vz,ntot1)
+        if (nFieldsToRead.gt.1) call copy(avgq2,vy,ntot1)
+                                call copy(avgq1,vx,ntot1)
+            
+        if (nid.eq.0) write(6,*)'Reading statistics for atime: ',time
+        avtime = time
+      else
+        if (nid.eq.0) write(6,*)'ABORT: Error when reading ',
+     &  trim(fpath),', no such file or directory'
+        call exitt
+      endif
+
+c     restore init c
+      call blank(initc(1),132)
+      call chcopy(initc(1),initcOld(1),132)
+
+c     restore state variables
+      call copy(vx,w1,ntot1)
+      call copy(vy,w2,ntot1)
+      call copy(vz,w3,ntot1)
+      call copy(pr,wp,ntot2)
+      do i=1,ldimt
+         call copy(t(1,1,1,1,i),wt(1,i),ntot1)
+      enddo
+
+      time = temp_time
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine printminmax
+      include 'SIZE'
+      include 'TOTAL'
+
+      real vxmax,vymax,vzmax,prmax,ttmax ! ,psmax(ldimt-1)
+      integer nxyz1,ntotv,ntot2,ntott
+
+      nxyz1 = lx1*ly1*lz1
+      ntotv = nxyz1*nelv
+      ntot2 = lx2*ly2*lz2*nelv
+      ntott = nxyz1*nelt
+
+      vxmax = glmin(vx,ntotv)
+      vymax = glmin(vy,ntotv)
+      vzmax = glmin(vz,ntotv)
+      prmax = glmin(pr,ntot2)
+
+      ntot = nxyz1*nelfld(2)
+      ttmax = glmin(t ,ntott)
+
+c     do i=1,ldimt-1
+c        ntot = nxyz1*nelfld(i+2)
+c        psmax(i) = glmin(T(1,1,1,1,i+1),ntot)
+c     enddo
+
+      if (nio.eq.0) then
+         write(6,20) vxmax,vymax,vzmax,prmax,ttmax
+   20    format(' uvwpt min',5g13.5)
+      endif
+c     if (ldimt-1.gt.0) then
+c        if (nio.eq.0) write(6,21) (psmax(i),i=1,LDIMT-1)
+c  21    format(' PS min   ',50g13.5)
+c     endif
+
+      vxmax = glmax(vx,ntotv)
+      vymax = glmax(vy,ntotv)
+      vzmax = glmax(vz,ntotv)
+      prmax = glmax(pr,ntot2)
+
+      ntot = nxyz1*nelfld(2)
+      ttmax = glmax(t ,ntott)
+
+c     do i=1,ldimt-1
+c        ntot = nxyz1*nelfld(i+2)
+c        psmax(i) = glmax(T(1,1,1,1,i+1),ntot)
+c     enddo
+
+      if (nio.eq.0) then
+         write(6,17) vxmax,vymax,vzmax,prmax,ttmax
+   17    format(' uvwpt max',5g13.5)
+      endif
+
+c     if (ldimt-1.gt.0) then
+c        if (nio.eq.0)  then
+c           write(6,18) (psmax(i),i=1,ldimt-1)
+c  18       format(' PS max   ',50g13.5)
+c        endif
+c     endif
+
+      return
+      end
+c-----------------------------------------------------------------------
+      real function delta(i,j)
+      
+      integer i,j
+
+      if (i.eq.j) then
+        delta=1.0
+      else
+        delta=0.0
+      endif
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine sample(vxAux,vyAux,vzAux,prAux,tAux,fileName,
+     &                  name1,name2,name3,name4,name5)
+
+      include 'SIZE'
+      include 'TOTAL'
+
+      integer i,nRows,n,currPos,icall
+      save icall
+      data    icall /1/
+      integer lxyze
+      logical there
+      parameter (lxyze=lx1*ly1*lz1*lelt)
+      real vxAux(lxyze),vyAux(lxyze),vzAux(lxyze),
+     &     prAux(lxyze),tAux(lxyze)
+      real vxOld(lxyze),vyOld(lxyze),vzOld(lxyze),
+     &     prOld(lxyze),tOld(lxyze)
+      real aux1,aux2,aux3,aux4,aux5,aux6
+      character(3) fileName 
+      character(7) fileNameTot
+      character(len=132) fpath
+      character(len=*) name1,name2,name3,name4,name5
+
+
+      do i=1,lx1*ly1*lz1*nelv
+        vxOld(i)=vx(i,1,1,1)
+        vyOld(i)=vy(i,1,1,1)
+        vzOld(i)=vz(i,1,1,1)
+        prOld(i)=pr(i,1,1,1)
+        tOld(i)=t(i,1,1,1,1)
+ 
+        vx(i,1,1,1)=vxAux(i)
+        vy(i,1,1,1)=vyAux(i)
+        vz(i,1,1,1)=vzAux(i)
+        pr(i,1,1,1)=prAux(i)
+        t(i,1,1,1,1)=tAux(i)
+      enddo
+
+
+      call hpts()
+
+      do i=1,lx1*ly1*lz1*nelv
+        vx(i,1,1,1)=vxOld(i)
+        vy(i,1,1,1)=vyOld(i)
+        vz(i,1,1,1)=vzOld(i)
+        pr(i,1,1,1)=prOld(i)
+        t(i,1,1,1,1)=tOld(i)
+      enddo
+
+!     File has been written, let's copy it
+
+      call nekgsync()         
+
+      if (nid.eq.0) then
+        call blank(fileNameTot,132)      
+
+        fileNameTot=fileName//".dat"
+        call addToPath(fileNameTot,fpath)
+
+        inquire (file=fpath,exist=there)
+
+        if (there) then
+
+          write(6,*)'Rewriting file: ',trim(fileNameTot)
+
+          open(unit=987,FILE=trim(fileNameTot),status='old')
+          close (987,status='delete')
+      
+        endif
+
+        open(unit=987,FILE=trim(fileNameTot),status='new')
+
+        rewind(50)
+
+        read(50,*)nRows
+        do i=1,nRows*icall
+          read(50,*)
+        enddo
+
+        write(987,'(1p,6A15)')'atime',name1,name2,name3,name4,name5
+
+        do i=1,nRows
+          read(50,'(1p,6E15.7)')aux1,aux2,aux3,aux4,aux5,aux6
+          write(987,'(1p,6E15.7)')aux1,aux2,aux3,aux4,aux5,aux6
+        enddo
+
+        close(unit=987)
+
+
+
+      endif
+
+      icall = icall+1
+      call nekgsync()         
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine addToPath(dirname,fpath)
+      INCLUDE 'SIZE'
+      INCLUDE 'INPUT'
+   
+      character (len=132) oldPath
+      common /pathVars/ oldPath  
+      character(len=132) path2,formatString,lpath,fpath
+      character(len=*) dirname
+
+      call chcopy(oldPath,path,132)
+
+      write(lpath,"(I2)") ltrunc(path,132)
+      formatString = "(A"//trim(lpath)//","//"'"//trim(dirname)//"')"
+      call blank(fpath,132)
+      write(fpath,formatString)path
+
+      return
+      end
+c-----------------------------------------------------------------------
+c-----------------------------------------------------------------------
+      subroutine probePoint !(uavg,vavg,wavg,urms,vrms,wrms)
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'AVG'
+
+c     real uavg(lx1,ly1,lz1,lelt)
+c     real vavg(lx1,ly1,lz1,lelt)
+c     real wavg(lx1,ly1,lz1,lelt)
+c     real urms(lx1,ly1,lz1,lelt)
+c     real vrms(lx1,ly1,lz1,lelt)
+c     real wrms(lx1,ly1,lz1,lelt)
+      real k(lx1,ly1,lz1,lelt)
+      real umag(lx1,ly1,lz1,lelt)
+      real umax,uave,kmax,kave,vol
+      integer i,ntot
+      ntot=lx1*ly1*lz1*nelv
+
+      do i=1,ntot
+        umag(i,1,1,1)=sqrt(uavg(i,1,1,1)**2+
+     &                     vavg(i,1,1,1)**2+
+     &                     wavg(i,1,1,1)**2)
+        k(i,1,1,1)=0.5*
+     &                (urms(i,1,1,1)-uavg(i,1,1,1)*uavg(i,1,1,1)+
+     &                 vrms(i,1,1,1)-vavg(i,1,1,1)*vavg(i,1,1,1)+
+     &                 wrms(i,1,1,1)-wavg(i,1,1,1)*wavg(i,1,1,1))
+      enddo
+
+      vol=glsum(bm1,ntot)
+
+      umax=glmax(umag,ntot)
+      kmax=glmax(k,ntot)
+      uave=glsc2(umag,bm1,ntot)/vol
+      kave=glsc2(k,bm1,ntot)/vol
+
+      if(nid.eq.0) then
+        write(6,258)'Umax:',umax
+        write(6,258)'Uave:',uave
+        write(6,258)'kmax:',kmax
+        write(6,258)'kave:',kave
+      endif
+
+ 258  format(a6,1es15.8)
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+c
+c   AVERAGING FUNCTIONS
+c
+c-----------------------------------------------------------------------
+c---AVG4  
+c-----------------------------------------------------------------------     
+      subroutine avg4(avg,f,g,h,alpha,beta,n,name,ifverbose)
+      INCLUDE 'SIZE'
+      INCLUDE 'TSTEP'
+c
+      real avg(n),f(n),g(n),h(n)
+      character*4 name
+      logical ifverbose
+c
+      do k=1,n
+        avg(k) = alpha*avg(k) + beta*f(k)*g(k)*h(k)
+      enddo
+c
+      if (ifverbose) then
+        avgmax = glmax(avg,n)
+        avgmin = glmin(avg,n)
+        if (nid.eq.0) WRITE(6,1) istep,time,avgmin,avgmax
+     $                           ,alpha,beta,name
+    1   FORMAT(i9,1p5e13.5,1x,a4,' av4mnx')
+      endif
+c
+      return
+      end
+c-----------------------------------------------------------------------
+c---FAVRE AVG1
+c-----------------------------------------------------------------------     
+      subroutine favg1(favg,rhoMean,rho,f,alpha,beta,n,name,ifverbose)
+      INCLUDE 'SIZE'
+      INCLUDE 'TSTEP'
+c
+      real favg(n),f(n),rho(n),rhoMean(n)
+      character*5 name
+      logical ifverbose
+c
+      do k=1,n
+        favg(k) = (alpha*favg(k)*rhoMean(k) + beta*f(k)*rho(k))/
+     &           (alpha*rhoMean(k)+beta*rho(k))
+      enddo
+c
+      if (ifverbose) then
+        avgmax = glmax(favg,n)
+        avgmin = glmin(favg,n)
+        if (nid.eq.0) WRITE(6,1) istep,time,avgmin,avgmax
+     $                           ,alpha,beta,name
+    1   FORMAT(i9,1p5e13.5,1x,a4,'fav1mnx')
+      endif
+c
+      return
+      end
+     
+c-----------------------------------------------------------------------
+c---FAVRE AVG2
+c-----------------------------------------------------------------------     
+      subroutine favg3(favg,rhoMean,rho,f,g,alpha,beta,n,name,ifverb)
+      INCLUDE 'SIZE'
+      INCLUDE 'TSTEP'
+c
+      real favg(n),f(n),g(n),rho(n),rhoMean(n)
+      character*4 name
+      logical ifverb
+c
+      do k=1,n
+        favg(k) = (alpha*favg(k)*rhoMean(k) + beta*f(k)*g(k)*rho(k))/
+     &           (alpha*rhoMean(k)+beta*rho(k))
+      enddo
+c
+      return
+      end
+c-----------------------------------------------------------------------
+c---FAVRE AVG4
+c-----------------------------------------------------------------------     
+      subroutine favg4(favg,rhoMean,rho,f,g,h,alpha,beta,n,name,ifverb)
+      INCLUDE 'SIZE'
+      INCLUDE 'TSTEP'
+c
+      real favg(n),f(n),g(n),h(n),rho(n),rhoMean(n)
+      character*6 name
+      logical ifverb
+c
+      do k=1,n
+        favg(k)=(alpha*favg(k)*rhoMean(k)+beta*f(k)*g(k)*h(k)*rho(k))/
+     &           (alpha*rhoMean(k)+beta*rho(k))
+      enddo
+c
+      return
+      end
+c-----------------------------------------------------------------------
+c---FAVRE AVG1 for tensors
+c-----------------------------------------------------------------------     
+      subroutine favg1tensor(favg,rhoMean,rho,f,
+     &                       alpha,beta,n,name,ifverbose)
+      INCLUDE 'SIZE'
+      INCLUDE 'TSTEP'
+c
+      real favg(lx1,ly1,lz1,lelt,ldim,ldim)
+      real f(lx1,ly1,lz1,lelt,ldim,ldim)
+      real rho(n),rhoMean(n)
+      integer i,j,ip
+      character*5 name
+      logical ifverbose
+
+      do i=1,ldim
+      do j=1,ldim
+      do ip=1,n
+        favg(ip,1,1,1,i,j) = (alpha*favg(ip,1,1,1,i,j)*rhoMean(ip) 
+     &                       + beta*f(ip,1,1,1,i,j)*rho(ip))/
+     &           (alpha*rhoMean(ip)+beta*rho(ip))
+      enddo
+      enddo
+      enddo
+
+      return
+      end
+ 
+c-----------------------------------------------------------------------
+c---AVG1 for tensors
+c-----------------------------------------------------------------------     
+      subroutine avg1Tensor(favg,f,
+     &                       alpha,beta,n,name,ifverbose)
+      INCLUDE 'SIZE'
+      INCLUDE 'TSTEP'
+c
+      real favg(lx1,ly1,lz1,lelt,ldim,ldim)
+      real f(lx1,ly1,lz1,lelt,ldim,ldim)
+      integer i,j,ip
+      character*5 name
+      logical ifverbose
+
+      do i=1,ldim
+      do j=1,ldim
+      do ip=1,n
+        favg(ip,1,1,1,i,j) = alpha*favg(ip,1,1,1,i,j) 
+     &                       + beta*f(ip,1,1,1,i,j)
+      enddo
+      enddo
+      enddo
+
+      return
+      end
+ 
+c-----------------------------------------------------------------------
+c--- Calculation of viscous stress tensor for the general case
+c-----------------------------------------------------------------------     
+      subroutine calcTau(tau,gradu)
+
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+      INCLUDE 'FLUIDPROP'
+
+          
+      integer i,j,ip
+      real tau(lx1,ly1,lz1,lelt,ldim,ldim) 
+      real gradu(lx1,ly1,lz1,lelt,ldim,ldim)
+      
+       !tau(i,j)= mu * (dui/dxj + duj/dxi -2/3 delta(i,j)duk/dxk)
+
+     
+      do ip=1,lx1*ly1*lz1*lelt
+        do i=1,ldim
+        do j=1,ldim
+          tau(ip,1,1,1,i,j)=visc(ip,1,1,1)*(gradu(ip,1,1,1,i,j)+
+     &                                      gradu(ip,1,1,1,j,i)-
+     &                  2.0/3.0*delta(i,j)*(gradu(ip,1,1,1,1,1)+
+     &                                      gradu(ip,1,1,1,2,2)+
+     &                                      gradu(ip,1,1,1,3,3)))
+        enddo
+        enddo
+      enddo
+
+      return
+      end
+c----------------------------------------------------------------------
+      subroutine tensorProduct(graduTau,gradu,tau,n)
+      INCLUDE 'SIZE'
+      INCLUDE 'TOTAL'
+
+      real graduTau(lx1,ly1,lz1,lelt,ldim,ldim)
+      real gradu(lx1,ly1,lz1,lelt,ldim,ldim)
+      real tau(lx1,ly1,lz1,lelt,ldim,ldim)
+      integer i,j,k,ip,n
+
+      ! Note that tau is a symmetric tensor
+
+      do ip=1,n
+        do i=1,ldim
+        do j=1,ldim
+          graduTau(ip,1,1,1,i,j)=0.0
+        do k=1,ldim
+          graduTau(ip,1,1,1,i,j)=graduTau(ip,1,1,1,i,j)+
+     &                           gradu(ip,1,1,1,i,k)*tau(ip,1,1,1,k,j)
+        enddo
+        enddo
+        enddo
+      enddo
+
+      return
+      end
+
+
+c      subroutine removeFromPath(dirname)
+c      INCLUDE 'SIZE'
+c      INCLUDE 'INPUT'
+c
+c      character (len=132) oldPath
+c      common /pathVars/ oldPath  
+c      character(len=132) path2 
+c      character(len=*) dirname
+c      
+c      call blank(path,132)
+c      call chcopy(path,oldPath)
+c
+c      return
+c      end
+
+
+C=======================================================================   

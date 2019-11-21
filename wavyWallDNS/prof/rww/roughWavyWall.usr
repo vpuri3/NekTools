@@ -1,0 +1,349 @@
+C-----------------------------------------------------------------------
+c
+c	Ramesh's Periodic Hill w/ wall shape function & ~ target res
+c
+C
+C  user specified routines:
+C     - userbc : boundary conditions
+C     - useric : initial conditions
+C     - uservp : variable properties
+C     - userf  : local acceleration term for fluid
+C     - userq  : local source term for scalars
+C     - userchk: general purpose routine for checking errors etc.
+C
+C-----------------------------------------------------------------------
+# define tSTATSTART param(3)
+# define tSTATFREQ  param(4)
+# define readSTAT   param(5)
+C-----------------------------------------------------------------------
+      include 'budgets.usr'
+      include 'tke.usr'
+      include 'wall.usr'
+C-----------------------------------------------------------------------
+      subroutine uservp(ix,iy,iz,eg) ! set variable properties
+      include 'SIZE'
+      include 'TOTAL'
+      include 'NEKUSE'
+      include 'REFERENCE'
+      include 'FLUIDPROP'
+
+      integer e,f,eg
+
+      e = gllel(eg)
+
+      if(ifield.eq.1) then !momentum
+        utrans=dens0
+        udiff=visc0
+      elseif(ifield.eq.ifld_h) then !enthalpy
+        utrans=dens0*thcap0
+        udiff=thcond0
+      endif
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine userf(ix,iy,iz,eg) ! set acceleration term
+c
+c     Note: this is an acceleration term, NOT a force!
+c     Thus, ffx will subsequently be multiplied by rho(x,t).
+c
+      include 'SIZE'
+      include 'TOTAL'
+      include 'NEKUSE'
+      common /cforce/ ffx_new,ffy_new,ffz_new
+
+      integer e,f,eg
+c     e = gllel(eg)
+
+      ffx = 0.0
+      ffy = 0.0
+      ffz = 0.0
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine userq(ix,iy,iz,eg) ! set source term
+      include 'SIZE'
+      include 'TOTAL'
+      include 'NEKUSE'
+
+      integer e,f,eg
+c     e = gllel(eg)
+
+      qvol   = 0.0
+      source = 0.0
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine userbc(ix,iy,iz,iside,ieg) ! set up boundary conditions
+c     NOTE ::: This subroutine MAY NOT be called by every process
+      include 'SIZE'
+      include 'TOTAL'
+      include 'NEKUSE'
+
+c      if (cbc(iside,gllel(ieg),ifield).eq.'v01')
+
+c	Empty/no call to with BCs P, W, SYM!
+
+      ux   = 0.0
+      uy   = 0.0
+      uz   = 0.0
+      temp = 0.0
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine useric(ix,iy,iz,ieg) ! set up initial conditions
+      include 'SIZE'
+      include 'TOTAL'
+      include 'NEKUSE'
+
+      ux   = 1.0
+      uy   = 0.0
+      uz   = 0.0
+      temp = 0.0
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine userchk()
+      include 'SIZE'
+      include 'TOTAL'
+
+      integer nelx,nely,nelz
+      integer avgtyp,readstats,idir_plnr,idir_line,idir_geom
+      integer idir_sctr,iface
+      character*3 bctyp
+
+      integer gs_plnr_hndl
+      save    gs_plnr_hndl
+      data    gs_plnr_hndl / 0 /
+ 
+      integer gs_line_hndl
+      save    gs_line_hndl
+      data    gs_line_hndl / 0 /
+ 
+      integer gs_geom_hndl
+      save    gs_geom_hndl
+      data    gs_geom_hndl / 0 /
+
+      integer gs_sctr_hndl
+      save    gs_sctr_hndl
+      data    gs_sctr_hndl / 0 /
+ 
+      nelx      = 128
+      nely      = 32
+      nelz      = 32
+ 
+c--------------------
+c     avgtyp    = -4 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
+c     readstats = int(readSTAT)
+
+c     idir_sctr = 2
+c     idir_line = 0
+c     idir_plnr = 3
+c     idir_geom = 1
+
+c     iface     = 1
+c     bctyp     = 'W  '
+c     
+c     call e2_out
+
+c     call postProcess(nelx,nely,nelz,avgtyp,readstats
+c    $                ,gs_line_hndl,idir_line
+c    $                ,gs_plnr_hndl,idir_plnr
+c    $                ,gs_geom_hndl,idir_geom
+c    $                ,gs_sctr_hndl,idir_sctr,iface,bctyp)
+c--------------------
+      avgtyp    = -4 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
+      readstats = int(readSTAT)
+ 
+      idir_sctr = 2
+      idir_line = 2
+      idir_plnr = 3
+      idir_geom = 1
+
+      iface     = 1
+      bctyp     = 'W  '
+      
+      call e2_out
+
+      call postProcess(nelx,nely,nelz,avgtyp,readstats
+     $                ,gs_line_hndl,idir_line
+     $                ,gs_plnr_hndl,idir_plnr
+     $                ,gs_geom_hndl,idir_geom
+     $                ,gs_sctr_hndl,idir_sctr,iface,bctyp)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine usrdat()   ! This routine to modify element vertices
+      include 'SIZE'
+      include 'TOTAL'
+      include 'REFERENCE'  
+      include 'FLUIDPROP'  
+
+      common /cdsmag/ ediff(lx1,ly1,lz1,lelv)
+
+      dens0   = param(1)
+      visc0   = param(2)
+      thcap0  = 1.
+      thcond0 = 1.
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine usrdat2()  ! This routine to modify mesh coordinates
+      include 'SIZE'
+      include 'TOTAL'
+
+c---------
+      parameter (lbc=10) ! Maximum number of bc types
+      character*3 f2tbc(2,lbc)
+c---------
+
+!..   declare some local variables
+      REAL*8 lambda
+
+c---------
+      nfield = 1 ! 1 == only flow field
+      nbc=0
+      call add_temp(f2tbc,nbc,1) !
+c---------
+
+      nt = nx1*ny1*nz1*nelt
+
+!..   the geometry fot this domain is taken from the paper by Mass & Schumann
+!..   (Ref.: http://elib.dlr.de/31857/1/94-Maass.pdf)
+      delta  = 2.54         !.. this is the height of the crest of the wavy wall
+      lambda = 20.0*delta   !.. this is the wavelength of the wavy wall (in mm)
+      hmax   = lambda       !.. depth of the domain in mm
+
+      delta2 = 0.4*delta    !.. this is the maximum ampliture of the perturbations
+                            !.. on the smooth wavy wall.
+
+      frequency = 5.0       !.. this is the frequency of the perturbation wave that
+                            !.. rides on the smooth wavy wall
+
+      domainLength = 4.0*lambda
+      xStartDomain = 0.0
+      xEndDomain   = domainLength
+
+      domainHeight = 1.0*lambda
+      yStartDomain = 0.0
+      yEndDomain   = ( delta + domainHeight )
+
+      domainSpan   = 2.0*lambda
+      zStartDomain = 0.0
+      zEndDomain   = domainSpan
+
+      call rescale_x(xm1, xStartDomain, xEndDomain)
+      call rescale_x(ym1, yStartDomain, yEndDomain)
+      call rescale_x(zm1, zStartDomain, zEndDomain)
+
+      nt = nx1*ny1*nz1*nelt
+      do i=1,nt
+        x  = xm1(i,1,1,1)
+        y  = ym1(i,1,1,1)
+
+        yw = bottomSWW(x, delta, lambda, delta2, frequency)
+
+        yy = (1. - yw/yEndDomain)*y + yw	! 0->yw & ymax=fix
+
+        ym1(i,1,1,1) = yy 
+      enddo
+
+      scale = 1./hmax			! scale by the depth of the domain (hmax)
+      call rescale_x(xm1, xStartDomain*scale, xEndDomain*scale)
+      call rescale_x(ym1, yStartDomain*scale, yEndDomain*scale)
+      call rescale_x(zm1, zStartDomain*scale, zEndDomain*scale)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine usrdat3()
+      include 'SIZE'
+      include 'TOTAL'
+
+      param(54) = -1
+      param(55) = 1
+
+      return
+      end
+C=======================================================================
+      subroutine e2_out
+      include 'SIZE'
+      include 'TOTAL'
+c
+c     prints out uvwp abs max and volume average/rms
+ 
+
+      n   = nx1*ny1*nz1*nelv
+      m   = nx2*ny2*nz2*nelv
+      vxm = glamax(vx,n)			! absolute value max
+      vym = glamax(vy,n)
+      prm = glamax(pr,m)
+      vxa = glsc2(vx,   bm1,n) / volvm1		! volume-average
+      vya = glsc2(vy,   bm1,n) / volvm1
+      pra = glsc2(pr,   bm2,m) / volvm2
+      vx2 = glsc3(vx,vx,bm1,n) / volvm1
+      vy2 = glsc3(vy,vy,bm1,n) / volvm1
+      pr2 = glsc3(pr,pr,bm2,m) / volvm2
+      vx2 = vx2 - vxa*vxa
+      vy2 = vy2 - vya*vya
+      pr2 = pr2 - pra*pra
+      if (vx2.gt.0) vx2 = sqrt(vx2)		! volume-rms
+      if (vy2.gt.0) vy2 = sqrt(vy2)
+      if (pr2.gt.0) pr2 = sqrt(pr2)
+
+      if (if3d) then				! 3D
+         vzm = glamax(vz,n)
+         vza = glsc2(vz,   bm1,n) / volvm1
+         vz2 = glsc3(vz,vz,bm1,n) / volvm1
+         vz2 = vz2 - vza*vza
+         if (vz2.gt.0) vz2 = sqrt(vz2)
+
+         if (nid.eq.0) write(6,1) istep,time,vxa,vya,vza,pra ! 1-2  3-6
+     $                      ,vx2,vy2,vz2,pr2,vxm,vym,vzm,prm ! 7-10 11-13
+      else
+         if (nid.eq.0) write(6,2) istep,time,vxa,vya,pra     ! 1-2 3-5
+     $                          ,vx2,vy2,pr2,vxm,vym,prm     ! 6-8 9-11
+      endif
+    1 format(i7,1p13e16.7,' e2')
+    2 format(i7,1p10e16.7,' e2')
+
+      return
+      end
+c-----------------------------------------------------------------------
+      function y_lower_lift(x,xmax)	! lift from y=0 for 0<x<xmax
+					! periodic for P BC
+      amp = 1.e-4
+      amp = 0.1
+
+      one = 1.
+      pi2 = 8.*atan(one)
+
+      xx  = x/xmax
+      yy  = cos(pi2*xx)
+      yy  = amp*yy
+
+      y_lower_lift = yy
+
+      return
+      end
+c-----------------------------------------------------------------------
+      FUNCTION bottomSWW(x, delta, alambda, delta2, frequency)
+
+      ONE = 1.0
+      PI  = 4.0*ATAN(ONE)
+
+!..   superpose the perturbation wave on top of the smooth wavy wall
+      y   = delta*COS(2.0*PI*x/alambda) 
+     &     +delta2*COS(2.0*frequency*PI*x/alambda)
+
+      bottomSWW = y
+
+      return
+      END
+c-----------------------------------------------------------------------

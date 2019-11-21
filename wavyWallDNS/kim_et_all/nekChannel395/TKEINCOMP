@@ -1,0 +1,22 @@
+C     Turbulent Kinetic Energy for Incompressible Flow
+
+      real tkmax,tkave,immax,imave,im_L2,divL2
+
+      real cnk(lx1,ly1,lz1,lelv) ! convection
+     $    ,prk(lx1,ly1,lz1,lelv) ! proudction
+     $    ,ptk(lx1,ly1,lz1,lelv) ! pressure transport
+     $    ,pdk(lx1,ly1,lz1,lelv) ! pressure diffusion
+     $    ,psk(lx1,ly1,lz1,lelv) ! pressure strain -- should be zero!
+     $    ,tdk(lx1,ly1,lz1,lelv) ! turbulent diffusion
+     $    ,epk(lx1,ly1,lz1,lelv) ! viscous dissipation
+     $    ,vdk(lx1,ly1,lz1,lelv) ! viscous diffusion
+     $    ,tkk(lx1,ly1,lz1,lelv) ! turublent kinetic energy
+     $    ,imb(lx1,ly1,lz1,lelv) ! imbalance
+c
+     $    ,iL2(lx1,ly1,lz1,lelv) ! L2 norm of imbalance
+     $    ,div(lx1,ly1,lz1,lelv) ! <u i,i> == 0
+     $    ,dL2(lx1,ly1,lz1,lelv) ! L2 norm of divergence
+
+      common / tkeincomp / tkmax,tkave,immax,imave,im_L2,divL2
+     $ ,cnk,prk,ptk,pdk,psk,tdk,epk,vdk
+     $ ,tkk,imb,iL2,dL2,div

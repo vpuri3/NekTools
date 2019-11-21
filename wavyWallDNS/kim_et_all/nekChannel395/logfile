@@ -1,0 +1,548 @@
+/----------------------------------------------------------\
+|      _   __ ______ __ __  ______  ____   ____   ____     |
+|     / | / // ____// //_/ / ____/ / __ \/ __ \/ __ \   |
+|    /  |/ // __/  / ,<   /___ \ / / / // / / // / / /    |
+|   / /|  // /___ / /| | ____/ / / /_/ // /_/ // /_/ /     |
+|  /_/ |_//_____//_/ |_|/_____/  \___/ \___/ \___/      |
+|                                                          |
+|----------------------------------------------------------|
+|                                                          |
+| NEK5000:  Open Source Spectral Element Solver            |
+| COPYRIGHT (c) 2008-2017 UCHICAGO ARGONNE, LLC            |
+| Version:  v17.0                                          |
+| Web:      http://nek5000.mcs.anl.gov                     |
+|                                                          |
+\----------------------------------------------------------/
+                                                              
+
+ Number of processors: 8192
+ REAL    wdsize      : 8
+ INTEGER wdsize      : 4
+ Timer accuracy      : 2.06E-07
+  
+ Reading /projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/channel.rea                                                                     
+ Reading /projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/channel.re2                                                                     
+ mapping elements to processors
+ Reading /projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/channel.ma2                                                                     
+  
+ element load imbalance:  0 4 4
+ done :: mapping    .18701     sec
+
+  
+  preading mesh 
+  preading bc for ifld 1
+ done :: read .re2 file    3.3     sec
+
+ 0  objects found
+ 118   Parameters from file:
+   1      1.00000     p001 DENSITY
+   2     -13650.0     p002 VISCOS
+   5      1.00000     p005 # readSTAT
+   8      1.00000     p008 CONDUCT
+  12     -1.00E-3     p012 DT
+  18      0.50000E-01 p018 GRID < 0 --> # cells on screen
+  21      0.10000E-06     p021 DIVERGENCE	# after using 0 to see
+  22      0.10000E-08     p022 HELMHOLTZ
+  24     0.100000E-01 p024 TOLREL
+  25     0.100009E-01 p025 TOLABS
+  26      1.000000    p26 COURANT/NTAU
+  27      2.000000    p27 TORDER
+  54     -1.00000     p054 fixed flow rate dir: |p54|=1,2,3=x,y,z
+  55      1.00000     p055 vol.flow rate (p54>0) or Ubar (p54<0)
+  59      1.00000     p059 !=0 --> full Jac. eval. for each el.
+  65      1.00000     p065 #iofiles (eg, 0 or 64); <0 --> sep. dirs
+  66      6.00000     p066 output : <0=ascii, else binary
+  67      6.00000     p067 restart: <0=ascii, else binary
+  93      20.0000     p093 Number of previous pressure solns saved
+  94      3.00000     p094 start projecting velocity after p94 step
+  95      5.00000     p095 start projecting pressure after p95 step
+  99      4.00000     p099 dealiasing: <0--> off/3--> old/4--> new
+ 101      1.00000     p101 Number of additional modes to filter
+ 103      0.01        p103 weight of stabilizing filter (.01)
+  
+ done :: read .rea file    3.8341     sec
+
+ nelgt/nelgv/lelt:       32768       32768           6
+ lx1  /lx2  /lx3 :           8           8           8
+ Reset the target Courant number to .5
+ setup mesh topology
+   Right-handed check complete for   32768 elements. OK.
+   setvert3d:   8     4261888    11339776     4261888     4261888
+ call usrsetvert
+ done :: usrsetvert
+
+gs_setup: 3034276 unique labels shared
+   pairwise times (avg, min, max): 0.000462821 0.00038344 0.000570537
+   crystal router                : 0.00330473 0.00326231 0.00337988
+   used all_to_all method: pairwise
+   handle bytes (avg, min, max): 27625.2 22140 32636
+   buffer bytes (avg, min, max): 17632.1 12176 25008
+   setupds time 4.0541E-01 seconds   0  8     4261888       32768
+ 8  max multiplicity
+ done :: setup mesh topology
+  
+ call usrdat
+ done :: usrdat
+
+ generate geometry data
+ NOTE: All elements deformed , param(59) ^=0
+ done :: generate geometry data
+  
+ call usrdat2
+ add temp:  2 1 0
+ setup mesh topology
+   Right-handed check complete for   32768 elements. OK.
+   setvert3d:   8     4261888    11339776     4261888     4261888
+ call usrsetvert
+ done :: usrsetvert
+
+gs_setup: 3034276 unique labels shared
+   pairwise times (avg, min, max): 0.000461047 0.000371803 0.00059525
+   crystal router                : 0.00334693 0.00330413 0.00342348
+   used all_to_all method: pairwise
+   handle bytes (avg, min, max): 27625.2 22140 32636
+   buffer bytes (avg, min, max): 17632.1 12176 25008
+   setupds time 3.9995E-01 seconds   1  8     4261888       32768
+ 8  max multiplicity
+ done :: setup mesh topology
+  
+ done :: usrdat2
+
+ regenerate geometry data 1
+ NOTE: All elements deformed , param(59) ^=0
+ done :: regenerate geometry data 1
+  
+ verify mesh topology
+ 0.000000000000000000E+00 4.00000000000000000  Xrange
+ 0.000000000000000000E+00 1.00000000000000000  Yrange
+ 0.000000000000000000E+00 2.00000000000000000  Zrange
+ done :: verify mesh topology
+  
+ IFTRAN   = T
+ IFFLOW   = T
+ IFHEAT   = T
+ IFSPLIT  = T
+ IFLOMACH = F
+ IFUSERVP = F
+ IFUSERMV = F
+ IFPERT   = F
+ IFADJ    = F
+ IFSTRS   = F
+ IFCHAR   = F
+ IFCYCLIC = F
+ IFAXIS   = F
+ IFMVBD   = F
+ IFMELT   = F
+ IFNEKNEK = F
+ IFSYNC   = F
+   
+ IFVCOR   = T
+ IFINTQ   = F
+ IFGEOM   = F
+ IFSURT   = F
+ IFWCNO   = F
+   
+ IFTMSH for field 1    =  F
+ IFADVC for field 1    =  T
+ IFNONL for field 1    =  F
+   
+ IFTMSH for field 2    =  T
+ IFADVC for field 2    =  T
+ IFNONL for field 2    =  F
+   
+ Dealiasing enabled, lxd= 12
+ verify mesh topology
+ 0.000000000000000000E+00 4.00000000000000000  Xrange
+ 0.000000000000000000E+00 1.00000000000000000  Yrange
+ 0.000000000000000000E+00 2.00000000000000000  Zrange
+ done :: verify mesh topology
+  
+ call usrdat3
+ done :: usrdat3
+
+ set initial conditions
+ Checking restart options: restart0.f00001                                                                                                                     
+ nekuic (1) for ifld  1
+ nekuic (1) for ifld  2
+ Reading checkpoint data 
+       FILE:restart0.f00001                                                                                                                     
+
+        0  7.2000E+02 done :: Read checkpoint data
+                              avg data-throughput =   255.3MBps
+                              io-nodes =  8192
+
+ xyz min     .00000E+00   .00000E+00   .00000E+00
+ uvwpt min  -.11739E-01  -.30252      -.34622      -.10367       .00000E+00
+ xyz max     4.0000       1.0000       2.0000    
+ uvwpt max   1.3022       .32734       .45528       .52599E-01   .00000E+00
+ Restart: recompute geom. factors.
+ regenerate geometry data 1
+ NOTE: All elements deformed , param(59) ^=0
+ done :: regenerate geometry data 1
+  
+ done :: set initial conditions
+  
+gridpoints unique/tot:      11339776     16777216
+  dofs: 11139072 11339776
+  
+ Initial time:  .7200009E+03
+ Initialization successfully completed    6.7650     sec
+
+ nsteps=0 -> skip time loop
+ running solver in post processing mode
+
+ call userchk
+ in postProcess(...)avgtyp -1
+ Reading checkpoint data 
+       FILE:avgchannel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   255.0MBps
+                              io-nodes =  8192
+
+ uvwpt min   .00000E+00  -.11429E-01  -.16338E-01  -.20603E-02   .00000E+00
+ uvwpt max   1.1571       .92682E-02   .11057E-01   .28323E-02   .00000E+00
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:rmschannel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   254.0MBps
+                              io-nodes =  8192
+
+ uvwpt min   .00000E+00   .00000E+00   .00000E+00   .50301E-05   .00000E+00
+ uvwpt max   1.3407       .39536E-02   .64275E-02   .86274E-04   .00000E+00
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:rm2channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   247.9MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.92764E-02  -.13300E-01  -.41936E-03  -.20603E-02   .00000E+00
+ uvwpt max   .10714E-01   .88834E-02   .41055E-03   .28323E-02   .00000E+00
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i01channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   178.0MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.89131E-01  -49.586      -1.3496      -.21374E-01  -.31993    
+ uvwpt max   .82974E-01   48.545       1.3878       .23550E-01   .32656    
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i02channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   184.7MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.38368      -.24576E-01  -1.4927      -.34478       .00000E+00
+ uvwpt max   .39125       .23083E-01   1.9039       .33959       6.5874    
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i03channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   181.7MBps
+                              io-nodes =  8192
+
+ uvwpt min   .63938       .00000E+00   .00000E+00   .11806E-01   .00000E+00
+ uvwpt max   2846.9       108.00       4.0379       8.6067       19.443    
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i04channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   181.4MBps
+                              io-nodes =  8192
+
+ uvwpt min   .00000E+00   .51186       .00000E+00  -.56690      -24.967    
+ uvwpt max   5.2211       189.71       10.091       .56219       25.212    
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i05channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   179.4MBps
+                              io-nodes =  8192
+
+ uvwpt min  -11.039      -.48758      -115.56      -3.9771      -.33109    
+ uvwpt max   11.062       .53058       98.066       4.3019       .38071    
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i06channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   181.2MBps
+                              io-nodes =  8192
+
+ uvwpt min  -2.7194      -1.4084      -.16420E-02  -.63961E-04  -.65701E-04
+ uvwpt max   2.6402       1.3588       .13724E-02   .71315E-04   .60464E-04
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i07channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   183.9MBps
+                              io-nodes =  8192
+
+ uvwpt min   .00000E+00  -.11005E-01  -.11397E-01   .00000E+00  -.37438E-03
+ uvwpt max   1.5552       .12102E-01   .81301E-02   .34680E-02   .35098E-03
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i08channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   176.1MBps
+                              io-nodes =  8192
+
+ uvwpt min   .00000E+00  -.17881E-03  -.48774E-04  -.11233E-03  -.29958E-03
+ uvwpt max   .52732E-02   .14689E-03   .56022E-04   .92010E-04   .24262E-03
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i09channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   179.3MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.73855E-02  -.15265      -.67032E-02  -.52762E-02  -.44251E-02
+ uvwpt max   .67196E-03   .14451       .65602E-02   .53454E-02   .46655E-02
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i10channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   185.0MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.43717E-02  -.18001E-02  -.11179E-01  -.10038E-03   .00000E+00
+ uvwpt max   .68538E-02   .19121E-02   .10868E-01   .71323E-02   .00000E+00
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i11channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   181.1MBps
+                              io-nodes =  8192
+
+ uvwpt min   .00000E+00   .00000E+00  -.62214E-03  -.76039E-01  -.25338E-01
+ uvwpt max   .00000E+00   .00000E+00   .81581E-02   .76291E-01   .21326E-01
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i12channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   183.7MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.52538E-02  -.44050E-02  -.37988E-02  -.19430E-02  -.40228E-02
+ uvwpt max   .52734E-02   .11749E-02   .27984E-02   .18389E-02   .34175E-02
+ Reading statistics for atime:  201.390999995100003
+ Reading checkpoint data 
+       FILE:i13channel0.f00001                                                                                                                  
+
+        0  2.0139E+02 done :: Read checkpoint data
+                              avg data-throughput =   184.2MBps
+                              io-nodes =  8192
+
+ uvwpt min  -.74033E-02  -.32865E-02  -.10411      -.32407E-01  -.32407E-01
+ uvwpt max   .23777E-03   .28997E-02   .10428       .28477E-01   .28477E-01
+ Reading statistics for atime:  201.390999995100003
+             L1/L2 DIV(V)           2.5281E-12   1.8653E-04
+             L1/L2 QTL              0.0000E+00   0.0000E+00
+             L1/L2 DIV(V)-QTL       2.5281E-12   1.8653E-04
+ in geom_avg_tke(...)avgtyp: -1
+ in avg_tensor(...)avgtyp: -1
+ Plnr averaging in direction 1
+gs_setup: 32768 unique labels shared
+   pairwise times (avg, min, max): 0.00260186 0.00221939 0.0029693
+   crystal router                : 0.00266069 0.00261112 0.00273459
+   all reduce                    : 0.00291606 0.00289151 0.00295341
+   used all_to_all method: crystal router
+   handle bytes (avg, min, max): 248207 156028 383868
+   buffer bytes (avg, min, max): 30474 16384 56320
+ Calculating uiuj...
+ Outpost:
+ dump history points
+ reading history points
+ found  129  points
+ dump history points
+ dump history points
+ Calculating dissipation...
+ Calculating production...
+ Calculating pressure transport..
+ Calculating pressure diffusion..
+ Calculating pressure strain..
+ Calculating viscous diffusion..
+ Calculating turbulent diffusion..
+ Calculating buoyancy..
+ Calculating convection..
+ Outpost:
+ dump history points
+ dump history points
+ dump history points
+ dump history points
+ dump history points
+ dump history points
+ dump history points
+ dump history points
+ in comp_tke(...)
+atime: 2.01391000E+02
+tkmax: 1.60759801E-02
+tkave: 5.91706187E-03
+immax: 2.39400661E-03
+imave: 1.58222700E-04
+im_L2: 3.79817127E-04
+divL2: 4.53419059E-05
+ Umax: 1.15623424E+00
+ Uave: 1.00000693E+00
+ kmax: 1.60759801E-02
+ kave: 5.91706187E-03
+ in comp_uplus(...)
+ in comp_wallShear(...)
+ area: 8.00000000E+00
+xdrag: 2.63096292E-02
+ydrag: 1.65708737E-07
+zdrag: 4.28049595E-05
+Mdrag: 2.63096640E-02
+Tmavg: 3.28870800E-03
+Ufavg: 5.73472580E-02
+gs_setup: 131072 unique labels shared
+   pairwise times (avg, min, max): 0.0001506 6.45304e-05 0.000358004
+   crystal router                : 0.00072913 0.000709976 0.000753021
+   used all_to_all method: pairwise
+   handle bytes (avg, min, max): 12035.1 10960 25252
+   buffer bytes (avg, min, max): 2280 1024 26624
+ dump history points
+ dump history points
+ dump history points
+ dump history points
+
+        0  2.0139E+02 Write checkpoint
+       FILE:/projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/tk1channel0.f00001                                                              
+
+        0  2.0139E+02 done :: Write checkpoint
+                              file size =     514.E+00MB
+                              avg data-throughput =   156.0MB/s
+                              io-nodes =  8192
+
+
+        0  2.0139E+02 Write checkpoint
+       FILE:/projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/tk2channel0.f00001                                                              
+
+        0  2.0139E+02 done :: Write checkpoint
+                              file size =     514.E+00MB
+                              avg data-throughput =   161.1MB/s
+                              io-nodes =  8192
+
+ in postProcess(...)avgtyp -1
+             L1/L2 DIV(V)          -1.3680E-12   4.5342E-05
+             L1/L2 QTL              0.0000E+00   0.0000E+00
+             L1/L2 DIV(V)-QTL      -1.3680E-12   4.5342E-05
+ in geom_avg_tke(...)avgtyp: -1
+ Calculating uiuj...
+ Outpost:
+ dump history points
+ Rewriting file: ave.dat
+ dump history points
+ Rewriting file: var.dat
+ dump history points
+ Rewriting file: cov.dat
+ Calculating dissipation...
+ Calculating production...
+ Calculating pressure transport..
+ Calculating pressure diffusion..
+ Calculating pressure strain..
+ Calculating viscous diffusion..
+ Calculating turbulent diffusion..
+ Calculating buoyancy..
+ Calculating convection..
+ Outpost:
+ dump history points
+ Rewriting file: cn1.dat
+ dump history points
+ Rewriting file: ep1.dat
+ dump history points
+ Rewriting file: pr1.dat
+ dump history points
+ Rewriting file: pt1.dat
+ dump history points
+ Rewriting file: td1.dat
+ dump history points
+ Rewriting file: pd1.dat
+ dump history points
+ Rewriting file: ps1.dat
+ dump history points
+ Rewriting file: vd1.dat
+ in comp_tke(...)
+atime: 2.01391000E+02
+tkmax: 1.60759801E-02
+tkave: 5.91706187E-03
+immax: 2.39400661E-03
+imave: 1.58222700E-04
+im_L2: 3.79817127E-04
+divL2: 4.53419059E-05
+ Umax: 1.15623424E+00
+ Uave: 1.00000693E+00
+ kmax: 1.60759801E-02
+ kave: 5.91706187E-03
+ in comp_uplus(...)
+ in comp_wallShear(...)
+ area: 8.00000000E+00
+xdrag: 2.63096292E-02
+ydrag: 1.65708737E-07
+zdrag: 4.28049595E-05
+Mdrag: 2.63096640E-02
+Tmavg: 3.28870800E-03
+Ufavg: 5.73472580E-02
+ dump history points
+ Rewriting file: tk1.dat
+ dump history points
+ Rewriting file: tk2.dat
+ dump history points
+ Rewriting file: tk3.dat
+ dump history points
+ Rewriting file: upl.dat
+
+        0  2.0139E+02 Write checkpoint
+       FILE:/projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/tk1channel0.f00002                                                              
+
+        0  2.0139E+02 done :: Write checkpoint
+                              file size =     514.E+00MB
+                              avg data-throughput =   157.7MB/s
+                              io-nodes =  8192
+
+
+        0  2.0139E+02 Write checkpoint
+       FILE:/projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/tk2channel0.f00002                                                              
+
+        0  2.0139E+02 done :: Write checkpoint
+                              file size =     514.E+00MB
+                              avg data-throughput =   154.5MB/s
+                              io-nodes =  8192
+
+ done :: userchk
+
+        0  2.0139E+02 Write checkpoint
+       FILE:/projects/PANDAVal/vpuri/channel-poi/kim-verify/p16/channel0.f00001                                                                 
+
+        0  2.0139E+02 done :: Write checkpoint
+                              file size =     514.E+00MB
+                              avg data-throughput =   169.6MB/s
+                              io-nodes =  8192
+
+  
+run successful: dying ...
+  
+  
+total elapsed time             :   5.70627E+01 sec
+total solver time w/o IO       :   0.00000E+00 sec
+time/timestep                  :   0.00000E+00 sec
+avg throughput per timestep    :   0.00000E+00 gridpts/CPUs
+total max memory usage         :   5.16175E+02 GB
+

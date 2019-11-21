@@ -1,0 +1,104 @@
+C     Budgets for REYNOLDS stresses
+
+
+      COMMON /ugradtens/
+     $ dudx(lx1,ly1,lz1,lelt),
+     $ dudy(lx1,ly1,lz1,lelt),
+     $ dudz(lx1,ly1,lz1,lelt),
+     $ dvdx(lx1,ly1,lz1,lelt),
+     $ dvdy(lx1,ly1,lz1,lelt),
+     $ dvdz(lx1,ly1,lz1,lelt),
+     $ dwdx(lx1,ly1,lz1,lelt),
+     $ dwdy(lx1,ly1,lz1,lelt),
+     $ dwdz(lx1,ly1,lz1,lelt)
+ 
+      COMMON /pgradvec/
+     $ dpdx(lx1,ly1,lz1,lelt),
+     $ dpdy(lx1,ly1,lz1,lelt),
+     $ dpdz(lx1,ly1,lz1,lelt)
+   
+
+      COMMON /dissipation/
+     $ udxavg(lx1,ly1,lz1,lelt),udyavg(lx1,ly1,lz1,lelt),
+     $ udzavg(lx1,ly1,lz1,lelt),vdxavg(lx1,ly1,lz1,lelt),
+     $ vdyavg(lx1,ly1,lz1,lelt),vdzavg(lx1,ly1,lz1,lelt),
+     $ wdxavg(lx1,ly1,lz1,lelt),wdyavg(lx1,ly1,lz1,lelt),
+     $ wdzavg(lx1,ly1,lz1,lelt),udxrms(lx1,ly1,lz1,lelt),
+     $ udyrms(lx1,ly1,lz1,lelt),udzrms(lx1,ly1,lz1,lelt),
+     $ vdxrms(lx1,ly1,lz1,lelt),vdyrms(lx1,ly1,lz1,lelt),
+     $ vdzrms(lx1,ly1,lz1,lelt),wdxrms(lx1,ly1,lz1,lelt),
+     $ wdyrms(lx1,ly1,lz1,lelt),wdzrms(lx1,ly1,lz1,lelt),
+     $ uvdxms(lx1,ly1,lz1,lelt),uvdyms(lx1,ly1,lz1,lelt),
+     $ uvdzms(lx1,ly1,lz1,lelt),uwdxms(lx1,ly1,lz1,lelt),
+     $ uwdyms(lx1,ly1,lz1,lelt),uwdzms(lx1,ly1,lz1,lelt),
+     $ vwdxms(lx1,ly1,lz1,lelt),vwdyms(lx1,ly1,lz1,lelt),
+     $ vwdzms(lx1,ly1,lz1,lelt),eps_uu(lx1,ly1,lz1,lelt),
+     $ eps_vv(lx1,ly1,lz1,lelt),eps_ww(lx1,ly1,lz1,lelt),
+     $ eps_uv(lx1,ly1,lz1,lelt),eps_uw(lx1,ly1,lz1,lelt),
+     $ eps_vw(lx1,ly1,lz1,lelt)    
+     
+      COMMON /production/
+     $ prd_uu(lx1,ly1,lz1,lelt),prd_vv(lx1,ly1,lz1,lelt),
+     $ prd_ww(lx1,ly1,lz1,lelt),prd_uv(lx1,ly1,lz1,lelt),
+     $ prd_uw(lx1,ly1,lz1,lelt),prd_vw(lx1,ly1,lz1,lelt)
+
+      COMMON /ptransport/
+     $ udpdxavg(lx1,ly1,lz1,lelt),udpdyavg(lx1,ly1,lz1,lelt),
+     $ udpdzavg(lx1,ly1,lz1,lelt),vdpdxavg(lx1,ly1,lz1,lelt),
+     $ vdpdyavg(lx1,ly1,lz1,lelt),vdpdzavg(lx1,ly1,lz1,lelt),
+     $ wdpdxavg(lx1,ly1,lz1,lelt),wdpdyavg(lx1,ly1,lz1,lelt),
+     $ wdpdzavg(lx1,ly1,lz1,lelt),dpdxavg(lx1,ly1,lz1,lelt),
+     $ dpdyavg(lx1,ly1,lz1,lelt),dpdzavg(lx1,ly1,lz1,lelt),
+     $ ptr_uu(lx1,ly1,lz1,lelt),
+     $ ptr_vv(lx1,ly1,lz1,lelt),ptr_ww(lx1,ly1,lz1,lelt),
+     $ ptr_uv(lx1,ly1,lz1,lelt),ptr_uw(lx1,ly1,lz1,lelt),
+     $ ptr_vw(lx1,ly1,lz1,lelt)
+
+      COMMON /pdiffusion/
+     $ upavg(lx1,ly1,lz1,lelt),vpavg(lx1,ly1,lz1,lelt),
+     $ wpavg(lx1,ly1,lz1,lelt),pdf_uu(lx1,ly1,lz1,lelt),
+     $ pdf_vv(lx1,ly1,lz1,lelt),pdf_ww(lx1,ly1,lz1,lelt),
+     $ pdf_uv(lx1,ly1,lz1,lelt),pdf_uw(lx1,ly1,lz1,lelt),
+     $ pdf_vw(lx1,ly1,lz1,lelt)
+
+      COMMON /vdiffusion/
+     $ vdf_uu(lx1,ly1,lz1,lelt),vdf_vv(lx1,ly1,lz1,lelt),
+     $ vdf_ww(lx1,ly1,lz1,lelt),vdf_uv(lx1,ly1,lz1,lelt), 
+     $ vdf_uw(lx1,ly1,lz1,lelt),vdf_vw(lx1,ly1,lz1,lelt)
+
+
+      COMMON /tdiffusion/
+     $ uuuavg(lx1,ly1,lz1,lelt),uuvavg(lx1,ly1,lz1,lelt),
+     $ uuwavg(lx1,ly1,lz1,lelt),uvvavg(lx1,ly1,lz1,lelt),
+     $ uwwavg(lx1,ly1,lz1,lelt),uvwavg(lx1,ly1,lz1,lelt),
+     $ vvvavg(lx1,ly1,lz1,lelt),vvwavg(lx1,ly1,lz1,lelt),
+     $ vwwavg(lx1,ly1,lz1,lelt),wwwavg(lx1,ly1,lz1,lelt),
+     $ tdf_uu(lx1,ly1,lz1,lelt),tdf_vv(lx1,ly1,lz1,lelt),
+     $ tdf_ww(lx1,ly1,lz1,lelt),tdf_uv(lx1,ly1,lz1,lelt),
+     $ tdf_uw(lx1,ly1,lz1,lelt),tdf_vw(lx1,ly1,lz1,lelt)
+
+       COMMON /pstrain/
+     $ pudxavg(lx1,ly1,lz1,lelt),pudyavg(lx1,ly1,lz1,lelt),
+     $ pudzavg(lx1,ly1,lz1,lelt),pvdxavg(lx1,ly1,lz1,lelt),
+     $ pvdyavg(lx1,ly1,lz1,lelt),pvdzavg(lx1,ly1,lz1,lelt),
+     $ pwdxavg(lx1,ly1,lz1,lelt),pwdyavg(lx1,ly1,lz1,lelt),
+     $ pwdzavg(lx1,ly1,lz1,lelt),pst_uu(lx1,ly1,lz1,lelt),
+     $ pst_vv(lx1,ly1,lz1,lelt),pst_ww(lx1,ly1,lz1,lelt),
+     $ pst_uv(lx1,ly1,lz1,lelt),pst_uw(lx1,ly1,lz1,lelt),
+     $ pst_vw(lx1,ly1,lz1,lelt)  
+
+       COMMON /buoyancy/
+     $ utavg(lx1,ly1,lz1,lelt),vtavg(lx1,ly1,lz1,lelt),
+     $ wtavg(lx1,ly1,lz1,lelt),buo_uu(lx1,ly1,lz1,lelt),
+     $ buo_vv(lx1,ly1,lz1,lelt),buo_ww(lx1,ly1,lz1,lelt),
+     $ buo_uv(lx1,ly1,lz1,lelt),buo_uw(lx1,ly1,lz1,lelt),
+     $ buo_vw(lx1,ly1,lz1,lelt)
+
+
+       COMMON /convection/
+     $ conv_uu(lx1,ly1,lz1,lelt),
+     $ conv_vv(lx1,ly1,lz1,lelt),conv_ww(lx1,ly1,lz1,lelt),
+     $ conv_uv(lx1,ly1,lz1,lelt),conv_uw(lx1,ly1,lz1,lelt),
+     $ conv_vw(lx1,ly1,lz1,lelt)
+
+

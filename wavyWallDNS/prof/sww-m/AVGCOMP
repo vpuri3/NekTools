@@ -1,0 +1,36 @@
+C     Budgets for REYNOLDS stresses in compressible form
+
+      COMMON /favre/
+     & rhorms(lx1,ly1,lz1,lelt),rhovari(lx1,ly1,lz1,lelt),
+     & rhou(lx1,ly1,lz1,lelt),rhov(lx1,ly1,lz1,lelt),
+     & rhow(lx1,ly1,lz1,lelt),rhouu(lx1,ly1,lz1,lelt),
+     & rhovv(lx1,ly1,lz1,lelt),rhoww(lx1,ly1,lz1,lelt),
+     & rhouv(lx1,ly1,lz1,lelt),rhouw(lx1,ly1,lz1,lelt),
+     & rhovw(lx1,ly1,lz1,lelt),rhoavg(lx1,ly1,lz1,lelt),
+     & favu(lx1,ly1,lz1,lelt),favv(lx1,ly1,lz1,lelt),
+     & favw(lx1,ly1,lz1,lelt),rhofuu(lx1,ly1,lz1,lelt),
+     & rhofvv(lx1,ly1,lz1,lelt),rhofww(lx1,ly1,lz1,lelt),
+     & rhofuv(lx1,ly1,lz1,lelt),rhofuw(lx1,ly1,lz1,lelt),
+     & rhofvw(lx1,ly1,lz1,lelt),fuu(lx1,ly1,lz1,lelt),
+     & fvv(lx1,ly1,lz1,lelt),fww(lx1,ly1,lz1,lelt),
+     & fuv(lx1,ly1,lz1,lelt),fuw(lx1,ly1,lz1,lelt),
+     & fvw(lx1,ly1,lz1,lelt)
+
+
+      COMMON /ugradtensgrad/
+     $ dudx(lx1,ly1,lz1,lelt),
+     $ dudy(lx1,ly1,lz1,lelt),
+     $ dudz(lx1,ly1,lz1,lelt),
+     $ dvdx(lx1,ly1,lz1,lelt),
+     $ dvdy(lx1,ly1,lz1,lelt),
+     $ dvdz(lx1,ly1,lz1,lelt),
+     $ dwdx(lx1,ly1,lz1,lelt),
+     $ dwdy(lx1,ly1,lz1,lelt),
+     $ dwdz(lx1,ly1,lz1,lelt),
+     $ tau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ gradu(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ graduTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ uTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ vTau(lx1,ly1,lz1,lelt,ldim,ldim),
+     $ wTau(lx1,ly1,lz1,lelt,ldim,ldim)
+

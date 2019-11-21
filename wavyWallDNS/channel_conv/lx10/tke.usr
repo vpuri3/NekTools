@@ -1,0 +1,520 @@
+c-----------------------------------------------------------------------
+c     include 'budgets.usr'
+c-----------------------------------------------------------------------
+      subroutine comp_tke
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+      INCLUDE 'TKEINCOMP'
+
+      integer ntot
+c
+      if(nid.eq.0) write(6,*)'in comp_tke(...)'
+c
+      ntot=lx1*ly1*lz1*nelv
+c 
+      call rzero(cnk,ntot)
+      call rzero(prk,ntot)
+      call rzero(ptk,ntot)
+      call rzero(pdk,ntot)
+      call rzero(psk,ntot)
+      call rzero(tdk,ntot)
+      call rzero(epk,ntot)
+      call rzero(vdk,ntot)
+      call rzero(tkk,ntot)
+      call rzero(imk,ntot)
+c
+      do i=1,ntot
+         cnk(i,1,1,1)=conv_uu(i,1,1,1)+conv_vv(i,1,1,1)+conv_ww(i,1,1,1)
+         prk(i,1,1,1)= prd_uu(i,1,1,1)+ prd_vv(i,1,1,1)+ prd_ww(i,1,1,1)
+         ptk(i,1,1,1)= ptr_uu(i,1,1,1)+ ptr_vv(i,1,1,1)+ ptr_ww(i,1,1,1)
+         pdk(i,1,1,1)= pdf_uu(i,1,1,1)+ pdf_vv(i,1,1,1)+ pdf_ww(i,1,1,1)
+         psk(i,1,1,1)= pst_uu(i,1,1,1)+ pst_vv(i,1,1,1)+ pst_ww(i,1,1,1)
+         tdk(i,1,1,1)= tdf_uu(i,1,1,1)+ tdf_vv(i,1,1,1)+ tdf_ww(i,1,1,1)
+         epk(i,1,1,1)= eps_uu(i,1,1,1)+ eps_vv(i,1,1,1)+ eps_ww(i,1,1,1)
+         vdk(i,1,1,1)= vdf_uu(i,1,1,1)+ vdf_vv(i,1,1,1)+ vdf_ww(i,1,1,1)
+c
+         cnk(i,1,1,1) = cnk(i,1,1,1) * 0.5
+         prk(i,1,1,1) = prk(i,1,1,1) * 0.5
+         ptk(i,1,1,1) = ptk(i,1,1,1) * 0.5
+         pdk(i,1,1,1) = pdk(i,1,1,1) * 0.5
+         psk(i,1,1,1) = psk(i,1,1,1) * 0.5
+         tdk(i,1,1,1) = tdk(i,1,1,1) * 0.5
+         epk(i,1,1,1) = epk(i,1,1,1) * 0.5
+         vdk(i,1,1,1) = vdk(i,1,1,1) * 0.5
+c
+         tkk(i,1,1,1) = 0.5*
+     $                (urms(i,1,1,1)-uavg(i,1,1,1)*uavg(i,1,1,1)+
+     $                 vrms(i,1,1,1)-vavg(i,1,1,1)*vavg(i,1,1,1)+
+     $                 wrms(i,1,1,1)-wavg(i,1,1,1)*wavg(i,1,1,1))
+c
+         imk(i,1,1,1) = - cnk(i,1,1,1) + prk(i,1,1,1) + ptk(i,1,1,1)
+     $                  + tdk(i,1,1,1) + epk(i,1,1,1) + vdk(i,1,1,1)
+      enddo
+
+      tkmax=glmax(tkk,ntot)
+      call comp_L2(tk_L2,tkk)
+
+      immax=glmax(imk,ntot)
+      call comp_L2(im_L2,imk)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      INCLUDE 'SIZE'  
+      INCLUDE 'TOTAL' 
+      INCLUDE 'AVG'
+      INCLUDE 'AVGINCOMP'
+      INCLUDE 'REFERENCE'
+      INCLUDE 'BUDGETSINCOMP'
+
+      integer avgtyp
+
+      if(nid.eq.0)write(6,*)'in geom_avg_tke(...)','avgtyp:',avgtyp
+
+      ! AVG
+      call avg_tensor_wrapper(uavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pm1avg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      do i=1,ldimt
+        call avg_tensor_wrapper(tavg(1,1,1,1,i),avgtyp,nelx,nely,nelz,1
+     $                         ,gs_line_hndl,idir_line
+     $                         ,gs_plnr_hndl,idir_plnr
+     $                         ,gs_geom_hndl,idir_geom)
+      enddo
+
+c     ! RMS
+      call avg_tensor_wrapper(urms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pmrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      do i=1,ldimt
+        call avg_tensor_wrapper(trms(1,1,1,1,i),avgtyp,nelx,nely,nelz,1
+     $                         ,gs_line_hndl,idir_line
+     $                         ,gs_plnr_hndl,idir_plnr
+     $                         ,gs_geom_hndl,idir_geom)
+      enddo
+
+      call avg_tensor_wrapper(uvms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wums,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vwms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+c      ! AVGINCOMP
+      call avg_tensor_wrapper(uvari,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vvari,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wvari,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(pvari,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(tvari,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(uvcov,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vwcov,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wucov,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+c     ! BUDGETSINCOMP    
+      call avg_tensor_wrapper(udxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(udyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(udzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(udxrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(udyrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(udzrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdxrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdyrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdzrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdxrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdyrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdzrms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+                        
+      call avg_tensor_wrapper(uvdxms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uvdyms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uvdzms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uwdxms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uwdyms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uwdzms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vwdxms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vwdyms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vwdzms,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+c                      
+      call avg_tensor_wrapper(upavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vpavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wpavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(utavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vtavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wtavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+c                     
+      call avg_tensor_wrapper(uuuavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uuvavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uuwavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uvvavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uvwavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(uwwavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vvvavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vvwavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vwwavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wwwavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+c
+      call avg_tensor_wrapper(pudxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pudyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pudzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pvdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pvdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pvdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pwdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pwdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(pwdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+c
+      call avg_tensor_wrapper(dpdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(dpdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(dpdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+c
+      call avg_tensor_wrapper(udpdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(udpdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(udpdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdpdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdpdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(vdpdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdpdxavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdpdyavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+      call avg_tensor_wrapper(wdpdzavg,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine hom_budgets(idir)
+      include 'SIZE'
+      include 'TOTAL'
+      include 'BUDGETSINCOMP'
+
+      integer idir
+
+      integer ntot
+
+      if(nid.eq.0)write(6,*)'Homogenizing budgets in direction',idir
+
+      ntot = lx1*ly1*lz1*nelv
+
+      if(idir.eq.1) then
+        call rzero(udxavg,ntot)
+        call rzero(vdxavg,ntot)
+        call rzero(wdxavg,ntot)
+        call rzero(udxrms,ntot)
+        call rzero(vdxrms,ntot)
+        call rzero(wdxrms,ntot)
+        call rzero(dpdxavg,ntot)
+        call rzero(udpdxavg,ntot)
+        call rzero(vdpdxavg,ntot)
+        call rzero(wdpdxavg,ntot)
+        call rzero(uvdxms,ntot)
+        call rzero(uwdxms,ntot)
+        call rzero(vwdxms,ntot)
+        call rzero(pudxavg,ntot)
+        call rzero(pvdxavg,ntot)
+        call rzero(pwdxavg,ntot)
+      endif
+      if(idir.eq.2) then
+        call rzero(udyavg,ntot)
+        call rzero(vdyavg,ntot)
+        call rzero(wdyavg,ntot)
+        call rzero(udyrms,ntot)
+        call rzero(vdyrms,ntot)
+        call rzero(wdyrms,ntot)
+        call rzero(dpdyavg,ntot)
+        call rzero(udpdyavg,ntot)
+        call rzero(vdpdyavg,ntot)
+        call rzero(wdpdyavg,ntot)
+        call rzero(uvdyms,ntot)
+        call rzero(uwdyms,ntot)
+        call rzero(vwdyms,ntot)
+        call rzero(pudyavg,ntot)
+        call rzero(pvdyavg,ntot)
+        call rzero(pwdyavg,ntot)
+      endif
+      if(idir.eq.3) then
+        call rzero(udzavg,ntot)
+        call rzero(vdzavg,ntot)
+        call rzero(wdzavg,ntot)
+        call rzero(udzrms,ntot)
+        call rzero(vdzrms,ntot)
+        call rzero(wdzrms,ntot)
+        call rzero(dpdzavg,ntot)
+        call rzero(udpdzavg,ntot)
+        call rzero(vdpdzavg,ntot)
+        call rzero(wdpdzavg,ntot)
+        call rzero(uvdzms,ntot)
+        call rzero(uwdzms,ntot)
+        call rzero(vwdzms,ntot)
+        call rzero(pudzavg,ntot)
+        call rzero(pvdzavg,ntot)
+        call rzero(pwdzavg,ntot)
+      endif
+
+      return
+      end
+c-----------------------------------------------------------------------
