@@ -1,5 +1,0 @@
-      real dens0,V0,L0,T0,visc0,thcond0,thcap0,g(3),Pref,
-     &     Tm,deltaT
-      integer ifld_h
-      common /reference_conditions/
-     & dens0,V0,L0,T0,visc0,thcond0,thcap0,g,Pref,Tm,deltaT,ifld_h

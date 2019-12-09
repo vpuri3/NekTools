@@ -1,4 +1,0 @@
-      real dens,visc,thcond,thcap
-      common /FLUIDPROP/
-     &  dens (lx1,ly1,lz1,lelv),visc  (lx1,ly1,lz1,lelv)
-     & ,thcap(lx1,ly1,lz1,lelv),thcond(lx1,ly1,lz1,lelv)
