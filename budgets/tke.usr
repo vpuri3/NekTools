@@ -461,6 +461,11 @@ c-----------------------------------------------------------------------
       ntot = lx1*ly1*lz1*nelv
 
       if(idir.eq.1) then
+        call rzero(uavg,ntot)
+        call rzero(urms,ntot)
+        call rzero(uvms,ntot)
+        call rzero(wums,ntot)
+
         call rzero(udxavg,ntot)
         call rzero(vdxavg,ntot)
         call rzero(wdxavg,ntot)
@@ -479,6 +484,11 @@ c-----------------------------------------------------------------------
         call rzero(pwdxavg,ntot)
       endif
       if(idir.eq.2) then
+        call rzero(vavg,ntot)
+        call rzero(vrms,ntot)
+        call rzero(vwms,ntot)
+        call rzero(uvms,ntot)
+
         call rzero(udyavg,ntot)
         call rzero(vdyavg,ntot)
         call rzero(wdyavg,ntot)
@@ -502,38 +512,46 @@ c-----------------------------------------------------------------------
         call rzero(vwms,ntot)
         call rzero(wums,ntot)
 
+        call rzero(udzavg,ntot)
+        call rzero(vdzavg,ntot)
         call rzero(wdxavg,ntot)
         call rzero(wdyavg,ntot)
         call rzero(wdzavg,ntot)
+        call rzero(udzrms,ntot)
+        call rzero(vdzrms,ntot)
+        call rzero(wdzrms,ntot)
         call rzero(wdxrms,ntot)
         call rzero(wdyrms,ntot)
-        call rzero(wdzrms,ntot)
+
+        call rzero(uvdzms,ntot)
+        call rzero(uwdxms,ntot)
+        call rzero(uwdyms,ntot)
+        call rzero(uwdzms,ntot)
+        call rzero(vwdxms,ntot)
+        call rzero(vwdyms,ntot)
+        call rzero(vwdzms,ntot)
+
         call rzero(wpavg,ntot)
         call rzero(wtavg,ntot)
+
         call rzero(uuwavg,ntot)
         call rzero(uvwavg,ntot)
         call rzero(uwwavg,ntot)
         call rzero(vvwavg,ntot)
         call rzero(vwwavg,ntot)
         call rzero(wwwavg,ntot)
+
+        call rzero(dpdzavg,ntot)
+
+        call rzero(udpdzavg,ntot)
+        call rzero(vdpdzavg,ntot)
         call rzero(wdpdxavg,ntot)
         call rzero(wdpdyavg,ntot)
         call rzero(wdpdzavg,ntot)
 
-        call rzero(udzavg,ntot)
-        call rzero(vdzavg,ntot)
-        call rzero(wdzavg,ntot)
-        call rzero(udzrms,ntot)
-        call rzero(vdzrms,ntot)
-        call rzero(wdzrms,ntot)
-        call rzero(dpdzavg,ntot)
-        call rzero(udpdzavg,ntot)
-        call rzero(vdpdzavg,ntot)
-        call rzero(wdpdzavg,ntot)
-        call rzero(uvdzms,ntot)
-        call rzero(uwdzms,ntot)
-        call rzero(vwdzms,ntot)
         call rzero(pudzavg,ntot)
+        call rzero(pvdzavg,ntot)
+        call rzero(pwdzavg,ntot)
         call rzero(pvdzavg,ntot)
         call rzero(pwdzavg,ntot)
       endif
