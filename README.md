@@ -1,2 +1,2 @@
 # NekRoutines
-post-processing and turbulence budget routines for spectral element code Nek5000
+Turbulence budgets and post-processing routines for spectral-element code NEK5000
