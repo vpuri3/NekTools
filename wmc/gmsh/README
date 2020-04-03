@@ -1,0 +1,62 @@
+GMSH to Nek 
+
+
+A. Gmsh part
+
+1. Open *.geo file in gmsh (I'm using 4.5.0)
+2. Mesh > Set Order 2
+3. Mesh > 3D
+4. File > Export > *.msh format > Version 2 ASCII
+
+You should now have msh file for the utility gmsh2nek can work with
+
+
+B. gmsh2nek part
+
+1. In trunk/tools, edit maketools:
+
+FC="ifort"
+CC="icc"
+
+FFLAGS="-O1 -axmic-avx512"
+CFLAGS="-O1 -axmic-avx512"
+
+2. Run ./maketools gmsh2nek
+3. cd to project run directory
+4. Run ../../bin/gmsh2nek
+5. Enter name of mesh file (without extension)
+6. Enter dimension (3)
+7. Enter periodic face pairs (most likely 1)
+8. Enter offset of periodic faces (for geos I gave you, this is the spanwise distance so, 0 0 X)
+9. Run genmap as usual
+
+
+C. Nek part
+
+1. in *.usr, must tag faces with boundary conditions in usrdat2, face ids 
+   should match what gmsh2nek prints out, example:
+
+      do iel=1,nelv
+      do ifc=1,2*ndim
+
+          id_face = bc(5,ifc,iel,1)
+
+          if (id_face.eq.1) then     ! inlet
+             cbc(ifc,iel,1) = 'v  '
+          elseif (id_face.eq.2) then ! outlet
+             cbc(ifc,iel,1) = 'O  '
+          elseif (id_face.eq.3) then ! symmetry
+             cbc(ifc,iel,1) = 'SYM'
+          elseif (id_face.eq.4) then ! pm
+c             !cbc(ifc,iel,1) = 'v  ' ! if solving other scalars, must define BC
+          elseif (id_face.eq.5) then ! pp
+c             !cbc(ifc,iel,1) = 'O  ' ! if solving other scalars, must define BC
+          elseif (id_face.eq.6) then ! wall
+             cbc(ifc,iel,1) = 'W  '
+          endif
+
+        enddo
+      enddo
+
+
+That should be it!
