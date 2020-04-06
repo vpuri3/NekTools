@@ -1,15 +1,16 @@
 
 /* MESH PARAMS */
 
-Nc  = 15;            // # points on cube side
+Nc  = 41;            // # points on cube side
 No  = 10;            // # points on line from cube to outer box
 Ny  = 20;            // # points (y-dir)
 Ne  =  5;            // # points in entrance (x-dir)
-Nw  = 15;            // # points in wake     (x-dir)
+Nw  = 3*Ne;          // # points in wake     (x-dir)
 bfc = 1.2;           // expansion from cube surface
 Py  = 1.2;           // expansion from ground (y-dir)
 Pc  = 0.05;          // edge refinement on cube "Nc Using Bump Pc;"
 Nsmooth = 9;         // # mesh smoothing iterations
+Nd = 5;
 
 /* DOMAIN SIZE */
 
@@ -20,13 +21,31 @@ wake     = 20.0 + 0.5*span;
 height   = 5.0;
 entrance = -(5.0 + 0.5*span);
 
-lc = 1e-2;
+lc = 1e-1;
 
 // fixed due to geom
 Nb = 0.5*(Nc+1);  // # points on side of small quads
-Nz = 2*Nc-1;  // # points (z-dir)
+Nz = 2*Nb+2*Nd-3; // # points (z-dir)
 
 /* CREATE DOMAIN AND MESH */
+
+// Triangle Splitting
+x = 0.30;
+y = 0.40;
+y2 = y + x/Sqrt(3);
+x3 = x + (1-x-y)*Sqrt(3)/(Sqrt(3)+1);
+y3 = y + (x3-x)/Sqrt(3);
+
+ll = len/2;
+
+xx0 = ll*(1-x);
+zz0 = ll*(1-y);
+xx1 = xx0;
+zz1 = ll;
+xx2 = ll;
+zz2 = ll*(1-y2);
+xx3 = ll*(1-x3);
+zz3 = ll*(1-y3);
 
 /******************** POINTS ********************/
 
@@ -63,48 +82,48 @@ Point(23) = { len/2,height,      0,lc};
 Point(24) = { len/2,height,-span/2,lc};
 
 // outer lower mid-pts
-Point(25) = {-len/4,0,-span/2,lc};
-Point(26) = {-len/2,0,-span/4,lc};
-Point(27) = {-len/2,0, span/4,lc};
-Point(28) = {-len/4,0, span/2,lc};
-Point(29) = { len/4,0, span/2,lc};
-Point(30) = { len/2,0, span/4,lc};
-Point(31) = { len/2,0,-span/4,lc};
-Point(32) = { len/4,0,-span/2,lc};
+Point(25) = {-xx1,0,-zz1,lc};
+Point(26) = {-xx2,0,-zz2,lc};
+Point(27) = {-xx2,0, zz2,lc};
+Point(28) = {-xx1,0, zz1,lc};
+Point(29) = { xx1,0, zz1,lc};
+Point(30) = { xx2,0, zz2,lc};
+Point(31) = { xx2,0,-zz2,lc};
+Point(32) = { xx1,0,-zz1,lc};
 
 // outer upper mid-pts
-Point(33) = {-len/4,height,-span/2,lc};
-Point(34) = {-len/2,height,-span/4,lc};
-Point(35) = {-len/2,height, span/4,lc};
-Point(36) = {-len/4,height, span/2,lc};
-Point(37) = { len/4,height, span/2,lc};
-Point(38) = { len/2,height, span/4,lc};
-Point(39) = { len/2,height,-span/4,lc};
-Point(40) = { len/4,height,-span/2,lc};
+Point(33) = {-xx1,height,-zz1,lc};
+Point(34) = {-xx2,height,-zz2,lc};
+Point(35) = {-xx2,height, zz2,lc};
+Point(36) = {-xx1,height, zz1,lc};
+Point(37) = { xx1,height, zz1,lc};
+Point(38) = { xx2,height, zz2,lc};
+Point(39) = { xx2,height,-zz2,lc};
+Point(40) = { xx1,height,-zz1,lc};
 
 // diag lower mid-pots
-Point(41) = {-len/4,0,-span/4,lc};
-Point(42) = {-len/4,0, span/4,lc};
-Point(43) = { len/4,0, span/4,lc};
-Point(44) = { len/4,0,-span/4,lc};
+Point(41) = {-xx3,0,-zz3,lc};
+Point(42) = {-xx3,0, zz3,lc};
+Point(43) = { xx3,0, zz3,lc};
+Point(44) = { xx3,0,-zz3,lc};
 
 // diag upper mid-pots
-Point(45) = {-len/4,height,-span/4,lc};
-Point(46) = {-len/4,height, span/4,lc};
-Point(47) = { len/4,height, span/4,lc};
-Point(48) = { len/4,height,-span/4,lc};
+Point(45) = {-xx3,height,-zz3,lc};
+Point(46) = {-xx3,height, zz3,lc};
+Point(47) = { xx3,height, zz3,lc};
+Point(48) = { xx3,height,-zz3,lc};
 
 // outer triangle mid-points lower
-Point(49) = {-len/3,0,-span/3,lc};
-Point(50) = {-len/3,0, span/3,lc};
-Point(51) = { len/3,0, span/3,lc};
-Point(52) = { len/3,0,-span/3,lc};
+Point(49) = {-xx0,0,-zz0,lc};
+Point(50) = {-xx0,0, zz0,lc};
+Point(51) = { xx0,0, zz0,lc};
+Point(52) = { xx0,0,-zz0,lc};
 
 // outer triangle mid-points upper
-Point(53) = {-len/3,height,-span/3,lc};
-Point(54) = {-len/3,height, span/3,lc};
-Point(55) = { len/3,height, span/3,lc};
-Point(56) = { len/3,height,-span/3,lc};
+Point(53) = {-xx0,height,-zz0,lc};
+Point(54) = {-xx0,height, zz0,lc};
+Point(55) = { xx0,height, zz0,lc};
+Point(56) = { xx0,height,-zz0,lc};
 
 
 // entrance
@@ -202,15 +221,15 @@ For i In {0:3}
 	If(i==3)
 		i3 = -2;
 	EndIf
-	Line(53+c) = {9 +i2,25+i2}; Transfinite Curve {53+c} = Nb;
+	Line(53+c) = {9 +i2,25+i2}; Transfinite Curve {53+c} = Nd;
 	Line(54+c) = {25+i2,10+i2}; Transfinite Curve {54+c} = Nb;
 	Line(55+c) = {10+i2,26+i2}; Transfinite Curve {55+c} = Nb;
-	Line(56+c) = {26+i2,11+i3}; Transfinite Curve {56+c} = Nb;
+	Line(56+c) = {26+i2,11+i3}; Transfinite Curve {56+c} = Nd;
 	Line(57+c) = {11+i3,41+i1}; Transfinite Curve {57+c} = Nb;
 	Line(58+c) = {41+i1,9 +i2}; Transfinite Curve {58+c} = Nb;
 	Line(59+c) = {49+i1,25+i2}; Transfinite Curve {59+c} = Nb;
 	Line(60+c) = {49+i1,26+i2}; Transfinite Curve {60+c} = Nb;
-	Line(61+c) = {49+i1,41+i1}; Transfinite Curve {61+c} = Nb;
+	Line(61+c) = {49+i1,41+i1}; Transfinite Curve {61+c} = Nd;
 
 	c = c + 9;
 EndFor
@@ -224,15 +243,15 @@ For i In {0:3}
 	If(i==3)
 		i3 = -2;
 	EndIf
-	Line(89+c) = {17+i2,33+i2}; Transfinite Curve {89+c} = Nb;
+	Line(89+c) = {17+i2,33+i2}; Transfinite Curve {89+c} = Nd;
 	Line(90+c) = {33+i2,18+i2}; Transfinite Curve {90+c} = Nb;
 	Line(91+c) = {18+i2,34+i2}; Transfinite Curve {91+c} = Nb;
-	Line(92+c) = {34+i2,19+i3}; Transfinite Curve {92+c} = Nb;
+	Line(92+c) = {34+i2,19+i3}; Transfinite Curve {92+c} = Nd;
 	Line(93+c) = {19+i3,45+i1}; Transfinite Curve {93+c} = Nb;
 	Line(94+c) = {45+i1,17+i2}; Transfinite Curve {94+c} = Nb;
 	Line(95+c) = {53+i1,33+i2}; Transfinite Curve {95+c} = Nb;
 	Line(96+c) = {53+i1,34+i2}; Transfinite Curve {96+c} = Nb;
-	Line(97+c) = {53+i1,45+i1}; Transfinite Curve {97+c} = Nb;
+	Line(97+c) = {53+i1,45+i1}; Transfinite Curve {97+c} = Nd;
 
 	c = c + 9;
 EndFor
