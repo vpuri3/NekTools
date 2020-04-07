@@ -4,10 +4,6 @@
 obj/
 *.o
 *~
-*.ma2
 *.map
-*.re2
 .*
 makefile
-compiler.out
-*.log*
