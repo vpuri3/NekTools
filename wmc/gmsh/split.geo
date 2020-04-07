@@ -1,9 +1,11 @@
 
 /* MESH PARAMS */
 
-Nc  = 41;            // # points on cube side
+/* at lx1=8, first point at 0.05 for z \in [0,1] */
+
+Nc  = 11;            // # points on cube side
 No  = 10;            // # points on line from cube to outer box
-Ny  = 20;            // # points (y-dir)
+Ny  = 10;            // # points (y-dir)
 Ne  =  5;            // # points in entrance (x-dir)
 Nw  = 3*Ne;          // # points in wake     (x-dir)
 bfc = 1.2;           // expansion from cube surface
@@ -493,6 +495,13 @@ Transfinite Surface {98 }; Recombine Surface {98 };
 Transfinite Surface {99 }; Recombine Surface {99 };
 Transfinite Surface {100}; Recombine Surface {100};
 
+// Entrance-box interface, wake-box interface - AC from vol POV
+
+Line Loop(101)={55,56,62,63,32,-99,-98,-92,-91,-30};    Plane Surface(101)={101};
+Line Loop(102)={-34,73,74,80,81,36,-117,-116,-110,-109};Plane Surface(102)={102};
+
+Transfinite Surface {101} = {10,12,18,20}; Recombine Surface {101};
+Transfinite Surface {102} = {22,24,14,16}; Recombine Surface {102};
 
 Mesh.Smoothing = Nsmooth;
 
@@ -533,22 +542,22 @@ Transfinite Volume {8+c}; Recombine Volume {8+c};
 	c = c + 3;
 EndFor
 
-// entrance and wake
-//Surface Loop(18)={}; Volume(18)={18};
-//Surface Loop(19)={}; Volume(19)={19};
-//
-//Transfinite Volume {18}={57,58,12,10,18,59,60,20}; Recombine Volume {18};
-//Transfinite Volume {19}={14,62,61,16,24,22,64,63}; Recombine Volume {19};
+// entrance, wake
+Surface Loop(18)={91:95 ,101}; Volume(18)={18};
+Surface Loop(19)={96:100,102}; Volume(19)={19};
+
+Transfinite Volume {18}; Recombine Volume {18};
+Transfinite Volume {19}; Recombine Volume {19};
 
 
 /******************** BOUNDARY CONDITIONS ********************/
-//Physical Surface("inlet") = {32};
-//Physical Surface("outlet") = {24};
-//Physical Surface("sym") = {8, 27, 28};
-//Physical Surface("pm") = {19, 25, 30};
-//Physical Surface("pp") = {6, 23, 31};
-//Physical Surface("wall") = {1,2,3,4,5,};
-//Physical Volume("fluid") = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
+Physical Surface("inlet")  = {95};
+Physical Surface("outlet") = {100};
+Physical Surface("wall")   = {91,96,1:4,5,6:9,31:42};
+Physical Surface("sym")    = {92,97,14,43:54};
+Physical Surface("pm")     = {93,99,84,85,55,56};
+Physical Surface("pp")     = {94,98,66,67,73,74};
+Physical Volume("fluid")   = {1:19};
 
 // mesh order
 Mesh.ElementOrder = 2;
