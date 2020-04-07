@@ -6,30 +6,39 @@
 Nc  = 11;            // # points on cube side
 No  = 10;            // # points on line from cube to outer box
 Ny  = 10;            // # points (y-dir)
-Ne  =  5;            // # points in entrance (x-dir)
-Nw  = 3*Ne;          // # points in wake     (x-dir)
+Ne  =  4;            // # points in entrance (x-dir)
+Nw  = 10;            // # points in wake     (x-dir)
 bfc = 1.2;           // expansion from cube surface
 Py  = 1.2;           // expansion from ground (y-dir)
 Pc  = 0.05;          // edge refinement on cube "Nc Using Bump Pc;"
-Nsmooth = 9;         // # mesh smoothing iterations
+Nsmooth = 0;         // # mesh smoothing iterations
 Nd = 5;
-
-/* DOMAIN SIZE */
-
-h        = 1.0; // cube height
-span     = 10.0;
-len      = 10.0;
-wake     = 20.0 + 0.5*span;
-height   = 5.0;
-entrance = -(5.0 + 0.5*span);
-
-lc = 1e-1;
 
 // fixed due to geom
 Nb = 0.5*(Nc+1);  // # points on side of small quads
 Nz = 2*Nb+2*Nd-3; // # points (z-dir)
 
-/* CREATE DOMAIN AND MESH */
+/********** DNS DOMAIN **********/
+
+h        = 1.0; // cube height
+span     = 3.0;
+len      = span;
+wake     = 3.5 + 0.5*span;
+height   = 2.0;
+entrance = -(1.0 + 0.5*span);
+
+/********** LES DOMAIN **********/
+
+//h        = 1.0; // cube height
+//span     = 10.0;
+//len      = span;
+//wake     = 20.0 + 0.5*span;
+//height   = 5.0;
+//entrance = -(5.0 + 0.5*span);
+
+lc = 1e-1;
+
+/********** CREATE DOMAIN **********/
 
 // Triangle Splitting
 x = 0.30;
@@ -555,8 +564,27 @@ Physical Surface("inlet")  = {95};
 Physical Surface("outlet") = {100};
 Physical Surface("wall")   = {91,96,1:4,5,6:9,31:42};
 Physical Surface("sym")    = {92,97,14,43:54};
-Physical Surface("pm")     = {93,99,84,85,55,56};
-Physical Surface("pp")     = {94,98,66,67,73,74};
+Physical Surface("pm")     = {93,56,55,85,84,99};
+Physical Surface("pp")     = {94,66,67,73,74,98};
+
+//Physical Surface("pmEnt") = {93};
+//Physical Surface("ppEnt") = {94};
+//
+//Physical Surface("pmT1") = {56};
+//Physical Surface("ppT1") = {66};
+//
+//Physical Surface("pmT2") = {55};
+//Physical Surface("ppT2") = {67};
+//
+//Physical Surface("pmT3") = {85};
+//Physical Surface("ppT3") = {73};
+//
+//Physical Surface("pmT4") = {84};
+//Physical Surface("ppT4") = {74};
+//
+//Physical Surface("pmWke") = {99};
+//Physical Surface("ppWke") = {98};
+
 Physical Volume("fluid")   = {1:19};
 
 // mesh order
