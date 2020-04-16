@@ -49,9 +49,9 @@ C-----------------------------------------------------------------------
 
       real vsc,dsty                    ! vsc == dynamic viscosity
       real n1,n2,n3                    ! normals
-      real a,xdrg,ydrg,zdrg,mdrg,Tmavg,ufavg
+      real Tmg,a,xdrg,ydrg,zdrg,mdrg,Tmavg,ufavg
 
-      integer e,k,ntot,ifld
+      integer e,f,k,ntot,ifld
       integer idimt,iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
@@ -219,10 +219,10 @@ C-----------------------------------------------------------------------
       real fNx(lx1,ly1,lz1,lelv) ! face normals
      $    ,fNy(lx1,ly1,lz1,lelv)
      $    ,fNz(lx1,ly1,lz1,lelv)
-      integer f,ifld
+      integer ifld
       character*3 bctyp
 
-      integer e,k,ntot
+      integer e,f,k,ntot
       integer iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
 
       ntot = lx1*ly1*lz1*nelv

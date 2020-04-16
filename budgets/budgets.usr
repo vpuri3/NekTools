@@ -183,7 +183,7 @@ c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
         call avg3    (vwms,vy,vz,alpha,beta,ntot,'vwm ',ifverbose)
         call avg3    (wums,vz,vx,alpha,beta,ntot,'wum ',ifverbose)
 
-        call probePoint
+        call probePoint(uavg,vavg,wavg,urms,vrms,wrms)
 
       endif
 

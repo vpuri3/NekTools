@@ -117,7 +117,7 @@ c
 
  258  format(a6,1es15.8)
 
-      call probePoint
+      call probePoint(uavg,vavg,wavg,urms,vrms,wrms)
 
 c     call geom_avg_tke2(avgtyp,nelx,nely,nelz,ifld
 c    $                  ,gs_line_hndl,idir_line
