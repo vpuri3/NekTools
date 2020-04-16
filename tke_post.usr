@@ -1,3 +1,192 @@
+C-----------------------------------------------------------------------
+c     include 'budgets.usr'
+c     include 'avg_tensor.usr'
+c     include 'wall.usr'
+c-----------------------------------------------------------------------
+c in usrchk
+c
+c     integer nelx,nely,nelz
+c     integer avgtyp,readstats,idir_plnr,idir_line,idir_geom
+c     integer idir_sctr,iface
+c     character*3 bctyp
+
+c     integer gs_plnr_hndl
+c     save    gs_plnr_hndl
+c     data    gs_plnr_hndl / 0 /
+c
+c     integer gs_line_hndl
+c     save    gs_line_hndl
+c     data    gs_line_hndl / 0 /
+c
+c     integer gs_geom_hndl
+c     save    gs_geom_hndl
+c     data    gs_geom_hndl / 0 /
+
+c     integer gs_sctr_hndl
+c     save    gs_sctr_hndl
+c     data    gs_sctr_hndl / 0 /
+c
+c     nelx      = 64
+c     nely      = 16
+c     nelz      = 32
+c
+c     avgtyp    = -4 ! -ve: plnr, 0: line, mag>1: nrep for geomavg
+c     readstats = int(readSTAT)
+c
+c     idir_sctr = 2
+c     idir_line = 2
+c     idir_plnr = 3
+c     idir_geom = 1
+c
+c     iface     = 1
+c     bctyp     = 'W  '
+
+c     call postProcess(nelx,nely,nelz,avgtyp,readstats
+c    $                ,gs_line_hndl,idir_line
+c    $                ,gs_plnr_hndl,idir_plnr
+c    $                ,gs_geom_hndl,idir_geom
+c    $                ,gs_sctr_hndl,idir_sctr,iface,bctyp)
+c
+C-----------------------------------------------------------------------
+      subroutine budgets_post(nelx,nely,nelz,avgtyp,readstats
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom
+     $                       ,gs_sctr_hndl,idir_sctr,iface,bctyp)
+      include 'SIZE'
+      include 'TOTAL'
+      include 'AVG'
+      include 'AVGINCOMP'
+      include 'BUDGETSINCOMP'
+      include 'REFERENCE'
+      include 'TKEINCOMP'
+
+      integer avgtyp
+c
+      real avtime
+      integer ifld,ntot
+      logical ifsample,iifxyo,iifvo,iifpo,iifto
+
+      real up (lx1,ly1,lz1,lelv)
+     $    ,yp (lx1,ly1,lz1,lelv)
+     $    ,Tma(lx1,ly1,lz1,lelv)
+
+      integer icalld
+      save    icalld 
+      data    icalld / 0 /
+
+      if(nid.eq.0) write(6,*)'in postProcess(...)','avgtyp',avgtyp
+
+      ntot     = lx1*ly1*lz1*nelv
+      ifld     = 1
+      ifsample = .true.
+
+      if(icalld.eq.0) then
+          icalld = icalld + 1
+          call load_standard_incomp(readstats,avtime)
+          call load_budgets_incomp(readstats)
+      endif
+
+      call sample(vx,vy,vz,pr,t,'ins',
+     $           'vx','vy','vz','pr','garbage')
+
+
+      do i=1,ntot
+        vx(i,1,1,1) = uavg(i,1,1,1)
+        vy(i,1,1,1) = vavg(i,1,1,1)
+        vz(i,1,1,1) = wavg(i,1,1,1)
+      enddo
+
+      call printdiverr
+
+      call geom_avg_tke(avgtyp,nelx,nely,nelz,ifld
+     $                 ,gs_line_hndl,idir_line
+     $                 ,gs_plnr_hndl,idir_plnr
+     $                 ,gs_geom_hndl,idir_geom)
+
+      call budgets_incomp_calc(0,.true.)
+      call comp_tke
+
+      if(nid.eq.0) then
+        write(6,258)'atime:',atime
+        write(6,258)'tkmax:',tkmax
+        write(6,258)'tk_L2:',tk_L2
+        write(6,258)'immax:',immax
+        write(6,258)'im_L2:',im_L2
+      endif
+
+ 258  format(a6,1es15.8)
+
+      call probePoint
+
+c     call geom_avg_tke2(avgtyp,nelx,nely,nelz,ifld
+c    $                  ,gs_line_hndl,idir_line
+c    $                  ,gs_plnr_hndl,idir_plnr
+c    $                  ,gs_geom_hndl,idir_geom)
+
+c     if(nid.eq.0) then
+c       write(6,258)'atime:',atime
+c       write(6,258)'tkmax:',tkmax
+c       write(6,258)'tkave:',tkave
+c       write(6,258)'immax:',immax
+c     endif
+
+! comp wall shaer
+      call comp_uplus(up,yp,Tma,uavg,vavg,wavg,iface,bctyp
+     $               ,gs_sctr_hndl,nelx,nely,nelz,ifld,idir_sctr)
+
+      call avg_tensor_wrapper(up,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(yp,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+      call avg_tensor_wrapper(Tma,avgtyp,nelx,nely,nelz,ifld
+     $                       ,gs_line_hndl,idir_line
+     $                       ,gs_plnr_hndl,idir_plnr
+     $                       ,gs_geom_hndl,idir_geom)
+
+! dumping
+      time = avtime
+
+      if(ifsample) then
+      call sample(cnk,prk,ptk,pdk,psk,'tk1',
+     $           'conv','prod','pres_tr','pres_df','garbage')
+      call sample(psk,tdk,epk,vdk,prk,'tk2',
+     $           'pres_st','turb_df','diss','visc_df','garbage')
+      call sample(tkk,imk,psk,prk,pdk,'tk3',
+     $           'tkk','imk','garbage','garbage','garbage')
+      call sample(up,yp,Tma,ym1,ym1,'upl',
+     $           'uplus','yplus','Wshr','trash','trash')
+      endif
+
+!     Outpost
+
+      iifxyo = ifxyo
+      iifvo  = ifvo
+      iifpo  = ifpo
+      iifto  = ifto
+
+      ifxyo = .true.
+      ifvo  = .true.
+      ifpo  = .true.
+      ifto  = .true.
+c
+      call outpost2(cnk,prk,ptk,pdk,psk,1,'tk1')
+      call outpost2(tdk,epk,vdk,tkk,imk,1,'tk2')
+c
+      ifxyo = iifxyo
+      ifvo  = iifvo
+      ifpo  = iifpo
+      ifto  = iifto
+ 
+
+      return
+      end
 c-----------------------------------------------------------------------
 c     include 'budgets.usr'
 c-----------------------------------------------------------------------
@@ -465,46 +654,12 @@ c-----------------------------------------------------------------------
         call rzero(urms,ntot)
         call rzero(uvms,ntot)
         call rzero(wums,ntot)
-
-        call rzero(udxavg,ntot)
-        call rzero(vdxavg,ntot)
-        call rzero(wdxavg,ntot)
-        call rzero(udxrms,ntot)
-        call rzero(vdxrms,ntot)
-        call rzero(wdxrms,ntot)
-        call rzero(dpdxavg,ntot)
-        call rzero(udpdxavg,ntot)
-        call rzero(vdpdxavg,ntot)
-        call rzero(wdpdxavg,ntot)
-        call rzero(uvdxms,ntot)
-        call rzero(uwdxms,ntot)
-        call rzero(vwdxms,ntot)
-        call rzero(pudxavg,ntot)
-        call rzero(pvdxavg,ntot)
-        call rzero(pwdxavg,ntot)
       endif
       if(idir.eq.2) then
         call rzero(vavg,ntot)
         call rzero(vrms,ntot)
         call rzero(vwms,ntot)
         call rzero(uvms,ntot)
-
-        call rzero(udyavg,ntot)
-        call rzero(vdyavg,ntot)
-        call rzero(wdyavg,ntot)
-        call rzero(udyrms,ntot)
-        call rzero(vdyrms,ntot)
-        call rzero(wdyrms,ntot)
-        call rzero(dpdyavg,ntot)
-        call rzero(udpdyavg,ntot)
-        call rzero(vdpdyavg,ntot)
-        call rzero(wdpdyavg,ntot)
-        call rzero(uvdyms,ntot)
-        call rzero(uwdyms,ntot)
-        call rzero(vwdyms,ntot)
-        call rzero(pudyavg,ntot)
-        call rzero(pvdyavg,ntot)
-        call rzero(pwdyavg,ntot)
       endif
       if(idir.eq.3) then
         call rzero(wavg,ntot)

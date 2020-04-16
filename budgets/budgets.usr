@@ -192,7 +192,7 @@ c       call avg2    (trms,t ,alpha,beta,ntott,'tms ',ifverbose)
       !=========
       if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
-     &   lastep.eq.1) then
+     &   (ifoutfld.or.(lastep.eq.1))) then
 
 c       We change time momentaneously to write down averaging time
         temp_time=time
@@ -609,7 +609,7 @@ c
 
       if (((time.gt.(ntdump+1)*tSTATFREQ).and.istep.gt.1)
      &   .or.
-     &   lastep.eq.1) then
+     &   (ifoutfld.or.(lastep.eq.1))) then
 
 c       We change time momentaneously to write down averaging time
         temp_time=time
@@ -1438,13 +1438,13 @@ c-----------------------------------------------------------------------
         time=atime
 
 c     !Average Velocity
-c     call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
+      call outpost2(uavg,vavg,wavg,pm1avg,tavg,ldimt,'ave')
 
 c     !Average Variance 
-c     call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
+      call outpost2(uvari,vvari,wvari,pvari,tvari,ldimt,'var')
 
 c     !Average Covariance  
-c     call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
+      call outpost2(uvcov,vwcov,wucov,pm1avg,tavg,ldimt,'cov')
  
       time=temp_time
 
@@ -3715,17 +3715,16 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
-      subroutine probePoint !(uavg,vavg,wavg,urms,vrms,wrms)
+      subroutine probePoint(uavg,vavg,wavg,urms,vrms,wrms)
       INCLUDE 'SIZE'
       INCLUDE 'TOTAL'
-      INCLUDE 'AVG'
 
-c     real uavg(lx1,ly1,lz1,lelt)
-c     real vavg(lx1,ly1,lz1,lelt)
-c     real wavg(lx1,ly1,lz1,lelt)
-c     real urms(lx1,ly1,lz1,lelt)
-c     real vrms(lx1,ly1,lz1,lelt)
-c     real wrms(lx1,ly1,lz1,lelt)
+      real uavg(lx1,ly1,lz1,lelt)
+      real vavg(lx1,ly1,lz1,lelt)
+      real wavg(lx1,ly1,lz1,lelt)
+      real urms(lx1,ly1,lz1,lelt)
+      real vrms(lx1,ly1,lz1,lelt)
+      real wrms(lx1,ly1,lz1,lelt)
       real k(lx1,ly1,lz1,lelt)
       real umag(lx1,ly1,lz1,lelt)
       real umax,uave,kmax,kave,vol
