@@ -134,10 +134,10 @@ c
             uf(j1,j2,1,e) = sqrt(Tmg/dsty)    ! friction velocity
             yp(j1,j2,1,e) = vsc/uf(j1,j2,1,e) ! y-plus
 c
-            a    = a    + area(k,1,f,e)                    ! area
-            xdrg = xdrg + dsty*Tx(j1,j2,1,e)*area(k,1,f,e) ! viscous drag
-            ydrg = ydrg + dsty*Ty(j1,j2,1,e)*area(k,1,f,e)
-            zdrg = zdrg + dsty*Tz(j1,j2,1,e)*area(k,1,f,e)
+            a    = a    + area(k,1,f,e)               ! area
+            xdrg = xdrg + Tx(j1,j2,1,e)*area(k,1,f,e) ! viscous drag
+            ydrg = ydrg + Ty(j1,j2,1,e)*area(k,1,f,e)
+            zdrg = zdrg + Tz(j1,j2,1,e)*area(k,1,f,e)
 c
 c           xdrg = xdrg - n1*pr(j1,j2,1,e)*area(k,1,f,e) ! pressure contribution
 c           ydrg = ydrg - n2*pr(j1,j2,1,e)*area(k,1,f,e) ! to drag
