@@ -86,8 +86,6 @@ c
       vsc  = vdiff(lx1,ly1,lz1,nelt,idimt)
       dsty = param(1)
 
-      if(nid.eq.0)write(6,*)'vsc,dsty',vsc,dsty
-
       ! get face info (initialize skpdat array)
       call dsset(nx1,ny1,nz1)
 

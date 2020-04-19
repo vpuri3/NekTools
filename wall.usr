@@ -11,7 +11,7 @@ c     real uf(lx1,ly1,lz1,lelv) ! friction velocity
 c     real yp(lx1,ly1,lz1,lelv) ! y-plus
 c
 c     bctyp = 'W  '
-c     call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,ux,uy,uz,bctyp)
+c     call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,vx,vy,vz,bctyp)
 c
 C-----------------------------------------------------------------------
       subroutine comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,ux,uy,uz,bctyp)
