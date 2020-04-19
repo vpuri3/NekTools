@@ -592,3 +592,452 @@ c     Set the z-average handle
       return
       end
 c-----------------------------------------------------------------------
+C========================================================================
+c
+c Below subroutines rely on tensor meshes (lexicographical element ordering)
+c don't forget to include avg_tensor.usr.
+c
+C========================================================================
+c U-Plus, Y-Plus
+C-----------------------------------------------------------------------
+c     In usrchk,
+c     call comp_uplus(upl,ypl,vlx,vly,vlz,f,bctyp,gs_sctr_hndl
+c    $                      ,nelx,nely,nelz,ifld,idir)
+c
+c     up,yp   : u-plus, y-plus
+c     ux/y/z  : velocity fields
+c     f       : face containing wall data
+c     idir    : direction perpendicular to face /
+c               direction to scatter data from face into domain
+c               [1,2,3] ==> [x,y,z]
+c     bctyp   : Boundary condition of face (char*3)
+c
+c     computes normal and tangential componenets of velocity,
+c     shear stress on wall, drag force on wall, friction velocity,
+c     y-plus.
+c
+c     outputs 1) shear stress vector on face,
+c             2) normal, tangential velocity,
+c                dist. to face, shear stress mag in volume,
+c             3) u-plus, y-plus, shear stress mag in volume.
+c
+c     relies on lexicographical element and node ordering.
+c
+c-----------------------------------------------------------------------
+c
+c      _________________________________________________
+c      \                                                |
+c       \                                               |
+c        \       scatter parallel                       |
+c wall--> \       to Y                                  |
+c (face 1) \                                            |
+c           * ------------------> *                     |
+c            \        ^                                 |  ^ Z
+c             \     distance to face                    |  |
+c              \                                        |  |
+c               \_______________________________________|  +----> Y
+c
+c
+c
+c-----------------------------------------------------------------------
+c     include 'avg_tensor.usr'
+c-----------------------------------------------------------------------
+c in usrchk
+c
+c     real ux(lx1,ly1,lz1,lelv)
+c     real uy(lx1,ly1,lz1,lelv)
+c     real uz(lx1,ly1,lz1,lelv)
+c     real up(lx1,ly1,lz1,lelv)
+c     real yp(lx1,ly1,lz1,lelv)
+c     integer f,ifld,idir_sctr,idir_avg
+c     character*3 bctyp
+c     logical ifplnr_avg,ifsample
+c
+c     integer gs_sctr_hndl
+c     save    gs_sctr_hndl
+c     data    gs_sctr_hndl / 0 /
+c
+c     integer gs_avg_hndl
+c     save    gs_avg_hndl
+c     data    gs_avg_hndl / 0 /
+c
+c     f          = 1
+c     bctyp      = 'W  '
+c     nelx       = 64
+c     nely       = 16
+c     nelz       = 32
+c     ifld       = 1
+c     idir_sctr  = 2
+c     idir_avg   = 3
+c     ifplnr_avg = .true. ! average over homogeneous direction idir_avg
+c     ifsample  = .true.
+c
+c     call comp_uplus(up,yp,ux,uy,uz,f,bctyp,gs_sctr_hndl,gs_avg_hndl
+c    $      ,nelx,nely,nelz,ifld,idir_sctr,idir_avg,ifplnr_avg,ifsample)
+c
+C-----------------------------------------------------------------------
+      subroutine comp_uplus(up,yp,volTm,ux,uy,uz,f,bctyp,gs_hndl1
+     $                           ,nelx,nely,nelz,ifld,idir1)
+
+      include 'SIZE'
+      include 'TOTAL'
+
+      real up(lx1,ly1,lz1,lelv)    ! U-Plus
+     $    ,yp(lx1,ly1,lz1,lelv)    ! Y-Plus
+     $    ,volTm(lx1,ly1,lz1,lelv) ! shear magnitude
+     $    ,ux(lx1,ly1,lz1,lelv)    ! Velocity Field
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
+      integer f,ifld,gs_hndl1,idir1
+      integer nelx,nely,nelz
+      character*3 bctyp
+c
+c     PREFIX:
+c            f   --> data present only on face (zero elsewhere)
+c            vol --> face data scattered into domain
+c                    in direction idir1
+
+      real fNx(lx1,ly1,lz1,lelv) ! face normal  X
+     $    ,fNy(lx1,ly1,lz1,lelv) !              Y
+     $    ,fNz(lx1,ly1,lz1,lelv) !              Z 
+     $    ,fTx(lx1,ly1,lz1,lelv) ! shear stress X-comp
+     $    ,fTy(lx1,ly1,lz1,lelv) !              Y   
+     $    ,fTz(lx1,ly1,lz1,lelv) !              Z
+     $    ,fTm(lx1,ly1,lz1,lelv) !              Mag    
+     $    ,fUf(lx1,ly1,lz1,lelv) ! face friction vel
+c
+     $    ,volNx(lx1,ly1,lz1,lelv)
+     $    ,volNy(lx1,ly1,lz1,lelv)
+     $    ,volNz(lx1,ly1,lz1,lelv)
+c    $    ,volTm(lx1,ly1,lz1,lelv)
+     $    ,volUf(lx1,ly1,lz1,lelv)
+c
+     $    ,utn(lx1,ly1,lz1,lelv) ! tangential velocity mag
+     $    ,d2f(lx1,ly1,lz1,lelv) ! distance to face
+
+      integer e,k,ntot
+      real n1 ,n2 ,n3
+      real u,v,w,un,uf,Tmg,vsc,dsty
+      logical iifxyo,iifvo,iifpo,iifto ! for outposting
+
+      if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
+c
+      ntot = lx1*ly1*lz1*nelv
+      vsc   = vdiff(lx1,ly1,lz1,nelt,1)
+      dsty  = param(1)
+c
+      call rzero(up,ntot)
+      call rzero(yp,ntot)
+c
+      call rzero(fTm,ntot)
+      call rzero(fUf,ntot)   ! friction vel on face
+c
+      call rzero(volNx,ntot)
+      call rzero(volNy,ntot)
+      call rzero(volNz,ntot)
+      call rzero(volTm,ntot)
+      call rzero(volUf,ntot) ! friction vel in vol
+c
+      call rzero(utn,ntot)
+      call rzero(d2f,ntot)
+c
+      call rzero(sij,ntot*nxzf)
+
+      call get_faceNormal(fNx,fNy,fNz,f,bctyp,ifld)
+ 
+      call comp_wallShear(fTx,fTy,fTz,fTm,fUf,yp,ux,uy,uz,bctyp)
+
+      ! shear magnitude, friction velocity
+      do i=1,ntot
+        fTm(i,1,1,1) = fTx(i,1,1,1)*fTx(i,1,1,1)
+     $                +fTy(i,1,1,1)*fTy(i,1,1,1)
+     $                +fTz(i,1,1,1)*fTz(i,1,1,1)
+        fTm(i,1,1,1) = sqrt(fTm(i,1,1,1))
+        fUf(i,1,1,1) = sqrt(fTm(i,1,1,1)/dsty)
+      enddo
+
+      ! scatter face data into domain
+      call scttr(volNx,fNx,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volNy,fNy,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volNz,fNz,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volTm,fTm,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call scttr(volUf,fUf,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      ! distance in direction parallel to idir
+      call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+c
+      ! compute u-plus, y-plus
+      do i=1,ntot
+         u   = ux   (i,1,1,1)
+         v   = uy   (i,1,1,1)
+         w   = uz   (i,1,1,1)
+         n1  = volNx(i,1,1,1)
+         n2  = volNy(i,1,1,1)
+         n3  = volNz(i,1,1,1)
+         Tmg = volTm(i,1,1,1)
+c        uf  = volUf(i,1,1,1)            ! =avg(sqrt(Tmg/rho))
+         uf  = sqrt(Tmg/dsty)            ! =sqrt(avg(Tmg)/rho)
+c
+         un = u*n1 + v*n2 + w*n3         ! mag of normal component
+         un = u*u  + v*v  + w*w - un*un
+         un = sqrt(un)
+         utn(i,1,1,1) = un               ! mag of tangential component
+c
+         up(i,1,1,1) = utn(i,1,1,1)/uf
+         yp(i,1,1,1) = d2f(i,1,1,1)*uf/vsc
+      enddo
+
+      ! Outpost
+
+      iifxyo = ifxyo
+      iifvo  = ifvo
+      iifpo  = ifpo
+      iifto  = ifto
+c
+      ifxyo = .true.
+      ifvo  = .true.
+      ifpo  = .true.
+      ifto  = .true.
+c
+c     call outpost(up,yp,utn,volTm,d2f,'upl')
+c
+      ifxyo = iifxyo
+      ifvo  = iifvo
+      ifpo  = iifpo
+      ifto  = iifto
+c
+      return
+      end
+c-----------------------------------------------------------------------
+c
+c     Scatter face data into domain in direction idir.
+c
+c     idir [1,2,3] ==> [X,Y,Z]
+c
+c     See example below.
+c-----------------------------------------------------------------------
+c     Assuming deformation of the form y = f(x,z),
+c
+c     From usrchk()
+c      
+c     real u (lx1,ly1,lz1,lelv)
+c    $     ua(lx1,ly1,lz1,lelv)
+c
+c     integer gs_sctr_hndl
+c     save    gs_sctr_hndl
+c     data    gs_sctr_hndl / 0 /
+c
+c     f     = 1
+c     bctyp = 'W  '
+c     nelx  = 16
+c     nelx  = 32
+c     nelx  = 128
+c     ifld  = 1       ! Velocity field
+c     idir  = 2       ! Y-Direction
+c
+c     call scttr(ua,u,f,bctyp,gs_sctr_hndl,nelx,nely,nelz,ifld,idir)
+c
+c      _________________________________________________
+c      \                                                |
+c       \                                               |
+c        \       scatter parallel                       |
+c wall--> \       to Y                                  |
+c (face 1) \                                            |
+c           * ------------------> *                     |
+c            \        ^                                 |  ^ Z
+c             \     distance to face                    |  |
+c              \                                        |  |
+c               \_______________________________________|  +----> Y
+c
+c
+c-----------------------------------------------------------------------
+      subroutine scttr(ua,u,f,bctyp,gs_hndl,nelx,nely,nelz,ifld,idir)
+      include 'SIZE'
+      include 'TOTAL'
+
+      real ua(lx1,ly1,lz1,lelv),u(1)
+      character*3 bctyp
+      integer gs_hndl,idir,f
+
+      integer nelx,nely,nelz,nel
+c     integer*8 glo_num(lx1,ly1,lz1,lelv)
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
+
+      nel  = nelfld(ifld)
+      n    = nx1*ny1*nz1*nel
+
+      if (gs_hndl.eq.0) then
+c      call rzero(glo_num,n)
+       call dsset(nx1,ny1,nz1)
+       if (idir.eq.1) call gs_x_sctr(gs_hndl,f,bctyp,nelx,nely,nelz,nel)
+       if (idir.eq.2) call gs_y_sctr(gs_hndl,f,bctyp,nelx,nely,nelz,nel)
+       if (idir.eq.3) call gs_z_sctr(gs_hndl,f,bctyp,nelx,nely,nelz,nel)
+      endif
+
+      call copy(ua,u,n)
+
+c     VERIFY GLOBAL NUMBERING
+c     do i=1,n
+c        ua(i,1,1,1) = glo_num(i,1,1,1)
+c     enddo
+
+      call fgslib_gs_op(gs_hndl,ua,1,1,0)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine gs_x_sctr(gs_sctr_hndl,f,bctyp,nelx,nely,nelz,nel)
+      include 'SIZE'
+      include 'TOTAL'
+      integer gs_sctr_hndl,f,e,ex,ey,ez,eg,nelyz
+      integer*8 ex_g
+      common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
+
+      integer nelx,nely,nelz,nel,n
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
+
+      n     = nx1*ny1*nz1*nel
+      nelyz = nely*nelz
+      nt    = ny1*nely*nz1*nelz
+
+      do e=1,nel
+         eg = lglel(e)
+         call get_exyz(ex,ey,ez,eg,nelx,nelyz,1)
+         ex_g = ey       ! Ensure int*8 promotion
+         do k=1,nz1      ! Enumerate points in the y-z plane
+         do j=1,ny1
+         do i=1,nx1
+            glo_num(i,j,k,e) = j+ny1*(k-1) + ny1*nz1*(ex_g-1)
+            glo_num(i,j,k,e) = - glo_num(i,j,k,e)
+         enddo
+         enddo
+         enddo
+         call flag_bdry(glo_num,f,e,bctyp)
+      enddo
+
+      call fgslib_gs_setup(gs_sctr_hndl,glo_num,n,nekcomm,mp)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine gs_y_sctr(gs_sctr_hndl,f,bctyp,nelx,nely,nelz,nel)
+      include 'SIZE'
+      include 'TOTAL'
+      integer gs_sctr_hndl,f,e,ex,ey,ez,eg
+      integer*8 ex_g
+      common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
+
+      integer nelx,nely,nelz,nel,n
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
+
+      n  = nx1*ny1*nz1*nel
+
+      do e=1,nel
+         eg = lglel(e)
+         call get_exyz(ex,ey,ez,eg,nelx,nely,nelz)            
+         ex_g = (ez-1)*nelx+ex  ! Ensure int*8 promotion
+         do k=1,nz1
+         do j=1,ny1
+         do i=1,nx1
+          glo_num(i,j,k,e) = k+nz1*(i-1) + nx1*nz1*(ex_g-1)
+          glo_num(i,j,k,e) = - glo_num(i,j,k,e)
+         enddo
+         enddo
+         enddo
+         call flag_bdry(glo_num,f,e,bctyp)
+      enddo
+
+      call fgslib_gs_setup(gs_sctr_hndl,glo_num,n,nekcomm,mp)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine gs_z_sctr(gs_sctr_hndl,f,bctyp,nelx,nely,nelz,nel)
+      include 'SIZE'
+      include 'TOTAL'
+      integer gs_sctr_hndl,f,e,ex,ey,ez,eg,nelxy
+      integer*8 ex_g
+      common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
+
+      integer nelx,nely,nelz,nel,n
+      integer*8 glo_num(lx1,ly1,lz1,lelv)
+c     common /sctr/ glo_num,nelx,nely,nelz,nel,n
+
+      n     = nx1*ny1*nz1*nel
+      nelxy = nelx*nely
+
+      do e=1,nel
+         eg = lglel(e)
+         call get_exyz(ex,ey,ez,eg,nelxy,1,1)
+         ex_g = ex       ! Ensure int*8 promotion
+         do k=1,nz1
+         do j=1,ny1
+         do i=1,nx1
+          glo_num(i,j,k,e) = i+nx1*(j-1) + nx1*ny1*(ex_g-1)
+          glo_num(i,j,k,e) = - glo_num(i,j,k,e)
+         enddo
+         enddo
+         enddo
+         call flag_bdry(glo_num,f,e,bctyp)
+      enddo
+
+      call fgslib_gs_setup(gs_sctr_hndl,glo_num,n,nekcomm,mp)
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine flag_bdry(idx,f,e,bctyp)
+      include 'SIZE'
+      include 'TOTAL'
+      integer*8 idx(lx1,ly1,lz1,lelv)
+      integer f,e
+      character*3 bctyp
+
+c     flag points on boundary
+
+      if(cbc(f,e,1).eq.bctyp) then
+         iface  = eface1(f)     ! surface to volume shifts
+         js1    = skpdat(1,iface)
+         jf1    = skpdat(2,iface)
+         jskip1 = skpdat(3,iface)
+         js2    = skpdat(4,iface)
+         jf2    = skpdat(5,iface)
+         jskip2 = skpdat(6,iface)
+
+         do j2=js2,jf2,jskip2
+         do j1=js1,jf1,jskip1
+            idx(j1,j2,1,e) = - idx(j1,j2,1,e)
+         enddo
+         enddo          
+      endif
+      
+      return
+      end
+c-----------------------------------------------------------------------
+c     computes dist in direction of idir
+c-----------------------------------------------------------------------
+      subroutine dist2face(d,f,bctyp,gs_sctr_hndl
+     $                      ,nelx,nely,nelz,ifld,idir)
+      include 'SIZE'
+      include 'TOTAL'
+      real d (lx1,ly1,lz1,lelv)
+      real dd(lx1,ly1,lz1,lelv)
+      integer n,f,ifld
+
+      nel = nelfld(ifld)
+      n   = nx1*ny1*nz1*nel
+
+      if(idir.eq.1) call copy(dd,xm1,n)
+      if(idir.eq.2) call copy(dd,ym1,n)
+      if(idir.eq.3) call copy(dd,zm1,n)
+
+      call scttr(d,dd,f,bctyp,gs_sctr_hndl,nelx,nely,nelz,ifld,idir)
+
+      do i=1,n
+         d(i,1,1,1) = abs(dd(i,1,1,1)-d(i,1,1,1))
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
