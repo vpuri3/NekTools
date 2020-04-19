@@ -1,31 +1,30 @@
 c-----------------------------------------------------------------------
-      subroutine write2file(sclr1,sclr2,sclr3,sclr4,name1,name2,name3
-     $                     ,name4,filename,step0,dstep,numsteps)
+      subroutine write2file(sclr1,sclr2,sclr3,sclr4,filename
+     $                    ,name1,name2,name3,name4,step0,dstep,numsteps)
       include 'SIZE'
       include 'TOTAL'
 
       real sclr1,sclr2,sclr3,sclr4
+      character(3) filename,name1,name2,name3,name4
       integer step0,dstep,numsteps
-      character(3) name1,name2,name3,name4
-      character(3) filename
 c
+      logical ifnwrite, there
       integer step1
-      logical ifnwrite
+      save    step1
+      data    step1  /1e9/
       integer i
       save    i
       data    i  /0/
       character(7) filenametot
-      logical there
+      save         filenametot
       real val(6,lhis)
       save val
 
       if(istep.lt.step0) goto 998
 
-      step1 = step0 + dstep * (numsteps - 1)
       if(istep.gt.step1) goto 998
 
-      ifnwrite =  mod(istep-step0,dstep).ne.0
-      if(ifnwrite) goto 998
+      if(mod(istep-step0,dstep).ne.0) goto 998
 
       if(numsteps.gt.lhis) then
         if(nid.eq.0) write(6,*) 'ABORT: in write2file, numsteps > lhis'
@@ -34,12 +33,11 @@ c
 
       if(i.eq.0) then
         call rzero(val,6*numsteps)
+        step1 = step0 + dstep * (numsteps - 1)
+        call blank(filenametot,7)
+        filenametot = trim(filename)//".dat"
       endif
 
-
-      filename = trim(filename)
-      call blank(filenametot,7)
-      filenametot = filename//".dat"
       if(nid.eq.0) write(6,*) 'writing scalar to file ',filenametot
 
       i = i + 1
@@ -50,9 +48,11 @@ c
       val(5,i) = sclr3
       val(6,i) = sclr4
 
+      if(istep.eq.step1) then
+
       call nekgsync()         
 
-      if((nid.eq.0).and.(istep.eq.step1)) then
+      if(nid.eq.0) then
 
         inquire(file=filenametot,exist=there)
         if(there) then
@@ -76,6 +76,8 @@ c
       endif
 
       call nekgsync()         
+
+      endif
 
  998  continue
 

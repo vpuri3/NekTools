@@ -133,38 +133,15 @@ c-----------------------------------------------------------------------
       include 'SIZE'
       include 'TOTAL'
 
-      real dudx(lx1,ly1,lz1,lelt)
-     $    ,dudy(lx1,ly1,lz1,lelt)
-     $    ,dudz(lx1,ly1,lz1,lelt)
-     $    ,dvdx(lx1,ly1,lz1,lelt)
-     $    ,dvdy(lx1,ly1,lz1,lelt)
-     $    ,dvdz(lx1,ly1,lz1,lelt)
-     $    ,dwdx(lx1,ly1,lz1,lelt)
-     $    ,dwdy(lx1,ly1,lz1,lelt)
-     $    ,dwdz(lx1,ly1,lz1,lelt)
+      real tmp1,tmp2,tmp3,tmp4
 
-      real div(lx1,ly1,lz1,lelt)
-     $   ,divm(lx1,ly1,lz1,lelt)
+      tmp1 = 1.
+      tmp2 = 2.
+      tmp3 = 3.
+      tmp4 = 4.
 
-      real tmp
-      integer ntot
-
-      ntot=lx1*ly1*lz1*nelv
-      call gradm1(dudx,dudy,dudz,vx)
-      call gradm1(dvdx,dvdy,dvdz,vy)
-      call gradm1(dwdx,dwdy,dwdz,vz)
-
-      call rzero(div,ntot)
-      call rzero(divm,ntot)
-      do i=1,ntot
-        div(i,1,1,1)  = dudx(i,1,1,1) + dvdy(i,1,1,1) + dwdz(i,1,1,1)
-        divm(i,1,1,1) = abs(div(i,1,1,1))
-      enddo
-
-      tmp = glmax(divm,ntot)
-      call write2file(tmp,tmp,tmp,tmp,'aaa','bbb','ccc','ddd','fil'
-     $               ,3,2,3,'ddd')
-!     call e2_out
+      call write2file(tmp1,tmp2,tmp3,tmp4,'fil'
+     $              ,'aaa','bbb','ccc','ddd',10,2,3)
 
       return
       end
