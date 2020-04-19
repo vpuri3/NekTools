@@ -1,10 +1,8 @@
 #!/bin/bash
 
-###########
-# usage: ./makebox <case>
 #
-# script pased down by Pablo Brubeck
-###########
+# usage: $ ./makebox <case>
+#
 
 case=$1
 
@@ -24,9 +22,9 @@ $sfx
 $case
 DOF
 
-rm box.rea box.re2
-
 $core'genmap' << DOF
 $case
 0.1
 DOF
+
+rm -f box.rea box.re2
