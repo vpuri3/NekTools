@@ -1,0 +1,30 @@
+Jobid: 428974
+qsub -n 1 -t 0:03:00 -A wall_turb_dd -q debug-flat-quad theta.script
+Sun Apr 19 13:19:21 2020 -0500 (CDT) submitted with cwd set to: /lus/theta-fs0/projects/wall_turb_dd/vpuri/NekTools/w2
+jobid 428974 submitted from terminal /dev/pts/4
+2020-04-19 18:19:58,179 INFO: Starting Resource_Prologue
+2020-04-19 18:19:58,180 DEBUG: no enabling attribute found
+2020-04-19 18:19:58,180 INFO: Resource_Prologue finished with exit code 0
+Sun Apr 19 18:20:19 2020 +0000 (UTC) 
+Sun Apr 19 18:20:19 2020 +0000 (UTC) Command: '/lus/theta-fs0/projects/wall_turb_dd/vpuri/NekTools/w2/theta.script'
+Sun Apr 19 18:20:19 2020 +0000 (UTC) 
+Sun Apr 19 18:20:19 2020 +0000 (UTC) Environment:
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_PARTCORES=64
+Sun Apr 19 18:20:19 2020 +0000 (UTC) SHELL=/bin/bash
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_PROJECT=wall_turb_dd
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_PARTNAME=0
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_JOBID=428974
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_STARTTIME=1587320369
+Sun Apr 19 18:20:19 2020 +0000 (UTC) LOGNAME=vpuri
+Sun Apr 19 18:20:19 2020 +0000 (UTC) USER=vpuri
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_ENDTIME=1587320549
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_PARTSIZE=1
+Sun Apr 19 18:20:19 2020 +0000 (UTC) HOME=/home/vpuri
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_JOBSIZE=1
+Sun Apr 19 18:20:19 2020 +0000 (UTC) COBALT_QUEUE=debug-flat-quad
+Sun Apr 19 18:20:19 2020 +0000 (UTC) 
+Sun Apr 19 18:20:19 2020 +0000 (UTC) Info: stdin received from /dev/null
+Sun Apr 19 18:20:19 2020 +0000 (UTC) Info: stdout sent to /lus/theta-fs0/projects/wall_turb_dd/vpuri/NekTools/w2/428974.output
+Sun Apr 19 18:20:19 2020 +0000 (UTC) Info: stderr sent to /lus/theta-fs0/projects/wall_turb_dd/vpuri/NekTools/w2/428974.error
+Sun Apr 19 18:20:19 2020 +0000 (UTC) 
+Sun Apr 19 18:21:20 2020 +0000 (UTC) Info: task completed normally with an exit code of 0; initiating job cleanup and removal

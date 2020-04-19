@@ -1,55 +1,58 @@
 C-----------------------------------------------------------------------
 c  in usrchk()
 c
-c     integer f,ifld,idir
 c     character*3 bctyp
 c 
 c     real Tx(lx1,ly1,lz1,lelv) ! shear stress X-comp
 c     real Ty(lx1,ly1,lz1,lelv) !              Y   
 c     real Tz(lx1,ly1,lz1,lelv) !              Z
+c     real Tm(lx1,ly1,lz1,lelv) ! shear stress mag
+c     real uf(lx1,ly1,lz1,lelv) ! friction velocity
+c     real yp(lx1,ly1,lz1,lelv) ! y-plus
 c
-c     ifxyo = .true.
-c     ifto  = .true.
-c
-c     f     = 1
 c     bctyp = 'W  '
-c     ifld  = 1
-c     call comp_wallShear(Tx,Ty,Tz,vx,vy,vz,f,bctyp,ifld)
+c     call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,vx,vy,vz,bctyp)
 c
 C-----------------------------------------------------------------------
-      subroutine comp_wallShear(Tx,Ty,Tz,ux,uy,uz,f,bctyp,ifld)
+      subroutine comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,ux,uy,uz,bctyp)
       implicit none
       include 'SIZE'
       include 'TOTAL'
 
-      integer lxyz,nxzf
-      parameter(lxyz = lx1*ly1*lz1)
-      parameter(nxzf = 2*ldim)
+      integer lxyz,nxzf,lxyzv
+      parameter(lxyz  = lx1*ly1*lz1)
+      parameter(nxzf  = 2*ldim)
+      parameter(lxyzv = lelv*lxyz)
 
       real Tx(lx1,ly1,lz1,lelv) ! Shear Stress
-      real Ty(lx1,ly1,lz1,lelv)
-      real Tz(lx1,ly1,lz1,lelv)
-      real ux(lx1,ly1,lz1,lelv) ! Velocity Field
-      real uy(lx1,ly1,lz1,lelv)
-      real uz(lx1,ly1,lz1,lelv)
-      integer f,ifld
+     $    ,Ty(lx1,ly1,lz1,lelv)
+     $    ,Tz(lx1,ly1,lz1,lelv)
+     $    ,Tm(lx1,ly1,lz1,lelv)
+     $    ,uf(lx1,ly1,lz1,lelv) ! friction velocity
+     $    ,yp(lx1,ly1,lz1,lelv) ! y-plus
+     $    ,ux(lx1,ly1,lz1,lelv) ! Velocity Field
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
       character*3 bctyp
 
-      real Tm(lx1,ly1,lz1,lelv) ! Shear-Mag
+
       real ur,us,ut,vr,vs,vt,wr,ws,wt
+
       common /ctmp1/ ur(lxyz),us(lxyz),ut(lxyz) ! used to compute sij
      $             , vr(lxyz),vs(lxyz),vt(lxyz)
      $             , wr(lxyz),ws(lxyz),wt(lxyz)
 
       real sij(lx1,ly1,lz1,nxzf,lelv)  ! strain rate tensor
-      integer e,k,ntot
-      integer idimt,iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
-      real Tmg,vsc,dsty                ! vsc == dynamic viscosity
-      real n1 ,n2 ,n3
       real s11,s12,s13
-      real s21,s22,s23
-      real s31,s32,s33
-      real a,xdrg,ydrg,zdrg,mdrg
+     $    ,s21,s22,s23
+     $    ,s31,s32,s33
+
+      real vsc,dsty                    ! vsc == dynamic viscosity
+      real n1,n2,n3                    ! normals
+      real Tmg,a,xdrg,ydrg,zdrg,mdrg,Tmavg,ufavg
+
+      integer e,f,k,ntot,ifld
+      integer idimt,iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
       logical iifxyo,iifvo,iifpo,iifto ! for outposting
 
       if(nid.eq.0) write(6,*) 'in comp_wallShear(...)'
@@ -60,29 +63,36 @@ c
       call rzero(Ty,ntot)
       call rzero(Tz,ntot)
       call rzero(Tm,ntot)
+      call rzero(uf,ntot)
+      call rzero(yp,ntot)
 c
       call rzero(sij,ntot*nxzf)
 
-      a     = 0.                ! drag on face
+      a     = 0.                ! area of face
       xdrg  = 0.                ! drag on face X-comp
       ydrg  = 0.                !              Y 
       zdrg  = 0.                !              Z
       mdrg  = 0.                !              Mag
 c
       idimt = 1
-      vsc   = vdiff(lx1,ly1,lz1,nelt,idimt)
-      dsty  = param(1)
+      ifld  = 1
+
+      ! strain rate tensor
+      call comp_sij(sij,nxzf,ux,uy,uz,ur,us,ut,vr,vs,vt,wr,ws,wt)
 
       ! initialize viscocity
       if (istep.eq.0) call cfill(vdiff,param(2),ntot)
 
-      ! strain rate tensor
-      call comp_sij(sij,nxzf,ux,uy,uz,ur,us,ut,vr,vs,vt,wr,ws,wt)
+      vsc  = vdiff(lx1,ly1,lz1,nelt,idimt)
+      dsty = param(1)
+
+      if(nid.eq.0)write(6,*)'vsc,dsty',vsc,dsty
 
       ! get face info (initialize skpdat array)
       call dsset(nx1,ny1,nz1)
 
       do e=1,nelv
+      do f=1,nxzf
         if (cbc(f,e,ifld).eq.bctyp) then
           iface  = eface1(f)   ! surface to volume shifts
           js1    = skpdat(1,iface)
@@ -122,7 +132,9 @@ c
             Tmg = Tmg + Tz(j1,j2,1,e)*Tz(j1,j2,1,e)
             Tmg = sqrt(Tmg)
 c
-            Tm(j1,j2,1,e) = Tmg                       ! shear stress mag
+            Tm(j1,j2,1,e) = Tmg               ! shear stress mag
+            uf(j1,j2,1,e) = sqrt(Tmg/dsty)    ! friction velocity
+            yp(j1,j2,1,e) = vsc/uf(j1,j2,1,e) ! y-plus
 c
             a    = a    + area(k,1,f,e)               ! area
             xdrg = xdrg + Tx(j1,j2,1,e)*area(k,1,f,e) ! viscous drag
@@ -138,6 +150,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
 
         endif
       enddo
+      enddo
  
       call gop(a   ,Tmg,'+  ',1) ! summing over all processes
       call gop(xdrg,Tmg,'+  ',1)
@@ -146,15 +159,21 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
  
       mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
       mdrg = sqrt(mdrg)
+      Tmavg= mdrg / (a*dsty)
+      ufavg= sqrt(Tmavg/dsty)
  
       if(nid.eq.0) then
-         write(6,*) 'area     is', a
-         write(6,*) 'xdrag    is', xdrg
-         write(6,*) 'ydrag    is', ydrg
-         write(6,*) 'zdrag    is', zdrg
-         write(6,*) 'drag mag is', mdrg
+        write(6,258)'area:' ,a
+        write(6,258)'xdrag:',xdrg
+        write(6,258)'ydrag:',ydrg
+        write(6,258)'zdrag:',zdrg
+        write(6,258)'Mdrag:',mdrg
+        write(6,258)'Tmavg:',Tmavg
+        write(6,258)'Ufavg:',ufavg
       endif
  
+ 258  format(a6,1es15.8)
+
       ! Outpost
 
       iifxyo = ifxyo
@@ -167,7 +186,7 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
       ifpo  = .false.
       ifto  = .true.
  
-      call outpost(Tx,Ty,Tz,pr,Tm,'wsh')
+c     call outpost(Tm,uf,yp,pr,Tx,'wsh')
  
       ifxyo = iifxyo
       ifvo  = iifvo
@@ -177,4 +196,37 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
       return
       end
 c------------------------------------------------------------------------
+      subroutine avg_3d(ua,u)
+      include 'SIZE'
+      include 'TOTAL'
+      real vol
+      integer nt
 
+      nt  = lx1*ly1*lz1*nelv
+      vol = glsum(bm1,nt)
+      ua  = glsc2(bm1,u,nt)/vol
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine comp_L2(uL2,u)
+      include 'SIZE'
+      include 'TOTAL'
+
+      real uL2, u(1)
+
+      real u2(lx1*ly1*lz1*lelv)
+      integer nt
+
+      nt = lx1*ly1*lz1*nelv;
+
+      do i=1,nt
+        u2(i) = u(i) * u(i)
+      enddo
+
+      call avg_3d(uL2,u2)
+      uL2 = sqrt(uL2)
+
+      return
+      end
+c-----------------------------------------------------------------------

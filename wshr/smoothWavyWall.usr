@@ -101,6 +101,7 @@ c-----------------------------------------------------------------------
       z = zm1(ix,iy,iz,ie)
  
       ux = y**2 + x**4 + z**7
+c     ux = y
       uy = 0.
       uz = 0.
 
@@ -108,22 +109,25 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine userchk()
+c     implicit none
       include 'SIZE'
       include 'TOTAL'
 
-      integer f,ifld,idir
       character*3 bctyp
   
       real Tx(lx1,ly1,lz1,lelv) ! shear stress X-comp
       real Ty(lx1,ly1,lz1,lelv) !              Y   
       real Tz(lx1,ly1,lz1,lelv) !              Z
-
-
+      real Tm(lx1,ly1,lz1,lelv) ! shear stress mag
+      real uf(lx1,ly1,lz1,lelv) ! friction velocity
+      real yp(lx1,ly1,lz1,lelv) ! y-plus
+ 
 ccccccccc     for verification
 ccccccccc
-      integer ntot,e,i,j
-      real dsty,vsc
-      real x  ,y  ,z  ,tmp
+      integer e,f,k,ntot,idimt,ifld,i
+      integer iface,j1,js1,jf1,jskip1,j2,js2,jf2,jskip2
+      real dsty,vsc,tmp
+      real x  ,y  ,z
       real n1 ,n2 ,n3
       real t1 ,t2 ,t3
       real s11,s12,s13
@@ -138,20 +142,28 @@ ccccccccc
       ifxyo = .true.
       ifto  = .true.
 
-      f     = 1
       bctyp = 'W  '
-      ifld  = 1
-      call comp_wallShear(Tx,Ty,Tz,vx,vy,vz,f,bctyp,ifld)
-
+      call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,vx,vy,vz,bctyp)
+ 
+c     call rzero(Tx,ntot)
+c     call rzero(Ty,ntot)
+c     call rzero(Tz,ntot)
+ 
 ccccccccc     for verification
 ccccccccc
-      ntot = lx1*ly1*lz1*nelv
+      ntot  = lx1*ly1*lz1*nelv
+      idimt = 1
+      ifld  = 1
+
+      if (istep.eq.0) call cfill(vdiff,param(2),ntot)
+
+      vsc  = vdiff(lx1,ly1,lz1,nelt,idimt)
       dsty = param(1)
-      vsc  = param(2)
- 
+
       call dsset(nx1,ny1,nz1) ! initialize skpdat array
 
       do e=1,nelv
+      do f=1,2*ldim
         if (cbc(f,e,ifld).eq.bctyp) then
           iface  = eface1(f)   ! surface to volume shifts
           js1    = skpdat(1,iface)
@@ -171,16 +183,21 @@ ccccccccc
             z = zm1(j1,j2,1,e)
  
             ! normals of bottom surface
-            tmp = 1 + ssx(x,DELTA)**2
+            tmp = 1. + ssx(x,DELTA)**2
             tmp = sqrt(tmp)
-            n1 = ssx(x,DELTA)/tmp
-            n2 = -1.0        /tmp
-            n3 =  0.0
+            n1  = ssx(x,DELTA)/tmp
+            n2  = -1.0        /tmp
+            n3  =  0.0
 
             ! gradients of velocity field for strain-rate tensor 
             udx = 4.*x**3
             udy = 2.*y**1
             udz = 7.*z**6
+
+c           udx = 0.
+c           udy = 1.
+c           udz = 0.
+
             vdx = 0.
             vdy = 0.
             vdz = 0.
@@ -193,8 +210,8 @@ ccccccccc
             s31 = udz + wdx
  
             s12 = vdx + udy
-            s22 = vdy + vdy 
-            s32 = vdz + wdy 
+            s22 = vdy + vdy
+            s32 = vdz + wdy
  
             s13 = wdx + udz
             s23 = wdy + vdz
@@ -207,11 +224,16 @@ ccccccccc
             Tx(j1,j2,1,e) = abs(Tx(j1,j2,1,e) - t1)
             Ty(j1,j2,1,e) = abs(Ty(j1,j2,1,e) - t2)
             Tz(j1,j2,1,e) = abs(Tz(j1,j2,1,e) - t3)
+
+c           Tx(j1,j2,1,e) = n1 + 0*unx(k,1,f,e)
+c           Ty(j1,j2,1,e) = n2 + 0*uny(k,1,f,e)
+c           Tz(j1,j2,1,e) = n3 + 0*unz(k,1,f,e)
  
           enddo
           enddo
 
         endif
+      enddo
       enddo
 
       tmp = glmax(Tx,ntot)
@@ -223,7 +245,9 @@ ccccccccc
 ccccccccc
 ccccccccc
 
-c     call exitt
+      call outpost(Tx,Ty,Tz,pr,t,'wsh')
+
+      call exitt
 
       return
       end
@@ -233,26 +257,6 @@ c-----------------------------------------------------------------------
       include 'TOTAL'
 
       common /cdsmag/ ediff(lx1,ly1,lz1,lelv)
-
-      n=8*nelv
-      xmin = glmin(xc,n)
-      xmax = glmax(xc,n)
-      ymin = glmin(yc,n)
-      ymax = glmax(yc,n)
-      zmin = glmin(zc,n)
-      zmax = glmax(zc,n)
-
-      xscale = XLEN/(xmax-xmin)
-      yscale = YLEN/(ymax-ymin)
-      zscale = ZLEN/(zmax-zmin)
-
-      do i=1,n
-         xc(i,1) = xscale*xc(i,1)
-         yc(i,1) = yscale*yc(i,1)
-         zc(i,1) = zscale*zc(i,1)
-      enddo
-
-      ! element vertices unchanged since XLEN = (xmax-xmin) = 1
 
       n = nx1*ny1*nz1*nelt 
       call cfill(ediff,param(2),n)  ! initialize viscosity
@@ -298,6 +302,8 @@ c-----------------------------------------------------------------------
       ss = 1.0 - (2.0*x-1.0)**2
       ss = ss*d
 
+c     ss = 0.
+
       return
       end
 c-----------------------------------------------------------------------
@@ -305,6 +311,8 @@ c-----------------------------------------------------------------------
 
       ssx = -4.0*(2.0*x-1)
       ssx = ssx*d
+
+c     ssx = 0.
 
       return
       end
