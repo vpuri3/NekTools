@@ -1,0 +1,4 @@
+Jobid: 429390
+qsub -n 1 -t 0:03:00 -A wall_turb_dd -q debug-cache-quad theta.script
+Mon Apr 20 17:42:39 2020 -0500 (CDT) submitted with cwd set to: /lus/theta-fs0/projects/wall_turb_dd/vpuri/NekTools/scatter
+jobid 429390 submitted from terminal /dev/pts/45

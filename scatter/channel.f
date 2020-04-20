@@ -17,7 +17,7 @@ C-----------------------------------------------------------------------
 #define YLEN 1.
 #define ZLEN 1.
 C-----------------------------------------------------------------------
-      include 'wallpts.usr'
+      include 'scatter.usr'
       include 'wallShear.usr'
 C-----------------------------------------------------------------------
       subroutine uservp(ix,iy,iz,eg) ! set variable properties
@@ -101,7 +101,7 @@ c-----------------------------------------------------------------------
       y = ym1(ix,iy,iz,ie)
       z = zm1(ix,iy,iz,ie)
  
-      ux = y
+      ux = x**2 + y**3 + z**4
       uy = 0.
       uz = 0.
 
@@ -114,7 +114,7 @@ c     implicit none
       include 'TOTAL'
 
       character*3 bctyp
-      integer ifld
+      integer ifld,n
 
       real d (lx1,ly1,lz1,lelv) ! dist to wall
       real Tx(lx1,ly1,lz1,lelv) ! shear stress X-comp
@@ -126,6 +126,8 @@ c     implicit none
  
       bctyp = 'W  '
       ifld  = 1
+      n     = lx1*ly1*lz1*nelfld(ifld)
+
       call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,vx,vy,vz,bctyp)
  
 c distance to BC

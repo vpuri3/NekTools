@@ -201,14 +201,13 @@ c
 c     integer ifld
 c     character*3 bctyp
 c 
-c     real fNx(lx1,ly1,lz1,lelv) ! face normal X-comp
-c     real fNy(lx1,ly1,lz1,lelv) !             Y   
-c     real fNz(lx1,ly1,lz1,lelv) !             Z
+c     real Nx(lx1,ly1,lz1,lelv) ! face normal X-comp
+c     real Ny(lx1,ly1,lz1,lelv) !             Y   
+c     real Nz(lx1,ly1,lz1,lelv) !             Z
 c
-c     f     = 1
 c     ifld  = 1
 c     bctyp = 'W  '
-c     call get_faceNormal(fNx,fNy,fNz,f,bctyp,ifld)
+c     call get_faceNormal(Nx,Ny,Nz,bctyp,ifld)
 c
 C-----------------------------------------------------------------------
       subroutine get_faceNormal(fNx,fNy,fNz,bctyp,ifld)

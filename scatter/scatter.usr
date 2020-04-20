@@ -23,7 +23,7 @@ c-----------------------------------------------------------------------
       nel  = nelfld(ifld)
       n    = lx1*ly1*lz1*nel
       b    = 'W  '
-      tol  = 1e-10
+      tol  = 1e-12
 
 c distance to BC
 c     call rzero(d,n)
@@ -36,7 +36,7 @@ c project data in coordinate direction
         do k=1,lz1
         do j=1,ly1
         do i=1,lx1
-c         if(d(i,1,1,1).lt.tol) goto 998 ! wall point - do nothing
+          if(d(i,j,k,e).lt.tol) goto 111 ! wall point - do nothing
           i0=max(  1,i-1)                ! bounding box
           j0=max(  1,j-1)
           k0=max(  1,k-1)
@@ -44,13 +44,13 @@ c         if(d(i,1,1,1).lt.tol) goto 998 ! wall point - do nothing
           j1=min(ly1,j+1)
           k1=min(lz1,k+1)
           call sctr_idx(ii,jj,kk,i0,j0,k0,i1,j1,k1,i,j,k,e,d)
-          g(i,j,k,e) = g(ii,jj,kk,e)          
-c998      continue
+          g(i,j,k,e) = g(ii,jj,kk,e)
+ 111      continue
         enddo
         enddo
         enddo
         enddo
-c       call fgslib_gs_op(gsh_fld(ifld),g,1,3,0) ! min over all elements
+        call fgslib_gs_op(gsh_fld(ifld),g,1,4,0) ! max over all elements
       enddo
 
       ifvo  = .true.
