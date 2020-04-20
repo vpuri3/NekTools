@@ -1,0 +1,19 @@
+#!/bin/bash
+
+case='channel'
+nprocs=64
+ppn=64
+thr=1
+
+echo $case     >  SESSION.NAME
+echo `pwd`'/' >>  SESSION.NAME
+touch ./$case.rea
+rm -f ioinfo
+
+aprun -n $nprocs \
+      -N $ppn \
+      -d $thr \
+      -cc depth \
+      -j 1 \
+      ./nek5000 > ./logfile 2>&1 &
+wait
