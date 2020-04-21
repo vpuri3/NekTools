@@ -91,7 +91,6 @@ C-----------------------------------------------------------------------
      $    ,uy(lx1,ly1,lz1,lelv)
      $    ,uz(lx1,ly1,lz1,lelv)
 c
-
       real Nx(lx1,ly1,lz1,lelv) ! face normal  X
      $    ,Ny(lx1,ly1,lz1,lelv) !              Y
      $    ,Nz(lx1,ly1,lz1,lelv) !              Z 
@@ -122,6 +121,8 @@ c
 
       call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,ux,uy,uz,bctyp)
 
+      ! distance in direction parallel to idir
+      call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       ! scatter face data into domain
       call scttr(Nx,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(Ny,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
@@ -129,9 +130,6 @@ c
       call scttr(Tm,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(uf,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(yp,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
-
-      ! distance in direction parallel to idir
-      call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
 c
       ! compute u-plus, y-plus
       do i=1,ntot
@@ -142,8 +140,7 @@ c
          n2  = Ny(i,1,1,1)
          n3  = Nz(i,1,1,1)
          Tmg = Tm(i,1,1,1)
-         ufr = uf(i,1,1,1)               ! =avg(sqrt(Tmg/rho))
-         ufr = sqrt(Tmg/dsty)            ! =sqrt(avg(Tmg)/rho)
+         ufr = uf(i,1,1,1)   
 c
          un = u*n1 + v*n2 + w*n3         ! mag of normal component
          un = u*u  + v*v  + w*w - un*un
