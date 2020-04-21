@@ -1,9 +1,110 @@
+C-----------------------------------------------------------------------
+c
+c
+c
+C-----------------------------------------------------------------------
+      subroutine comp_uplus(ux,uy,uz,bctyp,ifld)
+      include 'SIZE'
+      include 'TOTAL'
+
+      real ux(lx1,ly1,lz1,lelv) ! Velocity field
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
+
+      integer ifld
+      character*3 bctyp
+c
+      real Nx(lx1,ly1,lz1,lelv) ! face normal  X
+     $    ,Ny(lx1,ly1,lz1,lelv) !              Y
+     $    ,Nz(lx1,ly1,lz1,lelv) !              Z 
+     $    ,Tx(lx1,ly1,lz1,lelv) ! shear stress X-comp
+     $    ,Ty(lx1,ly1,lz1,lelv) !              Y   
+     $    ,Tz(lx1,ly1,lz1,lelv) !              Z
+     $    ,Tm(lx1,ly1,lz1,lelv) !              Mag    
+     $    ,uf(lx1,ly1,lz1,lelv) ! face friction vel
+     $    ,up(lx1,ly1,lz1,lelv) ! U-Plus
+     $    ,yp(lx1,ly1,lz1,lelv) ! Y-Plus
+c
+     $    ,utn(lx1,ly1,lz1,lelv) ! tangential velocity mag
+     $    ,d  (lx1,ly1,lz1,lelv) ! distance to face
+
+      integer nel,ntot
+      real n1 ,n2 ,n3
+      real u,v,w,un,ufr,Tmg,vsc,dsty
+      logical iifxyo,iifvo,iifpo,iifto ! for outposting
+
+      if(nid.eq.0) write(6,*) 'in comp_uplus(...)'
+c
+      nel  = nelfld(ifld)
+      ntot = lx1*ly1*lz1*nel
+      vsc   = vdiff(lx1,ly1,lz1,nelt,1)
+      dsty  = param(1)
+c
+      call rzero(utn,ntot)
+      call rzero(up ,ntot)
+c
+      call get_faceNormal(Nx,Ny,Nz,bctyp,ifld)
+
+      call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,ux,uy,uz,bctyp)
+
+      ! distance in direction parallel to idir
+      call cheap_dist(d,ifld,bctyp)
+
+      ! scatter face data into domain
+      call sctr(Nx,d,bctyp,ifld)
+      call sctr(Ny,d,bctyp,ifld)
+      call sctr(Nz,d,bctyp,ifld)
+      call sctr(Tm,d,bctyp,ifld)
+      call sctr(uf,d,bctyp,ifld)
+      call sctr(yp,d,bctyp,ifld)
+c
+      ! compute u-plus, y-plus
+      do i=1,ntot
+         u   = ux(i,1,1,1)
+         v   = uy(i,1,1,1)
+         w   = uz(i,1,1,1)
+         n1  = Nx(i,1,1,1)
+         n2  = Ny(i,1,1,1)
+         n3  = Nz(i,1,1,1)
+         Tmg = Tm(i,1,1,1)
+         ufr = uf(i,1,1,1)
+c
+         un = u*n1 + v*n2 + w*n3         ! mag of normal component
+         un = u*u  + v*v  + w*w - un*un
+         un = sqrt(un)
+         utn(i,1,1,1) = un               ! mag of tangential component
+c
+         up(i,1,1,1) = utn(i,1,1,1)/ufr
+         yp(i,1,1,1) = d  (i,1,1,1)*ufr/vsc
+      enddo
+
+      ! Outpost
+
+      iifxyo = ifxyo
+      iifvo  = ifvo
+      iifpo  = ifpo
+      iifto  = ifto
+c
+      ifxyo = .true.
+      ifvo  = .true.
+      ifpo  = .false.
+      ifto  = .true.
+c
+      call outpost(d,yp,uf,pr,Tm,'upl')
+c
+      ifxyo = iifxyo
+      ifvo  = iifvo
+      ifpo  = iifpo
+      ifto  = iifto
+c
+      return
+      end
 c-----------------------------------------------------------------------
 c
 c scatter boundary data in adjacent elements
 c
 c-----------------------------------------------------------------------
-      subroutine sctr(g,d,b)
+      subroutine sctr(g,d,b,ifld)
       implicit none
       include 'SIZE'
       include 'TOTAL'
@@ -11,15 +112,15 @@ c-----------------------------------------------------------------------
       real g(lx1,ly1,lz1,lelt) ! field to project
       real d(lx1,ly1,lz1,lelt) ! distance to wall
       character*3 b
+      integer ifld
 
-      integer ifld,nel,n,nface
+      integer nel,n,nface
       integer i ,j ,k ,e,f,ipass
      $       ,i0,j0,k0
      $       ,i1,j1,k1
      $       ,ii,jj,kk
       real tol
 
-      ifld = 1
       nel  = nelfld(ifld)
       n    = lx1*ly1*lz1*nel
       b    = 'W  '
@@ -50,14 +151,14 @@ c project data in coordinate direction
         enddo
         enddo
         enddo
-        call fgslib_gs_op(gsh_fld(ifld),g,1,4,0) ! max over all elements
+c       call fgslib_gs_op(gsh_fld(ifld),g,1,4,0) ! max over all elements
       enddo
 
       ifvo  = .true.
       ifpo  = .false.
       ifto  = .false.
       ifxyo = .true.
-      call outpost(d,g,vz,pr,t,'dst')
+c     call outpost(d,g,vz,pr,t,'dst')
 
       return
       end

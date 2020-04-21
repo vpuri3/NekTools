@@ -22,7 +22,6 @@ c
 c
 c
 c-----------------------------------------------------------------------
-c     include 'avg_tensor.usr'
 c     include 'wall.usr'
 C-----------------------------------------------------------------------
 c
@@ -80,16 +79,13 @@ C-----------------------------------------------------------------------
       include 'SIZE'
       include 'TOTAL'
 
+      real ux(lx1,ly1,lz1,lelv) ! Velocity field
+     $    ,uy(lx1,ly1,lz1,lelv)
+     $    ,uz(lx1,ly1,lz1,lelv)
+
       integer f,ifld,gs_hndl1,idir1
       integer nelx,nely,nelz
       character*3 bctyp
-
-      real up(lx1,ly1,lz1,lelv)    ! U-Plus
-     $    ,yp(lx1,ly1,lz1,lelv)    ! Y-Plus
-     $    ,volTm(lx1,ly1,lz1,lelv) ! shear magnitude
-     $    ,ux(lx1,ly1,lz1,lelv)    ! Velocity Field
-     $    ,uy(lx1,ly1,lz1,lelv)
-     $    ,uz(lx1,ly1,lz1,lelv)
 c
       real Nx(lx1,ly1,lz1,lelv) ! face normal  X
      $    ,Ny(lx1,ly1,lz1,lelv) !              Y
@@ -99,9 +95,11 @@ c
      $    ,Tz(lx1,ly1,lz1,lelv) !              Z
      $    ,Tm(lx1,ly1,lz1,lelv) !              Mag    
      $    ,uf(lx1,ly1,lz1,lelv) ! face friction vel
+     $    ,up(lx1,ly1,lz1,lelv) ! U-Plus
+     $    ,yp(lx1,ly1,lz1,lelv) ! Y-Plus
 c
      $    ,utn(lx1,ly1,lz1,lelv) ! tangential velocity mag
-     $    ,d2f(lx1,ly1,lz1,lelv) ! distance to face
+     $    ,d  (lx1,ly1,lz1,lelv) ! distance to face
 
       integer e,k,ntot
       real n1 ,n2 ,n3
@@ -114,15 +112,16 @@ c
       vsc   = vdiff(lx1,ly1,lz1,nelt,1)
       dsty  = param(1)
 c
+      call rzero(d  ,ntot)
       call rzero(utn,ntot)
-      call rzero(d2f,ntot)
+      call rzero(up ,ntot)
 c
       call get_faceNormal(fNx,fNy,fNz,bctyp,ifld)
 
       call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,ux,uy,uz,bctyp)
 
       ! distance in direction parallel to idir
-      call dist2face(d2f,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
+      call dist2face(d,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       ! scatter face data into domain
       call scttr(Nx,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
       call scttr(Ny,f,bctyp,gs_hndl1,nelx,nely,nelz,ifld,idir1)
@@ -140,7 +139,7 @@ c
          n2  = Ny(i,1,1,1)
          n3  = Nz(i,1,1,1)
          Tmg = Tm(i,1,1,1)
-         ufr = uf(i,1,1,1)   
+         ufr = uf(i,1,1,1)
 c
          un = u*n1 + v*n2 + w*n3         ! mag of normal component
          un = u*u  + v*v  + w*w - un*un
@@ -148,7 +147,7 @@ c
          utn(i,1,1,1) = un               ! mag of tangential component
 c
          up(i,1,1,1) = utn(i,1,1,1)/ufr
-         yp(i,1,1,1) = d2f(i,1,1,1)*ufr/vsc
+         yp(i,1,1,1) = d  (i,1,1,1)*ufr/vsc
       enddo
 
       ! Outpost
@@ -160,10 +159,10 @@ c
 c
       ifxyo = .true.
       ifvo  = .true.
-      ifpo  = .true.
+      ifpo  = .false.
       ifto  = .true.
 c
-c     call outpost(up,yp,utn,volTm,d2f,'upl')
+      call outpost(d,up,yp,pr,Tm,'upl')
 c
       ifxyo = iifxyo
       ifvo  = iifvo

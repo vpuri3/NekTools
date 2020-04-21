@@ -18,7 +18,7 @@ C-----------------------------------------------------------------------
 #define ZLEN 1.
 C-----------------------------------------------------------------------
       include 'scatter.usr'
-      include 'wallShear.usr'
+      include 'wall.usr'
 C-----------------------------------------------------------------------
       subroutine uservp(ix,iy,iz,eg) ! set variable properties
       include 'SIZE'
@@ -114,26 +114,14 @@ c     implicit none
       include 'TOTAL'
 
       character*3 bctyp
-      integer ifld,n
+      integer ifld,nel,n
 
-      real d (lx1,ly1,lz1,lelv) ! dist to wall
-      real Tx(lx1,ly1,lz1,lelv) ! shear stress X-comp
-      real Ty(lx1,ly1,lz1,lelv) !              Y   
-      real Tz(lx1,ly1,lz1,lelv) !              Z
-      real Tm(lx1,ly1,lz1,lelv) ! shear stress mag
-      real uf(lx1,ly1,lz1,lelv) ! friction velocity
-      real yp(lx1,ly1,lz1,lelv) ! y-plus
- 
       bctyp = 'W  '
       ifld  = 1
-      n     = lx1*ly1*lz1*nelfld(ifld)
+      nel   = nelfld(ifld)
+      n     = lx1*ly1*lz1*nel
 
-      call comp_wallShear(Tx,Ty,Tz,Tm,uf,yp,vx,vy,vz,bctyp)
- 
-c distance to BC
-      call cheap_dist(d,ifld,bctyp)
-
-      call sctr(Tm,d,bctyp)
+      call comp_uplus(vx,vy,vz,bctyp,ifld)
 
       call exitt
 

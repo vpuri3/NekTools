@@ -210,14 +210,14 @@ c     bctyp = 'W  '
 c     call get_faceNormal(Nx,Ny,Nz,bctyp,ifld)
 c
 C-----------------------------------------------------------------------
-      subroutine get_faceNormal(fNx,fNy,fNz,bctyp,ifld)
+      subroutine get_faceNormal(Nx,Ny,Nz,bctyp,ifld)
       implicit none
       include 'SIZE'
       include 'TOTAL'
 
-      real fNx(lx1,ly1,lz1,lelv) ! face normals
-     $    ,fNy(lx1,ly1,lz1,lelv)
-     $    ,fNz(lx1,ly1,lz1,lelv)
+      real Nx(lx1,ly1,lz1,lelv) ! face normals
+     $    ,Ny(lx1,ly1,lz1,lelv)
+     $    ,Nz(lx1,ly1,lz1,lelv)
       integer ifld
       character*3 bctyp
 
@@ -226,9 +226,9 @@ C-----------------------------------------------------------------------
 
       ntot = lx1*ly1*lz1*nelv
 c
-      call rzero(fNx,ntot)
-      call rzero(fNy,ntot)
-      call rzero(fNz,ntot)
+      call rzero(Nx,ntot)
+      call rzero(Ny,ntot)
+      call rzero(Nz,ntot)
 c
       ! get face info (initialize skpdat array)
       call dsset(nx1,ny1,nz1)
@@ -249,9 +249,9 @@ c
           do j1=js1,jf1,jskip1
             k = k + 1
 
-            fNx(j1,j2,1,e) = unx(k,1,f,e)      ! face normal X-comp
-            fNy(j1,j2,1,e) = uny(k,1,f,e)      !             Y
-            fNz(j1,j2,1,e) = unz(k,1,f,e)      !             Z
+            Nx(j1,j2,1,e) = unx(k,1,f,e)      ! face normal X-comp
+            Ny(j1,j2,1,e) = uny(k,1,f,e)      !             Y
+            Nz(j1,j2,1,e) = unz(k,1,f,e)      !             Z
 
           enddo
           enddo
