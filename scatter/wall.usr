@@ -81,10 +81,8 @@ c
       call comp_sij(sij,nxzf,ux,uy,uz,ur,us,ut,vr,vs,vt,wr,ws,wt)
 
       ! initialize viscocity
-      if (istep.eq.0) call cfill(vdiff,param(2),ntot)
-
-      vsc  = vdiff(lx1,ly1,lz1,nelt,idimt)
-      dsty = param(1)
+      if (istep.eq.0) call cfill(vdiff ,param(2),ntot)
+      if (istep.eq.0) call cfill(vtrans,param(1),ntot)
 
       ! get face info (initialize skpdat array)
       call dsset(nx1,ny1,nz1)
@@ -108,6 +106,9 @@ c
             n1 = unx(k,1,f,e)      ! face normal X-comp
             n2 = uny(k,1,f,e)      !             Y
             n3 = unz(k,1,f,e)      !             Z
+c
+            vsc   = vdiff (j1,j2,1,e,idimt)
+            dsty  = vtrans(j1,j2,1,e,idimt)
 c
             s11 = sij(j1,j2,1,1,e) ! Strain rate tensor
             s21 = sij(j1,j2,1,4,e)
@@ -162,9 +163,9 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
  
       if(nid.eq.0) then
         write(6,258)'area:' ,a
-        write(6,258)'xdrag:',xdrg
-        write(6,258)'ydrag:',ydrg
-        write(6,258)'zdrag:',zdrg
+c       write(6,258)'xdrag:',xdrg
+c       write(6,258)'ydrag:',ydrg
+c       write(6,258)'zdrag:',zdrg
         write(6,258)'Mdrag:',mdrg
         write(6,258)'Tmavg:',Tmavg
         write(6,258)'Ufavg:',ufavg
