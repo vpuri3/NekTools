@@ -123,7 +123,6 @@ c-----------------------------------------------------------------------
 
       nel  = nelfld(ifld)
       n    = lx1*ly1*lz1*nel
-      b    = 'W  '
       tol  = 1e-12
 
 c distance to BC
@@ -210,6 +209,84 @@ c-----------------------------------------------------------------------
         kk = k1
         dd = d(ii,jj,kk,e)
       endif
+
+      return
+      end
+c-----------------------------------------------------------------------
+c
+c cheap distance with projection - only within first element
+c
+c-----------------------------------------------------------------------
+      subroutine cheap_dist_with_proj(d,b,ifld)
+      implicit none
+      include 'SIZE'
+      include 'TOTAL'
+
+      real d(lx1,ly1,lz1,lelt) ! distance to wall
+      character*3 b
+      integer ifld
+
+      real x0,y0,z0
+      integer nel,n,nface
+      integer i ,j ,k ,e,f,ipass
+     $       ,i0,j0,k0
+     $       ,i1,j1,k1
+     $       ,ii,jj,kk
+      real tol
+
+      nel  = nelfld(ifld)
+      n    = lx1*ly1*lz1*nel
+      tol  = 1e-12
+
+      call rzero(d,n)
+
+      ! get face info (initialize skpdat array)
+      call dsset(nx1,ny1,nz1)
+
+      do e=1,nelv
+      do f=1,nxzf
+        if (cbc(f,e,ifld).eq.bctyp) then
+          iface  = eface1(f)   ! surface to volume shifts
+          js1    = skpdat(1,iface)
+          jf1    = skpdat(2,iface)
+          jskip1 = skpdat(3,iface)
+          js2    = skpdat(4,iface)
+          jf2    = skpdat(5,iface)
+          jskip2 = skpdat(6,iface)
+
+          k = 0
+          do j2=js2,jf2,jskip2
+          do j1=js1,jf1,jskip1
+            k = k + 1
+
+            nx = unx(k,1,f,e)      ! face normal X-comp
+            ny = uny(k,1,f,e)      !             Y
+            nz = unz(k,1,f,e)      !             Z
+c
+            x0 = xm1(k,1,f,e)
+            y0 = ym1(k,1,f,e)
+            z0 = zm1(k,1,f,e)
+c
+            ! get i0,j1,di based on f
+c
+            do i=i0,i1,di
+              d(j1+i,j2,1,e) = ((xm1(j1+i,j2,1,e) - x0) * nx
+     $                          (ym1(j1+i,j2,1,e) - y0) * ny
+     $                          (zm1(j1+i,j2,1,e) - z0) * nz)
+            enddo
+c
+          enddo
+          enddo
+
+        endif
+      enddo
+      enddo
+ 
+      ifvo  = .true.
+      ifpo  = .false.
+      ifto  = .false.
+      ifxyo = .true.
+c     call outpost(d,vy,vz,pr,t,'dst')
 
       return
       end
