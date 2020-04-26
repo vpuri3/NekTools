@@ -1,0 +1,8 @@
+#!/bin/bash
+
+qu="cache"
+[ "$#" == 1 ] && qu=$1
+
+rm -f logfile ioinfo *.cobaltlog *.error *.output
+
+qsub -n 8 -t 1:00:00 -A wall_turb_dd -q debug-"$qu"-quad theta.script
