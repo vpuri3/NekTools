@@ -155,7 +155,10 @@ c           zdrg = zdrg - n3*pr(j1,j2,1,e)*area(k,1,f,e)
       call gop(xdrg,Tmg,'+  ',1)
       call gop(ydrg,Tmg,'+  ',1)
       call gop(zdrg,Tmg,'+  ',1)
- 
+c 
+      vsc   = vdiff (j1,j2,1,e,idimt) ! repeating assignments in case
+      dsty  = vtrans(j1,j2,1,e,idimt) ! missed by any proc in above loop
+c
       mdrg = xdrg*xdrg + ydrg*ydrg + zdrg*zdrg
       mdrg = sqrt(mdrg)
       Tmavg= mdrg / (a*dsty)
