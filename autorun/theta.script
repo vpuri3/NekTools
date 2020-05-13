@@ -7,7 +7,6 @@ thr=1
 
 echo $case     >  SESSION.NAME
 echo `pwd`'/' >>  SESSION.NAME
-touch ./$case.rea
 rm -f ioinfo
 
 aprun -n $nprocs \
